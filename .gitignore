@@ -29,3 +29,4 @@ sysinfo.txt
 *.apk
 *.unitypackage
 /Website/nbproject/private/
+/Website1/nbproject/private/

@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
 <head>
-    <title><?=(isset($this->title)) ? "Stedi | " . $this->title : 'Stedi'; ?></title>
+    <title><?=(isset($this->title)) ? "COMET | " . $this->title : 'Stedi'; ?></title>
     <link rel="icon" href="<?= URL; ?>favicon.png" />
     
-    <!-- <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap.min.css" /> -->
-    <!-- <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap-theme.min.css" /> -->
+    <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatables.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatablesCustomized.css" />
     
@@ -16,8 +16,8 @@
     <?php Session::init(); ?>
     
     <script src="<?= URL; ?>public/js/jquery.js"></script>
-    <!-- <script src="<?= URL; ?>public/js/bootstrap/bootstrap.min.js"></script> -->
-    <?php if ($this->title == "Dashboard") { ?> <script src="<?= URL; ?>public/js/datatables/datatables.js"></script> <?php } ?>
+    <script src="<?= URL; ?>public/js/bootstrap/bootstrap.min.js"></script>
+    <script src="<?= URL; ?>public/js/datatables/datatables.js"></script>
     
     <div id="header">
         
