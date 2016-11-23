@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Net.Http;
 
-namespace Server
+namespace cnslServer
 {
-    public partial class Form1 : Form
+    class Program
     {
-        public Form1()
+        static void Main(string[] args)
         {
-            InitializeComponent();
+            Console.Write("niks");
         }
 
         async Task<int> AccessTheWebAsync()
@@ -28,7 +24,7 @@ namespace Server
             Task<string> getStringTask = client.GetStringAsync("http://msdn.microsoft.com");
 
             // You can do work here that doesn't rely on the string from GetStringAsync.  
-            
+
 
             // The await operator suspends AccessTheWebAsync.  
             //  - AccessTheWebAsync can't continue until getStringTask is complete.  
@@ -40,11 +36,6 @@ namespace Server
             // The return statement specifies an integer result.  
             // Any methods that are awaiting AccessTheWebAsync retrieve the length value.  
             return urlContents.Length;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
