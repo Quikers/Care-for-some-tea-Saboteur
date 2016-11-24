@@ -1,11 +1,11 @@
 <?php
 
-define('URL', 'http://localhost/');
+define('URL', 'http://careforsometeasaboteur.com/');
 
-define('LIBS', 'libs/');
+define('LIBS', 'data/libs/');
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'comet');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', 'luuk1996');
 

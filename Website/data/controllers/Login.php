@@ -7,6 +7,11 @@ class Login extends Controller {
     }
 
     public function index($params = NULL) {
+        $this->view->title = "Login";
+        $this->view->render('login/index');
+    }
+
+    public function login($params = NULL) {
         $this->loadModel("Login");
         $loginModel = new LoginModel();
         
