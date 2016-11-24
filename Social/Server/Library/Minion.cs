@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Library
 {
-    public class Class1
+    public class Minion : Card
     {
+        int CurrentHealth;
+        int MaxHealth;
+        int CurrentAttack;
+        int MaxAttack;
     }
 }
