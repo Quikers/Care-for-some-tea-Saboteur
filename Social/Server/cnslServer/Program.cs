@@ -34,7 +34,7 @@ namespace cnslServer
             string urlContents = await getStringTask;
 
             // The return statement specifies an integer result.  
-            // Any methods that are awaiting AccessTheWebAsync retrieve the length value.  
+            // Any methods that are awaiting AccessTheWebAsync retrieve the length value.   
             return urlContents.Length;
         }
     }
