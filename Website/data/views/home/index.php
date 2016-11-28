@@ -1,1 +1,1 @@
-Home page
+This is the Home page.
