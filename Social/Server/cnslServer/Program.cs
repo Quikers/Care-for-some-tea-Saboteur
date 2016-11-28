@@ -3,39 +3,101 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
+using System.Threading;
+using Library;
 
 namespace cnslServer
 {
     class Program
     {
+        private static List<Player> PlayerQueue;
+        private static string ReceivedData;
+
         static void Main(string[] args)
         {
-            Console.Write("niks");
+            //Initializers
+            PlayerQueue = new List<Player>();
+            int loopcount = 0;
+
+            //Server loop
+            do
+            {   
+                HandleMatchmaking();
+
+                
+                loopcount++;
+                Console.WriteLine(loopcount.ToString());
+            }
+            while (true);
         }
 
-        async Task<int> AccessTheWebAsync()
+        public void SendData(string Data)
         {
-            // You need to add a reference to System.Net.Http to declare client.  
-            HttpClient client = new HttpClient();
-
-            // GetStringAsync returns a Task<string>. That means that when you await the  
-            // task you'll get a string (urlContents).  
-            Task<string> getStringTask = client.GetStringAsync("http://msdn.microsoft.com");
-
-            // You can do work here that doesn't rely on the string from GetStringAsync.  
-
-
-            // The await operator suspends AccessTheWebAsync.  
-            //  - AccessTheWebAsync can't continue until getStringTask is complete.  
-            //  - Meanwhile, control returns to the caller of AccessTheWebAsync.  
-            //  - Control resumes here when getStringTask is complete.   
-            //  - The await operator then retrieves the string result from getStringTask.  
-            string urlContents = await getStringTask;
-
-            // The return statement specifies an integer result.  
-            // Any methods that are awaiting AccessTheWebAsync retrieve the length value.   
-            return urlContents.Length;
+            ReceivedData = Data;
         }
+
+        public void AddPlayerToQueue(Player player)
+        {
+            PlayerQueue.Add(player);
+        }
+
+        private void AddPlayerToQueue(string Data)
+        {
+
+        }
+
+        private static void HandleMatchmaking()
+        {
+            if (PlayerQueue.Count < 2) return;
+
+            for(int i=0; i < PlayerQueue.Count; i++)
+            {
+                Match match = new Match();
+                match.player1 = PlayerQueue[0];
+                match.player2 = PlayerQueue[1];
+
+                StartMatch(match);
+                PlayerQueue.Remove(match.player1);
+                PlayerQueue.Remove(match.player2);
+            }
+        }
+
+        private static void StartMatch(Match match)
+        {
+            
+        }
+
+        private static void Asynctesting()
+        {
+            Asynctesting();
+            Console.WriteLine("Het begint");
+            long currentaantal = testasync().Result;
+            Console.WriteLine(currentaantal.ToString());
+
+
+            Console.ReadLine();
+        }
+
+        private static long increase()
+        {
+            long currentaantal = 0;
+
+            do
+            {
+                currentaantal++;
+            } while (currentaantal < 1500000000);
+
+            return currentaantal;
+        }
+
+        private static async Task<long> testasync()
+        {
+            Task<long> task = new Task<long>(increase);
+            task.Start();
+            long currentaantal = await task;
+
+            return currentaantal;
+        }
+        
     }
 }
