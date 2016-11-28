@@ -1,6 +1,6 @@
 <?php
 
-class Error extends Controller {
+class WebsiteError extends Controller {
 
     public $pageName = "";
     
