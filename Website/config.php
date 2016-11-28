@@ -3,6 +3,7 @@
 define('URL', 'http://careforsometeasaboteur.com/');
 
 define('LIBS', 'data/libs/');
+define('CONTROLLERS', 'data/controllers/');
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'comet');

@@ -8,9 +8,9 @@ class View {
 
     public function render($name, $noInclude = false)
     {
-        if ($noInclude != true) { require 'views/header.php'; }
-        require 'views/' . $name . '.php';
-        if ($noInclude != true) { require 'views/footer.php'; }
+        if ($noInclude != true) { require 'data/views/header.php'; }
+        require 'data/views/' . $name . '.php';
+        if ($noInclude != true) { require 'data/views/footer.php'; }
     }
 
 }

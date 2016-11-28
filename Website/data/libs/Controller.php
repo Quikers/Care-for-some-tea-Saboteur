@@ -4,7 +4,7 @@ class Controller {
 
     public $model = NULL;
     
-    function __construct() {
+    function __construct() {    
         session::init();
         
         $this->view = new View();
@@ -21,5 +21,4 @@ class Controller {
             $this->model = new $name();
         }
     }
-
 }

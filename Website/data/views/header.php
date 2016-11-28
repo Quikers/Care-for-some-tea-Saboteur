@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title><?=(isset($this->title)) ? "COMET | " . $this->title : 'Stedi'; ?></title>
+    <title><?=(isset($this->title)) ? "COMET | " . ucfirst($this->title) : 'COMET'; ?></title>
     <link rel="icon" href="<?= URL; ?>favicon.png" />
     
     <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap.min.css" />
@@ -20,16 +20,16 @@
     <script src="<?= URL; ?>public/js/datatables/datatables.js"></script>
     
     <div id="header">
-        
+        <div id="logo"></div>
         <div id="nav">
+            <center>
+                <div class="li<?= strtolower($this->title) == "home" ? " active" : "" ?>"><a href="<?= URL ?>home">Home</a></div>
+                <div class="li<?= strtolower($this->title) == "content" ? " active" : "" ?>"><a href="<?= URL ?>content">Content</a></div>
+                <div class="li<?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
+            </center>
+            <div class="li<?= strtolower($this->title) == "login" ? " active" : "" ?>"><a href="<?= URL ?>login">Login</a></div>
             <?php if ($_SESSION["loggedIn"] != true) { ?>
-                <div class="li <?= $this->title == "Home" ? "active" : "" ?>"><a href="<?= URL ?>home">Home</a></div>
             <?php } else { ?>
-                <div class="li"><a href="<?= URL ?>logout">Logout</a></div><br>
-                <div class="username">Welcome,<br><?= ucfirst($_SESSION["user"]["username"]) . "<br>" . $_SESSION["user"]["email"] ?></div>
-                <div class="li <?= $this->title == "Dashboard" ? "active" : "" ?>"><a href="<?= URL ?>dashboard">Dashboard</a></div>
-                <div class="li <?= $this->title == "Games" ? "active" : "" ?>"><a href="<?= URL ?>games">Games</a></div>
-                <div class="li <?= $this->title == "Upload" ? "active" : "" ?>"><a href="<?= URL ?>upload">Upload Your Game</a></div>
             <?php } ?>
         </div>
 

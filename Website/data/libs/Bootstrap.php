@@ -5,8 +5,8 @@ class Bootstrap {
     private $_url = null;
     private $_controller = null;
     
-    private $_controllerPath = 'controllers/';
-    private $_errorFile = 'error.php';
+    private $_controllerPath = CONTROLLERS;
+    private $_errorFile = CONTROLLERS . 'error.php';
     
     
     public function init()
@@ -29,7 +29,6 @@ class Bootstrap {
     {
         $url = isset($_GET['url']) ? $_GET['url'] : null;
         $url = rtrim($url, '/');
-        $url = filter_var($url, FILTER_SANITIZE_URL);
         $this->_url = explode('/', $url);
     }
     
@@ -91,10 +90,10 @@ class Bootstrap {
     }
     
     private function _error($pageName) {
-        require $this->_controllerPath . $this->_errorFile;
-        $this->_controller = new Error($pageName);
+        require $this->_errorFile;
+        $this->_controller = new WebsiteError($pageName);
         $this->_controller->index();
+        
         exit;
     }
-
 }
