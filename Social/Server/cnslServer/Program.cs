@@ -31,9 +31,11 @@ namespace cnslServer
             while (true);
         }
 
-        public void SendData(string Data)
+        public void ReceiveData(string Data)
         {
             ReceivedData = Data;
+
+            
         }
 
         public void AddPlayerToQueue(Player player)

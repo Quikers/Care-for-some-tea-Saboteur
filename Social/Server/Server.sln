@@ -1,16 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{68D41E28-731B-443F-88E8-F5A3D94CC6CF}"
 	ProjectSection(ProjectDependencies) = postProject
-		{38F222FD-5844-4EF9-BBD7-3FC3FA1A3844} = {38F222FD-5844-4EF9-BBD7-3FC3FA1A3844}
+		{CA943D3C-0983-409F-B42E-C6C19E45C032} = {CA943D3C-0983-409F-B42E-C6C19E45C032}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cnslServer", "cnslServer\cnslServer.csproj", "{7C455127-BC54-497A-B613-46F4B08AAC17}"
 	ProjectSection(ProjectDependencies) = postProject
 		{68D41E28-731B-443F-88E8-F5A3D94CC6CF} = {68D41E28-731B-443F-88E8-F5A3D94CC6CF}
+		{CA943D3C-0983-409F-B42E-C6C19E45C032} = {CA943D3C-0983-409F-B42E-C6C19E45C032}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "Library\Library.csproj", "{38F222FD-5844-4EF9-BBD7-3FC3FA1A3844}"
