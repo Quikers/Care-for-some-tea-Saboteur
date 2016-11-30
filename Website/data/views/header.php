@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatables.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatablesCustomized.css" />
     
+    <link rel="stylesheet" href="<?= URL; ?>public/css/header.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/default.css" />
 </head>
 <body style="display: none;">
