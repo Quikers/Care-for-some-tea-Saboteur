@@ -28,10 +28,10 @@ class APIModel extends Model {
         }
     }
     
-    public function GetUserByUsername($idArr) {
+    public function GetUserByUsername($usernameArr) {
         $result = array();
         
-        foreach ($idArr as $username) {
+        foreach ($usernameArr as $username) {
             $row = $this->db->Query(
                 'SELECT `id`, `email`, `username`, `account_type`, `created`, `editted` FROM users WHERE `username` = :username',
                 array(

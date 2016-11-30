@@ -1,10 +1,57 @@
 #content-body {
     margin: 20px 15%;
-    padding: 30px;
+    padding: 20px 30px 30px;
     
     overflow-x: hidden;
     overflow-y: auto;
     
     box-shadow: 2px 2px 15px #AAAAAA;
     background: whitesmoke;
+}
+
+#form-container {
+    position: relative;
+    top: 50px;
+    
+    margin: 0 auto;
+    max-width: 400px;
+    min-width: 400px;
+    min-height: 380px;
+    max-height: 380px;
+    
+    padding: 10px 50px 0;
+    
+    overflow: hidden;
+    
+    background: whitesmoke;
+}
+
+#login-container {
+    
+}
+
+#login-container form {
+    margin-top: 20px;
+    margin-bottom: 75px;
+    transition: 200ms;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 300px;
+    height: 30px;
+    
+    font-size: 21px;
+    margin-bottom: 5px;
+}
+
+#login-container h2 {
+    text-align: center;
+    
+    cursor: pointer;
+}
+
+#register-container h2 {
+    text-align: center;
+    
+    cursor: pointer;
 }

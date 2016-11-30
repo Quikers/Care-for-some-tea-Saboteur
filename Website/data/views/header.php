@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="<?= URL; ?>public/css/bootstrap/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatables.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/datatables/datatablesCustomized.css" />
+    <link rel="stylesheet" href="<?= URL; ?>public/css/fontawesome/font-awesome.min.css" />
     
     <link rel="stylesheet" href="<?= URL; ?>public/css/header.css" />
     <link rel="stylesheet" href="<?= URL; ?>public/css/default.css" />
@@ -30,7 +31,7 @@
                     <div class="li<?= strtolower($this->title) == "content" ? " active" : "" ?>"><a href="<?= URL ?>content">Content</a></div>
                     <div class="li<?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
                 </center>
-                <div class="li<?= strtolower($this->title) == "login" ? " active" : "" ?>"><a href="<?= URL ?>login">Login</a></div>
+                <div class="li<?= strtolower($this->title) == "login" ? " active" : "" ?>"><a href="<?= URL ?>login">Account</a></div>
                 <?php if ($_SESSION["loggedIn"] != true) { ?>
                 <?php } else { ?>
                 <?php } ?>

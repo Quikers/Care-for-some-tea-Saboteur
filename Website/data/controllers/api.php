@@ -16,6 +16,7 @@ class API extends Controller {
         echo "Please use one of the following functions:<br><br>";
         echo "getuserbyid (http://careforsometeasaboteur.com/api/getuserbyid/1)<br>";
         echo "getuserbyemail (http://careforsometeasaboteur.com/api/getuserbyemail/admin@careforsometeasaboteur.com)<br>";
+        echo "getuserbyusername (http://careforsometeasaboteur.com/api/getuserbyusername/admin)<br>";
         echo "</html></body>";
     }
     
@@ -28,6 +29,12 @@ class API extends Controller {
     public function getuserbyemail($params = null) {
         if (count($params) > 0) {
             echo json_encode($this->API->GetUserByEmail(explode(",", $params[0])));
+        } else { echo 0; }
+    }
+    
+    public function getuserbyusername($params = null) {
+        if (count($params) > 0) {
+            echo json_encode($this->API->GetUserByUsername(explode(",", $params[0])));
         } else { echo 0; }
     }
 
