@@ -1,9 +1,12 @@
 #content-body {
-    margin: 20px 15%;
+    margin: 20px auto;
     padding: 20px 30px 30px;
     
     overflow-x: hidden;
     overflow-y: auto;
+    
+    min-width: 640px;
+    width: 70%;
     
     box-shadow: 2px 2px 15px #AAAAAA;
     background: whitesmoke;
@@ -29,7 +32,6 @@
 #login-container form {
     margin-top: 20px;
     margin-bottom: 75px;
-    transition: 200ms;
 }
 
 input[type="text"], input[type="password"], input[type="email"] {
@@ -45,5 +47,23 @@ input[type="text"], input[type="password"], input[type="email"] {
     background: rgba(0,0,0,0.1);
     padding: 3px;
     
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
     cursor: pointer;
+}
+
+#login-container h2:hover,#register-container h2:hover {
+    background: rgba(0,0,0,0.15);
+}
+
+#login-container h2:active,#register-container h2:active {
+    background: rgba(0,0,0,0.075);
+}
+
+.fa-smfnt {
+    font-size: 20px !important;
+    vertical-align: middle;
+    padding-left: 3px;
 }
