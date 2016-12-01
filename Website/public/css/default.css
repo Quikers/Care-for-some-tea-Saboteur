@@ -16,18 +16,14 @@
     margin: 0 auto;
     max-width: 400px;
     min-width: 400px;
-    min-height: 380px;
-    max-height: 380px;
+    min-height: 390px;
+    max-height: 390px;
     
     padding: 10px 50px 0;
     
     overflow: hidden;
     
     background: whitesmoke;
-}
-
-#login-container {
-    
 }
 
 #login-container form {
@@ -44,14 +40,10 @@ input[type="text"], input[type="password"], input[type="email"] {
     margin-bottom: 5px;
 }
 
-#login-container h2 {
+#login-container h2,#register-container h2 {
     text-align: center;
-    
-    cursor: pointer;
-}
-
-#register-container h2 {
-    text-align: center;
+    background: rgba(0,0,0,0.1);
+    padding: 3px;
     
     cursor: pointer;
 }
