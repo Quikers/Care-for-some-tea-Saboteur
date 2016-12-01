@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "Library\Library.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMessage", "..\TcpMessage\TcpMessage\TcpMessage.csproj", "{CA943D3C-0983-409F-B42E-C6C19E45C032}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendTcp", "SendTcp\SendTcp.csproj", "{376479C2-CA14-4B09-937D-F4DEBD15DB57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{CA943D3C-0983-409F-B42E-C6C19E45C032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA943D3C-0983-409F-B42E-C6C19E45C032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA943D3C-0983-409F-B42E-C6C19E45C032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{376479C2-CA14-4B09-937D-F4DEBD15DB57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{376479C2-CA14-4B09-937D-F4DEBD15DB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{376479C2-CA14-4B09-937D-F4DEBD15DB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{376479C2-CA14-4B09-937D-F4DEBD15DB57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

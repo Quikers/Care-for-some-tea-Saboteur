@@ -143,22 +143,22 @@ Succes</panel_attributes>
     <coordinates>
       <x>342</x>
       <y>369</y>
-      <w>234</w>
+      <w>198</w>
       <h>63</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;20.0;240.0;20.0;240.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;10.0;20.0;200.0;20.0;200.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>549</x>
+      <x>585</x>
       <y>369</y>
-      <w>153</w>
+      <w>117</w>
       <h>63</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>150.0;50.0;150.0;20.0;10.0;20.0;10.0;10.0</additional_attributes>
+    <additional_attributes>110.0;50.0;110.0;20.0;10.0;20.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -300,12 +300,12 @@ Time out</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>549</x>
-      <y>378</y>
+      <y>369</y>
       <w>27</w>
-      <h>54</h>
+      <h>63</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>

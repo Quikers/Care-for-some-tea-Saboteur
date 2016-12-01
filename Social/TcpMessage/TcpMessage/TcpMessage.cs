@@ -42,15 +42,12 @@ namespace TcpMessage {
                         } catch (Exception) {
                             throw new Exception("Type \"" + keyValue[1] + "\" is not an underlying value of TcpMessageType.");
                         }
-
                         break;
                 }
             }
 
             return packet;
         }
-
-
     }
 
     public class Packet {
