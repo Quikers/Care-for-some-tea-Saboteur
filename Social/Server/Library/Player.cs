@@ -10,8 +10,8 @@ namespace Library
     {
         public int UserID;
         public List<Card> SelectedDeck;
-        int CurrentEnergy;
-        int MaxEnergy;
+        public int CurrentEnergy;
+        public int MaxEnergy;
 
         public void StartTurn()
         {

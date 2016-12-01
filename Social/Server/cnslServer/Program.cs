@@ -19,22 +19,69 @@ namespace cnslServer
 
         static void Main(string[] args)
         {
-            ////Initializers
-            //PlayerQueue = new List<Player>();
-            //int loopcount = 0;
+            //Asynctesting();
 
-            ////Server loop
-            //do
-            //{   
-            //    HandleMatchmaking();
-
-
-            //    loopcount++;
-            //    Console.WriteLine(loopcount.ToString());
+            //for(int i =0; i<10; i++)
+            //{
+            //    Console.WriteLine("Nummer: {0}", i.ToString());
             //}
-            //while (true);
 
-            Listen();
+            //Console.ReadLine();
+
+            //Initializers
+            PlayerQueue = new List<Player>();
+
+            Task Matchmaking = new Task(HandleMatchmaking);
+            Matchmaking.Start();
+
+            Task AddPlayers = new Task(AddPlayersToQueue);
+            AddPlayers.Start();
+
+            Console.ReadLine();
+            
+        }
+
+        private static async void HandleMatchmaking()
+        {
+            while (true)
+            {
+                if (PlayerQueue.Count < 2) continue;
+
+                Match match = new Match();
+                match.player1 = PlayerQueue[0];
+                match.player2 = PlayerQueue[1];
+
+                StartMatch(match);
+                Console.WriteLine("Match has been started!");
+                PlayerQueue.Remove(match.player1);
+                PlayerQueue.Remove(match.player2);
+            }
+        }
+
+        private static async void AddPlayersToQueue()
+        {
+            int loopcount = 0;
+
+            while (true)
+            {
+                if (loopcount == 200000000) loopcount = 0;
+                else
+                {
+                    loopcount++;
+                    continue;
+                }
+
+                Player player = new Player()
+                {
+                    UserID = loopcount,
+                    SelectedDeck = null,
+                    CurrentEnergy = 10,
+                    MaxEnergy = 10
+                };
+
+                PlayerQueue.Add(player);
+                //Console.WriteLine("Loopcount: 20000000");
+            }
         }
 
         public void ReceiveData(Packet packet)
@@ -52,21 +99,7 @@ namespace cnslServer
 
         }
 
-        private static void HandleMatchmaking()
-        {
-            if (PlayerQueue.Count < 2) return;
-
-            for(int i=0; i < PlayerQueue.Count; i++)
-            {
-                Match match = new Match();
-                match.player1 = PlayerQueue[0];
-                match.player2 = PlayerQueue[1];
-
-                StartMatch(match);
-                PlayerQueue.Remove(match.player1);
-                PlayerQueue.Remove(match.player2);
-            }
-        }
+       
 
         private static void StartMatch(Match match)
         {
@@ -75,13 +108,12 @@ namespace cnslServer
 
         private static void Asynctesting()
         {
-            Asynctesting();
+            //Asynctesting();
             Console.WriteLine("Het begint");
             long currentaantal = testasync().Result;
             Console.WriteLine(currentaantal.ToString());
 
-
-            Console.ReadLine();
+            
         }
 
         private static long increase()
@@ -91,7 +123,8 @@ namespace cnslServer
             do
             {
                 currentaantal++;
-            } while (currentaantal < 1500000000);
+                Console.WriteLine(currentaantal.ToString());
+            } while (currentaantal < 150);
 
             return currentaantal;
         }
