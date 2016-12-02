@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using Library;
+
 
 namespace SendTcp
 {
@@ -12,6 +14,8 @@ namespace SendTcp
     {
         static void Main(string[] args)
         {
+            Packet packet = new Packet("Quickers", "Server", TcpMessageType.Message, new[] { "Wachtwoord", "Lantaarnpaal"});
+
             // Create a TcpClient.
             // Note, for this client to work you need to have a TcpServer 
             // connected to the same address as specified by the server, port

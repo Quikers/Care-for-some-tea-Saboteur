@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TcpMessage {
+namespace Library {
     public enum TcpMessageType {
         None = 0,
 

@@ -33,9 +33,12 @@ namespace cnslServer
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
-
+            
             Task AddPlayers = new Task(AddPlayersToQueue);
             AddPlayers.Start();
+
+            Task Listen = new Task(ListenTcp);
+            Listen.Start();
 
             Console.ReadLine();
             
@@ -99,8 +102,6 @@ namespace cnslServer
 
         }
 
-       
-
         private static void StartMatch(Match match)
         {
             
@@ -138,7 +139,7 @@ namespace cnslServer
             return currentaantal;
         }
 
-        private static void Listen()
+        private static void ListenTcp()
         {
             TcpListener server = null;
 
@@ -161,7 +162,7 @@ namespace cnslServer
                 // Enter the listening loop.
                 while (true)
                 {
-                    Console.Write("Waiting for a connection... ");
+                    Console.WriteLine("TcpListener started. Waiting for a connection... ");
 
                     // Perform a blocking call to accept requests.
                     // You could also user server.AcceptSocket() here.
@@ -179,11 +180,11 @@ namespace cnslServer
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         // Translate data bytes to a ASCII string.
-                        data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                        data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString(); //Veranderd
                         Console.WriteLine("Received: {0}", data);
 
                         // Process the data sent by the client.
-                        data = data.ToUpper();
+                        //data = data.ToUpper();
 
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
 
