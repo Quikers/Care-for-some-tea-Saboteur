@@ -6,8 +6,14 @@ class LoginModel extends Model {
         parent::__construct();
     }
     
-    public function Login($username, $password) {
-        $result = $this->db->Query('SELECT `id`, `username`, `accountType`, `email` FROM ' . DB_NAME . '.users WHERE `username` = "' . $username . '" AND `password` = PASSWORD("' . $password . '")');
+    public function Login($email, $password) {
+        $result = $this->db->Query(
+            'SELECT `id`, `email`, `username`, `account_type`, `created`, `editted` FROM users WHERE `email` = :email AND `password` = PASSWORD(:password)',
+            array(
+                "email" => $email,
+                "password" => $password
+            )
+        );
         
         if ($result != array()) {
             return $result;
@@ -23,7 +29,14 @@ class LoginModel extends Model {
     public function Register($email, $username, $password) {
         try {
             $lastID = $this->GetLastInsertedUser()["id"];
-            $this->db->Query('INSERT INTO `users`(`email`, `username`, `password`, `accountType`) VALUES ("' . $email . '", "' . $username . '", PASSWORD("' . $password . '"), 1)', true, false, true);
+            $this->db->Query(
+                'INSERT INTO `users`(`email`, `username`, `password`, `account_type`) VALUES (:email, :username, PASSWORD(:password), 3)',
+                array(
+                    "email" => $email,
+                    "username" => $username,
+                    "password" => $password
+                ), true, false, true
+            );
             $newID = $this->GetLastInsertedUser()["id"];
         } catch(Exception $ex) { return -1; }
         
