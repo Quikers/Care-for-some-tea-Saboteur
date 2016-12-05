@@ -33,7 +33,7 @@ class API extends Controller {
     }
     
     public function docs($params = null) {
-        $this->view->methodGroups = array("User" => new User(), "Match" => new Match());
+        $this->view->methodGroups = array("User", "Match");
         
         $this->view->title = "API Documentation";
         $this->view->render('api/index');

@@ -7,10 +7,15 @@
             
             <?php
             
+            $content = array();
+            
             foreach($this->methodGroups as $groupName) {
-                echo "<a id=\"" . $groupName . "\" class=\"header1-link\" href=\"" . URL . "api/docs#" . $groupName . "\"" . $groupName . "</a>";
+                $content[$groupName] = array();
+                
+                echo '<a id="' . $groupName . '" class="header1-link" href="' . URL . 'api/docs#' . $groupName . '">' . $groupName . '</a>';
                 foreach(get_class_vars($groupName) as $varName => $description) {
-                    echo "";
+                    $content[$groupName][$varName] = $description;
+                    echo '<a id="' . $varName . '" class="header2-link" href="' . URL . 'api/docs#' . $varName . '">' . $varName . '</a>';
                 }
             }
             
