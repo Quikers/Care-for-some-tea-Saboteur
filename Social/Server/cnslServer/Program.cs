@@ -6,40 +6,36 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Sockets;
 using Library;
-using TcpMessage;
 using System.Net;
 
 
 namespace cnslServer
 {
+
+    //receive data port = 25002;
+    //submit data port = 25003;
     class Program
     {
         private static List<Player> PlayerQueue;
         private static string ReceivedData;
+        private static string PacketString;
+        private static NetworkStream stream;
+
 
         static void Main(string[] args)
-        {
-            //Asynctesting();
-
-            //for(int i =0; i<10; i++)
-            //{
-            //    Console.WriteLine("Nummer: {0}", i.ToString());
-            //}
-
-            //Console.ReadLine();
-
-            //Initializers
+        {   
             PlayerQueue = new List<Player>();
+            PlayerQueue.Add(new Player { UserID = 10, IP = "1.1.1.1" });
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
             
-            Task AddPlayers = new Task(AddPlayersToQueue);
-            AddPlayers.Start();
+            //Task AddPlayers = new Task(AddPlayersToQueue);
+            //AddPlayers.Start();
 
             Task Listen = new Task(ListenTcp);
             Listen.Start();
-
+            
             Console.ReadLine();
             
         }
@@ -92,11 +88,6 @@ namespace cnslServer
             ReceivedData = packet.ToString();
         }
 
-        public void AddPlayerToQueue(Player player)
-        {
-            PlayerQueue.Add(player);
-        }
-
         private void AddPlayerToQueue(string Data)
         {
 
@@ -104,7 +95,23 @@ namespace cnslServer
 
         private static void StartMatch(Match match)
         {
-            
+            // Send response to player 1
+            Packet packet = new Packet();
+            packet.From = match.player2.IP;
+            packet.To = match.player1.IP;
+            packet.Type = TcpMessageType.MatchStart;
+            var variables = new Dictionary<string, string>();
+            variables.Add("User1ID", match.player1.UserID.ToString());
+            variables.Add("User1IP", match.player1.IP);
+            variables.Add("User2ID", match.player2.UserID.ToString());
+            variables.Add("User2IP", match.player2.IP.ToString());
+            packet.Variables = variables;
+
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(packet.ToString());
+
+            stream.Write(msg, 0, packet.ToString().Length);
+
+            // Send response to player 2
         }
 
         private static void Asynctesting()
@@ -146,7 +153,7 @@ namespace cnslServer
             try
             {
                 // Set the TcpListener on port 13000.
-                Int32 port = 25001;
+                Int32 port = 25002;
                 IPAddress localAddr = IPAddress.Parse("0.0.0.0");
 
                 // TcpListener server = new TcpListener(port);
@@ -172,7 +179,7 @@ namespace cnslServer
                     data = null;
 
                     // Get a stream object for reading and writing
-                    NetworkStream stream = client.GetStream();
+                    stream = client.GetStream();
 
                     int i;
 
@@ -181,10 +188,14 @@ namespace cnslServer
                     {
                         // Translate data bytes to a ASCII string.
                         data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString(); //Veranderd
+                        
                         Console.WriteLine("Received: {0}", data);
+
 
                         // Process the data sent by the client.
                         //data = data.ToUpper();
+                        Packet packet = PacketParser.Parse(data);
+                        HandlePacket(packet);
 
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
 
@@ -207,6 +218,59 @@ namespace cnslServer
                 server.Stop();
             }
         }
-        
+
+        private static void HandlePacket(Packet packet)
+        {
+            if (packet == null) return;
+            
+
+            switch (packet.Type)
+            {
+                case TcpMessageType.ChatMessage:
+                    break;
+                case TcpMessageType.Command:
+                    break;
+                case TcpMessageType.MapData:
+                    break;
+                case TcpMessageType.Message:
+                    int from = int.Parse(packet.From);
+                    int to = int.Parse(packet.To);
+                    string message = packet.Variables["Message"];
+                    string IPdestination = packet.Variables["IPdestination"];
+                    break;
+
+                case TcpMessageType.None:
+                    break;
+                case TcpMessageType.PlayerUpdate:
+                    {
+                        Player player = new Player();
+                        player.UserID = int.Parse(packet.Variables["UserID"]);
+                        player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
+                        player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
+                        
+                        break;
+                    }
+
+                case TcpMessageType.AddPlayerToQueue:
+                    {
+                        string value = "";
+                        Player playerr = new Player();
+                        bool canReadd = packet.Variables.TryGetValue("UserID", out value);
+                        if (canReadd)
+                        {
+                            playerr.UserID = int.Parse(value);
+                            PlayerQueue.Add(playerr);
+                            Console.WriteLine("UserID {0} has been added to the player queue", playerr.UserID.ToString());
+                        }
+                        break;
+                    }
+
+            }
+        }
+
+        private static void SendMessage(int from, int to, string message, string IPdestination)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

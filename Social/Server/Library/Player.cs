@@ -12,6 +12,7 @@ namespace Library
         public List<Card> SelectedDeck;
         public int CurrentEnergy;
         public int MaxEnergy;
+        public string IP;
 
         public void StartTurn()
         {

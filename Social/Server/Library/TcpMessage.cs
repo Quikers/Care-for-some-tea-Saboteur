@@ -10,7 +10,9 @@ namespace Library {
         Message = 2,
         ChatMessage = 3,
         PlayerUpdate = 4,
-        MapData = 5
+        MapData = 5,
+        AddPlayerToQueue = 6,
+        MatchStart = 7
     }
 
     public static class PacketParser {
