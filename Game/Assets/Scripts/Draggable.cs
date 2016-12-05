@@ -4,27 +4,26 @@ using UnityEngine.EventSystems;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Transform parentToReturnTo = null;
-    public Transform placeHolderParent = null;
+    public Transform ParentToReturnTo = null;
+    public Transform PlaceHolderParent = null;
 
-    GameObject placeHolder = null;
+    GameObject _placeHolder = null;
 
     public void OnBeginDrag( PointerEventData eventData )
     {
-        Debug.Log( "OnBeginDrag" );
-        placeHolder = new GameObject( "Place Holder" );
-        placeHolder.transform.SetParent( transform.parent );
-        LayoutElement le = placeHolder.AddComponent<LayoutElement>();
+        _placeHolder = new GameObject( "Place Holder" );
+        _placeHolder.transform.SetParent( transform.parent, true );
+        LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
         le.preferredWidth = GetComponent<LayoutElement>().preferredWidth;
         le.preferredHeight= GetComponent<LayoutElement>().preferredHeight;
 
         le.flexibleWidth = 0;
         le.flexibleHeight = 0;
 
-        placeHolder.transform.SetSiblingIndex( transform.GetSiblingIndex() );
+        _placeHolder.transform.SetSiblingIndex( transform.GetSiblingIndex() );
 
-        parentToReturnTo = transform.parent;
-        placeHolderParent = parentToReturnTo;
+        ParentToReturnTo = transform.parent;
+        PlaceHolderParent = ParentToReturnTo;
         transform.SetParent( transform.parent.parent );
 
         GetComponent<CanvasGroup>().blocksRaycasts = false;
@@ -32,35 +31,37 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrag( PointerEventData eventData )
     {
-        transform.position = eventData.position;
+        transform.position = new Vector3( eventData.position.x, eventData.position.y, 0f );
+        Debug.Log( eventData.position );
 
-        if( placeHolder.transform.parent != placeHolderParent )
-            placeHolder.transform.SetParent( placeHolderParent );
-
-        int newSiblingIndex = placeHolderParent.childCount;
-
-        for( int i = 0; i < placeHolderParent.childCount; i++ )
+        if( _placeHolder.transform.parent != PlaceHolderParent )
         {
-            if( transform.position.x < placeHolderParent.GetChild( i ).position.x )
+            _placeHolder.transform.SetParent( PlaceHolderParent );
+        }
+
+        int newSiblingIndex = PlaceHolderParent.childCount;
+
+        for( int i = 0; i < PlaceHolderParent.childCount; i++ )
+        {
+            if( transform.position.x < PlaceHolderParent.GetChild( i ).position.x )
             {
                 newSiblingIndex = i;
 
-                if( placeHolder.transform.GetSiblingIndex() < newSiblingIndex )
+                if( _placeHolder.transform.GetSiblingIndex() < newSiblingIndex )
                     newSiblingIndex--;
 
                 break;
             }
         }
-        placeHolder.transform.SetSiblingIndex( newSiblingIndex );
+        _placeHolder.transform.SetSiblingIndex( newSiblingIndex );
     }
 
     public void OnEndDrag( PointerEventData eventData )
     {
-        Debug.Log( "OnEndDrag" );
-        transform.SetParent( parentToReturnTo );
-        transform.SetSiblingIndex( placeHolder.transform.GetSiblingIndex() );
+        transform.SetParent( ParentToReturnTo, true );
+        transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
-        Destroy( placeHolder );
+        Destroy( _placeHolder );
     }
 }
