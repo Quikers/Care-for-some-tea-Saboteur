@@ -17,12 +17,12 @@ namespace cnslServer
     class Program
     {
         private static List<Player> PlayerQueue;
-        private static string ReceivedData;
+        private static Packet Response;
         private static NetworkStream stream;
 
 
         static void Main(string[] args)
-        {   
+        {
             PlayerQueue = new List<Player>();
             PlayerQueue.Add(new Player { UserID = 10, IP = "1.1.1.1" });
 
@@ -81,11 +81,7 @@ namespace cnslServer
                 //Console.WriteLine("Loopcount: 20000000");
             }
         }
-
-        public void ReceiveData(Packet packet)
-        {
-            ReceivedData = packet.ToString();
-        }
+        
 
         private void AddPlayerToQueue(string Data)
         {
@@ -121,6 +117,7 @@ namespace cnslServer
                 variables2.Add("User1IP", match.player1.IP);
                 variables2.Add("User2ID", match.player2.UserID.ToString());
                 variables2.Add("User2IP", match.player2.IP.ToString());
+                
                 packet2.Variables = variables2;
 
                 byte[] msg2 = System.Text.Encoding.ASCII.GetBytes(packet2.ToString());
@@ -161,7 +158,7 @@ namespace cnslServer
                     // You could also user server.AcceptSocket() here.
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine("Incoming connection detected.");
-
+                    Response = null;
                     data = null;
 
                     // Get a stream object for reading and writing
@@ -173,21 +170,20 @@ namespace cnslServer
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         // Translate data bytes to a ASCII string.
-                        data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString(); //Veranderd
-                        
+                        data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString();
                         Console.WriteLine("Received: {0}", data);
 
-
                         // Process the data sent by the client.
-                        //data = data.ToUpper();
                         Packet packet = PacketParser.Parse(data);
                         HandlePacket(packet);
 
-                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
-
                         // Send back a response.
-                        stream.Write(msg, 0, msg.Length);
-                        Console.WriteLine("Sent: {0}", data);
+                        if(Response != null)
+                        {
+                            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Response.ToString());
+                            stream.Write(msg, 0, msg.Length);
+                            Console.WriteLine("Sent: {0}", Response.ToString());
+                        }
                     }
 
                     // Shutdown and end connection
@@ -214,7 +210,13 @@ namespace cnslServer
                 switch (packet.Type)
                 {
                     case TcpMessageType.ChatMessage:
-                        break;
+                        {
+                            string from = packet.From;
+                            string to = packet.To;
+                            string chatmessage = packet.Variables["Chatmessage"];
+                            string IPdestination = packet.Variables["IPdestination"];
+                            break;
+                        }
 
                     case TcpMessageType.Command:
                         break;
@@ -223,20 +225,25 @@ namespace cnslServer
                         break;
 
                     case TcpMessageType.Message:
-                        int from = int.Parse(packet.From);
-                        int to = int.Parse(packet.To);
-                        string message = packet.Variables["Message"];
-                        string IPdestination = packet.Variables["IPdestination"];
-                        break;
+                        {
+                            int from = int.Parse(packet.From);
+                            int to = int.Parse(packet.To);
+                            string message = packet.Variables["Message"];
+                            string IPdestination = packet.Variables["IPdestination"];
+                            break;
+                        }
 
                     case TcpMessageType.None:
                         break;
+
                     case TcpMessageType.PlayerUpdate:
                         {
                             Player player = new Player();
                             player.UserID = int.Parse(packet.Variables["UserID"]);
                             player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
                             player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
+                            player.CurrentHealth = int.Parse(packet.Variables["CurrentHealth"]);
+                            player.MaxHealth = int.Parse(packet.Variables["MaxHealth"]);
                             break;
                         }
 
@@ -247,6 +254,7 @@ namespace cnslServer
                             player.IP = packet.Variables["IP"];
                             PlayerQueue.Add(player);
                             Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
+                            Response = new Packet("Server", player.IP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
                             break;
                         }
                 }
@@ -254,13 +262,9 @@ namespace cnslServer
             catch
             {
                 Console.WriteLine("Could not handle packet. Please check the syntax.");
+                return;
             }
             
-        }
-
-        private static void SendMessage(int from, int to, string message, string IPdestination)
-        {
-            throw new NotImplementedException();
         }
     }
 }

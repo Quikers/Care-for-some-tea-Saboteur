@@ -12,7 +12,8 @@ namespace Library {
         PlayerUpdate = 4,
         MapData = 5,
         AddPlayerToQueue = 6,
-        MatchStart = 7
+        MatchStart = 7,
+        Response = 8
     }
 
     public static class PacketParser {
