@@ -18,7 +18,6 @@ namespace cnslServer
     {
         private static List<Player> PlayerQueue;
         private static string ReceivedData;
-        private static string PacketString;
         private static NetworkStream stream;
 
 
@@ -51,7 +50,7 @@ namespace cnslServer
                 match.player2 = PlayerQueue[1];
 
                 StartMatch(match);
-                Console.WriteLine("Match has been started!");
+                Console.WriteLine("Match has been started between UserID {0} and {1}", match.player1.UserID, match.player2.UserID);
                 PlayerQueue.Remove(match.player1);
                 PlayerQueue.Remove(match.player2);
             }
@@ -95,55 +94,43 @@ namespace cnslServer
 
         private static void StartMatch(Match match)
         {
-            // Send response to player 1
-            Packet packet = new Packet();
-            packet.From = match.player2.IP;
-            packet.To = match.player1.IP;
-            packet.Type = TcpMessageType.MatchStart;
-            var variables = new Dictionary<string, string>();
-            variables.Add("User1ID", match.player1.UserID.ToString());
-            variables.Add("User1IP", match.player1.IP);
-            variables.Add("User2ID", match.player2.UserID.ToString());
-            variables.Add("User2IP", match.player2.IP.ToString());
-            packet.Variables = variables;
+            //// Send response to player 1
+            //Packet packet1 = new Packet();
+            //packet1.From = match.player2.UserID.ToString();
+            //packet1.To = match.player1.UserID.ToString();
+            //packet1.Type = TcpMessageType.MatchStart;
+            //var variables = new Dictionary<string, string>();
+            //variables.Add("User1ID", match.player1.UserID.ToString());
+            //variables.Add("User1IP", match.player1.IP);
+            //variables.Add("User2ID", match.player2.UserID.ToString());
+            //variables.Add("User2IP", match.player2.IP.ToString());
+            //packet1.Variables = variables;
 
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(packet.ToString());
-
-            stream.Write(msg, 0, packet.ToString().Length);
+            //byte[] msg1 = System.Text.Encoding.ASCII.GetBytes(packet1.ToString());
+            //stream.Write(msg1, 0, packet1.ToString().Length);
 
             // Send response to player 2
-        }
-
-        private static void Asynctesting()
-        {
-            //Asynctesting();
-            Console.WriteLine("Het begint");
-            long currentaantal = testasync().Result;
-            Console.WriteLine(currentaantal.ToString());
-
-            
-        }
-
-        private static long increase()
-        {
-            long currentaantal = 0;
-
-            do
+            try
             {
-                currentaantal++;
-                Console.WriteLine(currentaantal.ToString());
-            } while (currentaantal < 150);
+                Packet packet2 = new Packet();
+                packet2.From = match.player2.IP;
+                packet2.To = match.player1.IP;
+                packet2.Type = TcpMessageType.MatchStart;
+                var variables2 = new Dictionary<string, string>();
+                variables2.Add("User1ID", match.player1.UserID.ToString());
+                variables2.Add("User1IP", match.player1.IP);
+                variables2.Add("User2ID", match.player2.UserID.ToString());
+                variables2.Add("User2IP", match.player2.IP.ToString());
+                packet2.Variables = variables2;
 
-            return currentaantal;
-        }
-
-        private static async Task<long> testasync()
-        {
-            Task<long> task = new Task<long>(increase);
-            task.Start();
-            long currentaantal = await task;
-
-            return currentaantal;
+                byte[] msg2 = System.Text.Encoding.ASCII.GetBytes(packet2.ToString());
+                stream.Write(msg2, 0, packet2.ToString().Length);
+            }
+            catch
+            {
+                Console.WriteLine("Unable to connect players. Check if the Player.UserID and Player.IP are not empty.");
+            }
+            
         }
 
         private static void ListenTcp()
@@ -152,11 +139,10 @@ namespace cnslServer
 
             try
             {
-                // Set the TcpListener on port 13000.
+                // Initialize port & local IP
                 Int32 port = 25002;
                 IPAddress localAddr = IPAddress.Parse("0.0.0.0");
-
-                // TcpListener server = new TcpListener(port);
+                
                 server = new TcpListener(localAddr, port);
 
                 // Start listening for client requests.
@@ -174,7 +160,7 @@ namespace cnslServer
                     // Perform a blocking call to accept requests.
                     // You could also user server.AcceptSocket() here.
                     TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("Connected!");
+                    Console.WriteLine("Incoming connection detected.");
 
                     data = null;
 
@@ -222,50 +208,54 @@ namespace cnslServer
         private static void HandlePacket(Packet packet)
         {
             if (packet == null) return;
-            
 
-            switch (packet.Type)
+            try
             {
-                case TcpMessageType.ChatMessage:
-                    break;
-                case TcpMessageType.Command:
-                    break;
-                case TcpMessageType.MapData:
-                    break;
-                case TcpMessageType.Message:
-                    int from = int.Parse(packet.From);
-                    int to = int.Parse(packet.To);
-                    string message = packet.Variables["Message"];
-                    string IPdestination = packet.Variables["IPdestination"];
-                    break;
-
-                case TcpMessageType.None:
-                    break;
-                case TcpMessageType.PlayerUpdate:
-                    {
-                        Player player = new Player();
-                        player.UserID = int.Parse(packet.Variables["UserID"]);
-                        player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
-                        player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
-                        
+                switch (packet.Type)
+                {
+                    case TcpMessageType.ChatMessage:
                         break;
-                    }
 
-                case TcpMessageType.AddPlayerToQueue:
-                    {
-                        string value = "";
-                        Player playerr = new Player();
-                        bool canReadd = packet.Variables.TryGetValue("UserID", out value);
-                        if (canReadd)
+                    case TcpMessageType.Command:
+                        break;
+
+                    case TcpMessageType.MapData:
+                        break;
+
+                    case TcpMessageType.Message:
+                        int from = int.Parse(packet.From);
+                        int to = int.Parse(packet.To);
+                        string message = packet.Variables["Message"];
+                        string IPdestination = packet.Variables["IPdestination"];
+                        break;
+
+                    case TcpMessageType.None:
+                        break;
+                    case TcpMessageType.PlayerUpdate:
                         {
-                            playerr.UserID = int.Parse(value);
-                            PlayerQueue.Add(playerr);
-                            Console.WriteLine("UserID {0} has been added to the player queue", playerr.UserID.ToString());
+                            Player player = new Player();
+                            player.UserID = int.Parse(packet.Variables["UserID"]);
+                            player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
+                            player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
+                            break;
                         }
-                        break;
-                    }
 
+                    case TcpMessageType.AddPlayerToQueue:
+                        {
+                            Player player = new Player();
+                            player.UserID = int.Parse(packet.Variables["UserID"]);
+                            player.IP = packet.Variables["IP"];
+                            PlayerQueue.Add(player);
+                            Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
+                            break;
+                        }
+                }
             }
+            catch
+            {
+                Console.WriteLine("Could not handle packet. Please check the syntax.");
+            }
+            
         }
 
         private static void SendMessage(int from, int to, string message, string IPdestination)

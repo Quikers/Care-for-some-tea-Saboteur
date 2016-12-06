@@ -14,7 +14,7 @@ namespace SendTcp
     {
         static void Main(string[] args)
         {
-            Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.AddPlayerToQueue, new[] { "UserID", "3"});
+            Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.AddPlayerToQueue, new[] { "UserID", "3", "IP", "127.0.0.1"});
 
             // Create a TcpClient.
             // Note, for this client to work you need to have a TcpServer 
