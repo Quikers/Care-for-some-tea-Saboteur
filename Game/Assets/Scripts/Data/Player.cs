@@ -2,13 +2,7 @@
 
 namespace Data
 {
-    public class Player : MonoBehaviour
+    public struct Player
     {
-
-        void Start()
-        {}
-
-        void Update()
-        {}
     }
 }
