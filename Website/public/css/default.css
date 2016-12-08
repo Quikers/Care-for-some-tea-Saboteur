@@ -12,6 +12,18 @@
     background: whitesmoke;
 }
 
+#message-content {
+    display: inline-block;
+    margin: 20px 0 0 0;
+    padding: 20px 30px 30px;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    box-shadow: 2px 2px 15px #AAAAAA;
+    background: whitesmoke;
+}
+
 #form-container {
     position: relative;
     top: 50px;

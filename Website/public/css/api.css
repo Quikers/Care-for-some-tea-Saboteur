@@ -17,6 +17,12 @@ a:focus {
     color: black;
 }
 
+a.jumpTo:before {
+    padding-top:50px;
+    display:block;
+    content:"";
+}
+
 #api-nav {
     position: absolute;
     top: 0;
