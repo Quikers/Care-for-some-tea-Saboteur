@@ -12,7 +12,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnBeginDrag( PointerEventData eventData )
     {
         _placeHolder = new GameObject( "Place Holder" );
-        _placeHolder.transform.SetParent( transform.parent, true );
+        _placeHolder.transform.SetParent( transform.parent, false );
         LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
         le.preferredWidth = GetComponent<LayoutElement>().preferredWidth;
         le.preferredHeight= GetComponent<LayoutElement>().preferredHeight;
@@ -24,15 +24,22 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         ParentToReturnTo = transform.parent;
         PlaceHolderParent = ParentToReturnTo;
-        transform.SetParent( transform.parent.parent );
+        transform.SetParent( Utilities.FindInParents<Canvas>( gameObject ).transform );
 
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
     public void OnDrag( PointerEventData eventData )
     {
-        transform.position = new Vector3( eventData.position.x, eventData.position.y, 0f );
-        Debug.Log( eventData.position );
+        RectTransform rt = GetComponent<RectTransform>();
+
+        Vector3 globalMousePos;
+
+        if( RectTransformUtility.ScreenPointToWorldPointInRectangle( rt, eventData.position, eventData.pressEventCamera, out globalMousePos))
+        {
+            rt.position = globalMousePos;
+            rt.rotation = transform.rotation;
+        }
 
         if( _placeHolder.transform.parent != PlaceHolderParent )
         {

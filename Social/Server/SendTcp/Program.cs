@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.Sockets;
 using Library;
 
-
 namespace SendTcp
 {
     class Program
