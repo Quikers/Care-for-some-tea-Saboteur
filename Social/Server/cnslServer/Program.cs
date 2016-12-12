@@ -163,7 +163,7 @@ namespace cnslServer
                     Response = null;
                     data = null;
 
-                    Console.WriteLine(">>>>>>>>>>>>>" + client.Client.LocalEndPoint.AddressFamily.ToString());
+                    Console.WriteLine(">>>>>>>>>>>>>" + client.Client.RemoteEndPoint.ToString());
 
                     // Get a stream object for reading and writing
                     stream = client.GetStream();
@@ -266,7 +266,7 @@ namespace cnslServer
                             PlayerQueue.Add(player);
                             Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
                             Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
-                            SendTcp.SendPacket(response);
+                            SendTcp.SendPacket(Response);
                             break;
                         }
                 }
