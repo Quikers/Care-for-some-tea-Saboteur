@@ -7,6 +7,7 @@ class Home extends Controller {
     }
     
     public function index() {
+        $this->view->session = json_encode($_SESSION);
         $this->view->title = "Home";
         $this->view->render('home/index');
     }

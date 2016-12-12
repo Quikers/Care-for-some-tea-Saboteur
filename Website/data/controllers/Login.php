@@ -9,25 +9,28 @@ class Login extends Controller {
     public function index($params = NULL) {
         $this->view->title = "Login";
         $this->view->render('login/index');
+        
+        unset($_SESSION["message"]);
     }
 
     public function login($params = NULL) {
         $this->loadModel("Login");
         $loginModel = new LoginModel();
         
-        $result = $loginModel->login($_POST["username"], $_POST["password"]);
+        $result = $loginModel->login($_POST["email"], $_POST["password"]);
         
         if ($result != false) {
             
             $_SESSION["user"] = $result;
             $_SESSION["loggedIn"] = true;
             
-            header("Location:" . URL . "games");
+            header("Location:" . URL . "dashboard");
         } else {
             $_SESSION["loggedIn"] = false;
-            $_SESSION["message"] = "<h1 style=\"position: relative; top: -75px; color: red; text-align: center; font-weight: 100;\">Invalid username or password.</h1>";
+            $_SESSION["message"] = "<h3 style=\"color: red; text-align: center; font-weight: 100;\">Invalid username or password.</h3>";
             
-            header("Location:" . URL . "home");
+            print_r($_SESSION);
+            header("Location:" . URL . "login");
         }
     }
 
@@ -37,7 +40,7 @@ class Login extends Controller {
         
         $result = $loginModel->Register($_POST["email"], $_POST["username"], $_POST["password"]);
         
-        $preMessage = "<h1 style=\"position: relative; top: -75px; color: " . ($result > 0 ? "lightgreen" : "crimson") .  "; text-align: center; font-weight: 100;\">";
+        $preMessage = "<h1 style=\"color: " . ($result > 0 ? "lightgreen" : "crimson") .  "; text-align: center; font-weight: 100;\">";
         $afterMessage = "</h1>";
         if ((int)$result > 0) {
             $_SESSION["message"] = $preMessage . "Successfully registered!". $afterMessage;
@@ -48,6 +51,6 @@ class Login extends Controller {
             $_SESSION["message"] = $preMessage . "Registration failed!<br>Please contact the system administrator." . $afterMessage;
         }
         
-        header("Location:" . URL . "home");
+        header("Location:" . URL . "login");
     }
 }

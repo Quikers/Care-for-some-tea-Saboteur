@@ -31,7 +31,7 @@
                     <div class="li<?= strtolower($this->title) == "content" ? " active" : "" ?>"><a href="<?= URL ?>content">Content</a></div>
                     <div class="li<?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
                 </center>
-                <div class="li<?= strtolower($this->title) == "login" ? " active" : "" ?>"><a href="<?= URL ?>login">Account</a></div>
+                <div class="li<?= strtolower($this->title) == "login" ? " active" : "" ?>"><a href="<?= URL ?><?= $_SESSION["loggedIn"] != "1" ? "login" : "dashboard" ?>">Account</a></div>
                 <?php if ($_SESSION["loggedIn"] != true) { ?>
                 <?php } else { ?>
                 <?php } ?>
