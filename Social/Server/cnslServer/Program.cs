@@ -24,7 +24,7 @@ namespace cnslServer
         static void Main(string[] args)
         {
             PlayerQueue = new List<Player>();
-            PlayerQueue.Add(new Player { UserID = 10, IP = "1.1.1.1" });
+            PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10,});
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
@@ -90,6 +90,8 @@ namespace cnslServer
 
         private static void StartMatch(Match match)
         {
+            //player 1 wordt automatisch in de code aangemaakt voor test purposes
+
             //// Send response to player 1
             //Packet packet1 = new Packet();
             //packet1.From = match.player2.UserID.ToString();
@@ -109,14 +111,14 @@ namespace cnslServer
             try
             {
                 Packet packet2 = new Packet();
-                packet2.From = match.player2.IP;
-                packet2.To = match.player1.IP;
+                packet2.From = match.player2.LocalIP;
+                packet2.To = match.player1.LocalIP;
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("User1ID", match.player1.UserID.ToString());
-                variables2.Add("User1IP", match.player1.IP);
+                variables2.Add("User1IP", match.player1.LocalIP);
                 variables2.Add("User2ID", match.player2.UserID.ToString());
-                variables2.Add("User2IP", match.player2.IP.ToString());
+                variables2.Add("User2IP", match.player2.LocalIP.ToString());
                 
                 packet2.Variables = variables2;
 
@@ -161,6 +163,8 @@ namespace cnslServer
                     Response = null;
                     data = null;
 
+                    Console.WriteLine(">>>>>>>>>>>>>" + client.Client.LocalEndPoint.AddressFamily.ToString());
+
                     // Get a stream object for reading and writing
                     stream = client.GetStream();
 
@@ -172,10 +176,9 @@ namespace cnslServer
                         // Translate data bytes to a ASCII string.
                         data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString();
                         Console.WriteLine("Received: {0}", data);
-
+                        
                         // Process the data sent by the client.
-                        Packet packet = PacketParser.Parse(data);
-                        HandlePacket(packet);
+                        HandlePacket(new Packet(data));
 
                         // Send back a response.
                         if(Response != null)
@@ -204,6 +207,9 @@ namespace cnslServer
         private static void HandlePacket(Packet packet)
         {
             if (packet == null) return;
+            Packet response = new Packet();
+            response.Type = TcpMessageType.Response;
+            
 
             try
             {
@@ -215,6 +221,11 @@ namespace cnslServer
                             string to = packet.To;
                             string chatmessage = packet.Variables["Chatmessage"];
                             string IPdestination = packet.Variables["IPdestination"];
+
+                            SendSuccessRespone(packet);
+                            //response.From = from;
+                            //response.To = to;
+                            //response.Variables = 
                             break;
                         }
 
@@ -251,10 +262,11 @@ namespace cnslServer
                         {
                             Player player = new Player();
                             player.UserID = int.Parse(packet.Variables["UserID"]);
-                            player.IP = packet.Variables["IP"];
+                            player.LocalIP = packet.Variables["IP"];
                             PlayerQueue.Add(player);
                             Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
-                            Response = new Packet("Server", player.IP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
+                            Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
+                            SendTcp.SendPacket(response);
                             break;
                         }
                 }
@@ -265,6 +277,12 @@ namespace cnslServer
                 return;
             }
             
+        }
+
+        private static void SendSuccessRespone(Packet ReceivedPacket)
+        {
+            Packet packet = new Packet("Server", ReceivedPacket.From, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
+            SendTcp.SendPacket(packet);
         }
     }
 }
