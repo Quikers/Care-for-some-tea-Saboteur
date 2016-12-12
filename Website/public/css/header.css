@@ -19,9 +19,9 @@ html, body {
     right: 0;
     bottom: 0;
     
-    background: url("http://careforsometeasaboteur.com/public/images/background.jpg");
-    background-repeat:no-repeat;
-    background-size: 1920px 150px;
+    background: url("http://careforsometeasaboteur.com/public/images/background.jpg") no-repeat;
+    background-repeat: no-repeat;
+    background-size: 1920px 211px;
     background-position: center top;
 }
 

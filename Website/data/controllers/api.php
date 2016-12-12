@@ -56,5 +56,11 @@ class API extends Controller {
             echo json_encode($this->API->GetUserByUsername(explode(",", $params[0])));
         } else { echo 0; }
     }
+    
+    public function getdecksbyuserid($params = null) {
+        if (count($params) > 0) {
+            echo json_encode($this->API->GetDecksByUserID(explode(",", $params[0])));
+        } else { echo 0; }
+    }
 
 }
