@@ -9,17 +9,15 @@ if (isset($_SESSION["message"])) {
     echo "</div></center>";
 }
 if (isset($this->login)) {
-    $username = $this->login["username"];
+    $username = $this->login["email"];
     $password = $this->login["password"];
 }
-
-if ($_SESSION["loggedIn"] != "1") {
 ?>
 
 <div id="form-container" class="form-group">
     <div id="login-container">
         <h2 class="changeView">Login<i class="fa fa-chevron-down fa-smfnt"></i></h2>
-        <form method="POST" action="<?= URL ?>login/login">
+        <form method="POST" action="<?= URL ?>account/login">
             <input required class="form-control" type="text" name="email" id="iEmail" value="<?= $email ?? "" ?>" placeholder="Email" autofocus><br>
             <input required class="form-control" type="password" name="password" id="iPassword" value="<?= $password ?? "" ?>" placeholder="Password"><br>
             <input class="btn btn-default form-control" type="submit" id="iSubmit" value="Login">
@@ -28,11 +26,11 @@ if ($_SESSION["loggedIn"] != "1") {
     
     <div id="register-container">
         <h2 class="changeView">Registration<i class="fa fa-chevron-up fa-smfnt"></i></h2><br>
-        <form method="POST" action="<?= URL ?>login/register" style="display: none;">
+        <form method="POST" action="<?= URL ?>account/register" style="display: none;">
             <input required class="form-control" type="email"     name="email"     id="iEmail"     placeholder="E-mail"><br>
             <input required class="form-control" type="text"      name="username"  id="iUsername"  placeholder="Username"><br>
             <input required class="form-control" type="password"  name="password"  id="iPassword"  placeholder="Password"><br>
-            <input required type="password"  name="password"  id="iPassword"  placeholder="Password" hidden>
+            <input required class="form-control" type="password"  name="passwordConfirm"  id="iPasswordConfirm"  placeholder="Confirm password"><br>
             <input class="btn btn-default form-control" type="submit" id="iSubmit" value="Register">
         </form>
     </div>
@@ -42,8 +40,12 @@ if ($_SESSION["loggedIn"] != "1") {
 
 
 $(document).ready(function () {
-    $("#login-container #iUsername").focus(function () {
-        console.log("Test");
+    $("#register-container #iPasswordConfirm").keyup(function () {
+        console.log("Key Up");
+        if ($(this).val() !== $("#register-container #iPassword").val())
+            this.setCustomValidity("Passwords Don't Match");
+        else
+            this.setCustomValidity("");
     });
 
     $(".changeView").click(function(event) {
@@ -75,5 +77,3 @@ $(document).ready(function () {
 
 
 </script>
-
-<?php } else { header("Location:" . URL . "dashboard"); }

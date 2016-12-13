@@ -1,12 +1,22 @@
 <?php
 
+// API documentation starts
+
 class User {
 
     function __construct() { }
 
-    public $getuserbyid = "";
+    public $getuserbyuserid = "";
     public $getuserbyemail = "";
     public $getuserbyusername = "";
+}
+
+class Deck {
+
+    function __construct() { }
+
+    public $getdeckbyuserid = "";
+    public $getdeckbydeckid = "";
 }
 
 class Match {
@@ -16,6 +26,8 @@ class Match {
     public $getmatchbyid = "";
     public $getmatchbyplayer = "";
 }
+
+// API documentation ends
 
 class API extends Controller {
     
@@ -39,9 +51,9 @@ class API extends Controller {
         $this->view->render('api/index');
     }
     
-    public function getuserbyid($params = null) {
+    public function getuserbyuserid($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetUserByID(explode(",", $params[0])));
+            echo json_encode($this->API->GetUserByUserID(explode(",", $params[0])));
         } else { echo 0; }
     }
     

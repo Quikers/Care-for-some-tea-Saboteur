@@ -12,7 +12,7 @@ class APIModel extends Model {
         );
     }
     
-    public function GetUserByID($idArr) {
+    public function GetUserByUserID($idArr) {
         $result = array();
         
         foreach ($idArr as $id) {
