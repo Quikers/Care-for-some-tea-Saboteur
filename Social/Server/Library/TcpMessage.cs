@@ -13,7 +13,8 @@ namespace Library {
         MapData = 5,
         AddPlayerToQueue = 6,
         MatchStart = 7,
-        Response = 8
+        Response = 8,
+        Login = 9
     }
 
     public static class PacketParser {

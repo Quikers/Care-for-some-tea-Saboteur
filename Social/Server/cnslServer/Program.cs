@@ -222,6 +222,8 @@ namespace cnslServer
                             string chatmessage = packet.Variables["Chatmessage"];
                             string IPdestination = packet.Variables["IPdestination"];
 
+                            Packet chatmsg = new Packet(packet.From, packet.To, TcpMessageType.ChatMessage, new string[] {"Chatmessage", packet.Variables["Chatmessage"] });
+                            SendTcp.SendPacket(chatmsg);
                             SendSuccessRespone(packet);
                             //response.From = from;
                             //response.To = to;
@@ -269,11 +271,17 @@ namespace cnslServer
                             SendTcp.SendPacket(Response);
                             break;
                         }
+
+                    case TcpMessageType.Login:
+                        {
+
+                            break;
+                        }
                 }
             }
             catch
             {
-                Console.WriteLine("Could not handle packet. Please check the syntax.");
+                Console.WriteLine("Could not handle packet. Please check the packet syntax.");
                 return;
             }
             
