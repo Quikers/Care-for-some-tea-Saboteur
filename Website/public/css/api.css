@@ -17,10 +17,23 @@ a:focus {
     color: black;
 }
 
+a.jumpTo {
+    color: black;
+}
+
+a.jumpTo:hover {
+    color: black;
+}
+
 a.jumpTo:before {
-    padding-top:50px;
+    padding-top: 25px;
     display:block;
     content:"";
+}
+
+a.method:after {
+    display:block;
+    content: "";
 }
 
 #api-nav {
@@ -67,9 +80,22 @@ a.jumpTo:before {
 }
 
 #api-nav .header1-link {
+    padding-top: 10px;
     font-size: 20px;
 }
 
 #api-nav .header2-link {
     margin-left: 10px;
+}
+
+#api-content .group {
+    font-size: 25px;
+}
+
+#api-content .method {
+    font-size: 18px;
+}
+
+pre {
+    font-size: 15px;
 }

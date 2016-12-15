@@ -12,6 +12,10 @@ html, body {
     min-width: 1000px;
 }
 
+#header #logo {
+    min-width: 1200px;
+}
+
 #header #logo, #header #nav #nav-bg {
     position: absolute;
     top: 0;
