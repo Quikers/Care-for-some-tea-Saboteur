@@ -23,7 +23,7 @@ namespace cnslServer
 
 
         static void Main(string[] args)
-        {
+        {   
             OnlinePlayers = new Dictionary<int, Client>();
 
             PlayerQueue = new List<Player>();
@@ -214,12 +214,17 @@ namespace cnslServer
                 {
                     case TcpMessageType.ChatMessage:
                         {
-                            string from = packet.From;
-                            string to = packet.To;
-                            string chatmessage = packet.Variables["Chatmessage"];
-                            string IPdestination = packet.Variables["IPdestination"];
+                            //============Under construction
 
-                            SendSuccessResponse(packet);
+                            string from = packet.From;
+                            //string to = OnlinePlayers.Where(x => x.Key == int.Parse(packet.To)).FirstOrDefault().Value.;
+                            string chatmessage = packet.Variables["Chatmessage"];
+                            
+                            
+
+                            SendTcp.SendPacket(packet); 
+
+                            //SendSuccessResponse(packet);
                             //response.From = from;
                             //response.To = to;
                             //response.Variables = 
@@ -277,7 +282,14 @@ namespace cnslServer
                                 
                             };
                             if (!OnlinePlayers.ContainsKey(_client.UserID))
-                            OnlinePlayers.Add(_client.UserID , _client);
+                            {
+                                OnlinePlayers.Add(_client.UserID, _client);
+                                Console.WriteLine(_client.Username + " logged in");
+                            }
+                            else if (OnlinePlayers.ContainsKey(_client.UserID))
+                            {
+                                Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
+                            }
 
                             //OnlinePlayers.Add(packet.Variables["UserID"]);
                             break;
@@ -286,12 +298,6 @@ namespace cnslServer
                         {
                             client.Socket.Close();
                             OnlinePlayers.Remove(client.UserID);
-                            break;
-                        }
-
-                    case TcpMessageType.Login:
-                        {
-
                             break;
                         }
                 }
