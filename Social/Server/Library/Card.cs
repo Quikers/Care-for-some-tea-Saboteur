@@ -25,6 +25,6 @@ namespace Library
 
     public enum Effect
     {
-        Battlecry
+        Battlecry, Deathrattle
     }
 }

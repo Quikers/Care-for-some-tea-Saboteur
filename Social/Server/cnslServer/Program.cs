@@ -19,12 +19,15 @@ namespace cnslServer
         private static List<Player> PlayerQueue;
         private static Packet Response;
         private static NetworkStream stream;
+        private static Dictionary<int, Client> OnlinePlayers;
 
 
         static void Main(string[] args)
         {
+            OnlinePlayers = new Dictionary<int, Client>();
+
             PlayerQueue = new List<Player>();
-            PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10,});
+            PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10});
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
@@ -82,12 +85,6 @@ namespace cnslServer
             }
         }
         
-
-        private void AddPlayerToQueue(string Data)
-        {
-
-        }
-
         private static void StartMatch(Match match)
         {
             //player 1 wordt automatisch in de code aangemaakt voor test purposes
@@ -163,7 +160,7 @@ namespace cnslServer
                     Response = null;
                     data = null;
 
-                    Console.WriteLine(">>>>>>>>>>>>>" + client.Client.RemoteEndPoint.ToString());
+                    //Console.WriteLine(">>>>>>>>>>>>>" + client.Client.RemoteEndPoint.ToString());
 
                     // Get a stream object for reading and writing
                     stream = client.GetStream();
@@ -176,9 +173,9 @@ namespace cnslServer
                         // Translate data bytes to a ASCII string.
                         data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString();
                         Console.WriteLine("Received: {0}", data);
-                        
+
                         // Process the data sent by the client.
-                        HandlePacket(new Packet(data));
+                        HandlePacket(new Packet(data), new Client {Socket = client });
 
                         // Send back a response.
                         if(Response != null)
@@ -204,7 +201,7 @@ namespace cnslServer
             }
         }
 
-        private static void HandlePacket(Packet packet)
+        private static void HandlePacket(Packet packet, Client client)
         {
             if (packet == null) return;
             Packet response = new Packet();
@@ -222,7 +219,7 @@ namespace cnslServer
                             string chatmessage = packet.Variables["Chatmessage"];
                             string IPdestination = packet.Variables["IPdestination"];
 
-                            SendSuccessRespone(packet);
+                            SendSuccessResponse(packet);
                             //response.From = from;
                             //response.To = to;
                             //response.Variables = 
@@ -265,8 +262,30 @@ namespace cnslServer
                             player.LocalIP = packet.Variables["IP"];
                             PlayerQueue.Add(player);
                             Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
-                            Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
-                            SendTcp.SendPacket(Response);
+                            //Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
+                            //SendTcp.SendPacket(Response);
+                            SendSuccessResponse(packet);
+                            break;
+                        }
+                    case TcpMessageType.Login:
+                        {
+                            Client _client = new Client
+                            {
+                                UserID = int.Parse(packet.Variables["UserID"]),
+                                Username = packet.Variables["Username"],
+                                Socket = client.Socket
+                                
+                            };
+                            if (!OnlinePlayers.ContainsKey(_client.UserID))
+                            OnlinePlayers.Add(_client.UserID , _client);
+
+                            //OnlinePlayers.Add(packet.Variables["UserID"]);
+                            break;
+                        }
+                    case TcpMessageType.Logout:
+                        {
+                            client.Socket.Close();
+                            OnlinePlayers.Remove(client.UserID);
                             break;
                         }
                 }
@@ -279,7 +298,7 @@ namespace cnslServer
             
         }
 
-        private static void SendSuccessRespone(Packet ReceivedPacket)
+        private static void SendSuccessResponse(Packet ReceivedPacket)
         {
             Packet packet = new Packet("Server", ReceivedPacket.From, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
             SendTcp.SendPacket(packet);
