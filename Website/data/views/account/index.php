@@ -18,7 +18,7 @@ if (isset($this->login)) {
     <div id="login-container">
         <h2 class="changeView">Login<i class="fa fa-chevron-down fa-smfnt"></i></h2>
         <form method="POST" action="<?= URL ?>account/login">
-            <input required class="form-control" type="text" name="email" id="iEmail" value="<?= $email ?? "" ?>" placeholder="Email" autofocus><br>
+            <input required class="form-control" type="text" name="email" id="iEmail" value="<?= $email ?? "" ?>" placeholder="E-mail" autofocus><br>
             <input required class="form-control" type="password" name="password" id="iPassword" value="<?= $password ?? "" ?>" placeholder="Password"><br>
             <input class="btn btn-default form-control" type="submit" id="iSubmit" value="Login">
         </form>

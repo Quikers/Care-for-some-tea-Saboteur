@@ -34,7 +34,7 @@ class APIModel extends Model {
         }
     }
     
-    public function GetUserByUsername($usernameArr) {
+    public function GetUserByUsername($usernameArr = array()) {
         $result = array();
         
         foreach ($usernameArr as $username) {
@@ -71,6 +71,19 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
+    public function CheckLogin($email, $password) {
+        require "AccountModel.php";
+        $AccountModel = new AccountModel();
+        $result = $AccountModel->Login($email, $password);
+        
+        if ($result != false) {
             if (count($result) == 1) { return $result[0]; }
             else { return $result; }
         } else {
@@ -115,7 +128,6 @@ class APIModel extends Model {
             
             if ($row != array()) { array_push($result, $row); }
         }
-            print_r($result);
         
         if ($result != array() && $result != array(array())) {
             if (count($result) == 1) { return $result[0]; }
@@ -130,9 +142,32 @@ class APIModel extends Model {
         
         foreach ($cardidArr as $cardid) {
             $row = $this->db->Query(
-                'SELECT * FROM `card` WHERE `id` = :cardid',
+                'SELECT * FROM `cards` WHERE `id` = :cardid',
                 array(
                     "cardid" => $cardid
+                ),
+                false
+            );
+            
+            if ($row != array()) { array_push($result, $row); }
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
+    public function GetCardByCardName($cardnameArr) {
+        $result = array();
+        
+        foreach ($cardnameArr as $cardname) {
+            $row = $this->db->Query(
+                'SELECT * FROM `cards` WHERE `cardname` = :cardname',
+                array(
+                    "cardname" => $cardname
                 ),
                 false
             );
@@ -182,12 +217,46 @@ class APIModel extends Model {
         }
     }
     
+    public function GetDeckByDeckID($deckIDArr) {
+        $result = array();
+        
+        foreach ($deckIDArr as $deckID) {
+            $row = $this->db->Query(
+                'SELECT * FROM `decks` WHERE `id` = :deckid',
+                array(
+                    "deckid" => $deckID
+                ),
+                false
+            );
+            
+            foreach ($row as $key => $deck) {
+                $card_deck_relArr = $this->GetCardDeckRelByDeckID(array($deck["id"]));
+            
+                $cardArr = array();
+                foreach ($card_deck_relArr as $card_deck_rel) {
+                    array_push($cardArr, $this->GetCardByCardID(array($card_deck_rel["cardid"])));
+                }
+                
+                $row[$key]["cards"] = $cardArr;
+            }
+            
+            if ($row != array()) { array_push($result, $row); }
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
     public function GetDeckByUsername($usernameArr) {
         $result = array();
         
         $userIDArr = array();
         foreach ($usernameArr as $username) {
-            array_push($userIDArr, $this->GetUserByUsername($username)["id"]);
+            array_push($userIDArr, $this->GetUserByUsername(array($username))["id"]);
         }
         
         foreach ($userIDArr as $userID) {

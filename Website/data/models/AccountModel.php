@@ -15,7 +15,7 @@ class AccountModel extends Model {
             )
         );
         
-        if ($result != array()) {
+        if ($result != array() && $result != null) {
             return $result;
         } else {
             return false;
