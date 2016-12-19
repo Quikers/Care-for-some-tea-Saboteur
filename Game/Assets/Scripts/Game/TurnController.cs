@@ -5,17 +5,17 @@ public class TurnController : MonoBehaviour
 {
     public Text PhaseValueText;
     public Text TurnValueText;
+    public Button NextTurnButton;
+
     int a = 0;
     void Start()
     {
-        if( Random.Range( 0, 1 ) == 1 )
-            Data.Turn.First = Data.TurnType.LocalPlayer;
-        else
-            Data.Turn.First = Data.TurnType.RemotePlayer;
+        Data.Turn.First = Random.Range( -1, 1 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
         CurrentTurn = 1;
     }
     void Update()
     {
+        Debug.Log( Data.Turn.CurrentPhase );
         if( Data.Turn.CurrentPhase != Data.TurnType.RemotePlayer ) return;
 
         if( a >= 500)

@@ -173,7 +173,7 @@ namespace cnslServer
                         // Translate data bytes to a ASCII string.
                         data = new Packet(System.Text.Encoding.ASCII.GetString(bytes, 0, i)).ToString();
                         Console.WriteLine("Received: {0}", data);
-
+                        
                         // Process the data sent by the client.
                         HandlePacket(new Packet(data), new Client {Socket = client });
 
@@ -288,11 +288,17 @@ namespace cnslServer
                             OnlinePlayers.Remove(client.UserID);
                             break;
                         }
+
+                    case TcpMessageType.Login:
+                        {
+
+                            break;
+                        }
                 }
             }
             catch
             {
-                Console.WriteLine("Could not handle packet. Please check the syntax.");
+                Console.WriteLine("Could not handle packet. Please check the packet syntax.");
                 return;
             }
             

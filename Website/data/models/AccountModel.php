@@ -1,6 +1,6 @@
 <?php
 
-class LoginModel extends Model {
+class AccountModel extends Model {
     
     function __construct() {
         parent::__construct();
@@ -30,7 +30,7 @@ class LoginModel extends Model {
         try {
             $lastID = $this->GetLastInsertedUser()["id"];
             $this->db->Query(
-                'INSERT INTO `users`(`email`, `username`, `password`, `account_type`) VALUES (:email, :username, PASSWORD(:password), 3)',
+                'INSERT INTO `users`(`email`, `username`, `password`, `account_type`, `activated`) VALUES (:email, :username, PASSWORD(:password), 3, 1)',
                 array(
                     "email" => $email,
                     "username" => $username,

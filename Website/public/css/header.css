@@ -12,6 +12,10 @@ html, body {
     min-width: 1000px;
 }
 
+#header #logo {
+    min-width: 1200px;
+}
+
 #header #logo, #header #nav #nav-bg {
     position: absolute;
     top: 0;
@@ -19,9 +23,9 @@ html, body {
     right: 0;
     bottom: 0;
     
-    background: url("http://careforsometeasaboteur.com/public/images/background.jpg");
-    background-repeat:no-repeat;
-    background-size: 1920px 150px;
+    background: url("http://careforsometeasaboteur.com/public/images/background.jpg") no-repeat;
+    background-repeat: no-repeat;
+    background-size: 1920px 211px;
     background-position: center top;
 }
 
@@ -40,7 +44,7 @@ html, body {
     bottom: 0;
     
     background: url("http://careforsometeasaboteur.com/public/images/backgroundblur.jpg");
-    background-position: center -150px;
+    background-position: center -155px;
     
     border-top: 2px solid rgba(255,255,255,0.5);
 }
@@ -108,6 +112,28 @@ html, body {
 
 #header #nav #li-container .li.active a {
     color: black;
+}
+
+#header #nav #li-container p {
+    position: absolute;
+    top: -2px;
+    background: rgba(255,255,255,0.4);
+    padding: 6px 0 6px 6px;
+}
+
+#header #nav #li-container p .button {
+    background: rgba(255,255,255,0.4);
+    padding: 6px;
+    text-decoration: none;
+    transition: 150ms;
+}
+
+#header #nav #li-container p .button:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+#header #nav #li-container p .button:active {
+    background: rgba(255,255,255,0.6);
 }
 
 #content {

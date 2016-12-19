@@ -11,6 +11,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnBeginDrag( PointerEventData eventData )
     {
+        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
+            return;
+
         _placeHolder = new GameObject( "Place Holder" );
         _placeHolder.transform.SetParent( transform.parent, false );
         LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
@@ -24,13 +27,16 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         ParentToReturnTo = transform.parent;
         PlaceHolderParent = ParentToReturnTo;
-        transform.SetParent( Utilities.FindInParents<Canvas>( gameObject ).transform );
+        transform.SetParent( Utilities.Find.InParents<Canvas>( gameObject ).transform );
 
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
     public void OnDrag( PointerEventData eventData )
     {
+        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
+            return;
+
         RectTransform rt = GetComponent<RectTransform>();
 
         Vector3 globalMousePos;
@@ -65,9 +71,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag( PointerEventData eventData )
     {
+        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
+            return;
+
         transform.SetParent( ParentToReturnTo, true );
         transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
         GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+        if( gameObject.tag == "almostBoardCard" )
+            gameObject.tag = "BoardCard";
 
         Destroy( _placeHolder );
     }

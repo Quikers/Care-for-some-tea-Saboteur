@@ -26,11 +26,16 @@
 
     <div id="api-content">
         <h1>API Documentation</h1>
-        <p>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Please use one of the following functions:<br><br>
-        <a id="getuserbyid" class="jumpTo"></a>getuserbyid (http://careforsometeasaboteur.com/api/getuserbyid/1)<br>
-        <a id="getuserbyemail" class="jumpTo"></a>getuserbyemail (http://careforsometeasaboteur.com/api/getuserbyemail/admin@careforsometeasaboteur.com)<br>
-        <a id="getuserbyusername" class="jumpTo"></a>getuserbyusername (http://careforsometeasaboteur.com/api/getuserbyusername/admin)</p>
+        <?php
+            
+        foreach($content as $groupName => $group) {
+            echo '<a id="' . $groupName . '" class="group jumpTo">' . $groupName . '</a><br>';
+            foreach($content[$groupName] as $methodName => $description) {
+                echo '<a id="' . $methodName . '" class="method jumpTo">' . $methodName . '</a><br>'
+                        . $description;
+            }
+        }
         
-        <p>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test<br>Test</p>
+        ?>
     </div>
 </div>
