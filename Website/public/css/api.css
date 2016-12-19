@@ -88,11 +88,26 @@ a.method:after {
     margin-left: 10px;
 }
 
+#api-content * {
+    padding-left: 10px;
+}
+
+#api-content .separator {
+    margin-top: 40px;
+    border-top: 2px solid grey;
+    
+    padding-left: 0;
+}
+
 #api-content .group {
+    color: #0259C4;
     font-size: 25px;
+    
+    padding-left: 0;
 }
 
 #api-content .method {
+    color: #0133A3;
     font-size: 18px;
 }
 

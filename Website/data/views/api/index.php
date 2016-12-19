@@ -27,8 +27,14 @@
     <div id="api-content">
         <h1>API Documentation</h1>
         <?php
+        
+        $i = 0;
             
         foreach($content as $groupName => $group) {
+            if ($i++ != 0) {
+                echo '<div class="separator"></div>';
+            }
+            
             echo '<a id="' . $groupName . '" class="group jumpTo">' . $groupName . '</a><br>';
             foreach($content[$groupName] as $methodName => $description) {
                 echo '<a id="' . $methodName . '" class="method jumpTo">' . $methodName . '</a><br>'
