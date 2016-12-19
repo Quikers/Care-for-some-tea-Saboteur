@@ -31,14 +31,10 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
     public void OnDrop( PointerEventData eventData )
     {
         Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-
-        if( d == null )
-            return;
-        
-        d.ParentToReturnTo = transform;
-        d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
-
-        if( gameObject.tag == "Board" && d.gameObject.tag == "HandCard" )
-            d.gameObject.tag = "almostBoardCard";
+        if( d != null)
+        {
+            d.ParentToReturnTo = transform;
+            d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
+        }
     }
 }
