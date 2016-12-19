@@ -25,7 +25,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         ParentToReturnTo = transform.parent;
         PlaceHolderParent = ParentToReturnTo;
         transform.SetParent( Utilities.FindInParents<Canvas>( gameObject ).transform );
-
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 

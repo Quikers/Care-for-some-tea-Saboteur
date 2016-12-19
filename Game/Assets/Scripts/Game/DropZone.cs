@@ -34,6 +34,7 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
         if( d != null)
         {
             d.ParentToReturnTo = transform;
+            d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
         }
     }
 }
