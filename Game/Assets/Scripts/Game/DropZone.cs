@@ -1,44 +1,47 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler {
-
-    public void OnPointerEnter(PointerEventData eventData)
+namespace Game
+{
+    public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        if( eventData.pointerDrag == null )
-            return;
-
-        Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-        if( d != null )
+        public void OnPointerEnter( PointerEventData eventData )
         {
-            d.PlaceHolderParent = transform;
-            d.transform.rotation = transform.rotation;
+            if( eventData.pointerDrag == null )
+                return;
+
+            Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
+            if( d != null )
+            {
+                d.PlaceHolderParent = transform;
+                d.transform.rotation = transform.rotation;
+            }
         }
-    }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if( eventData.pointerDrag == null )
-            return;
-
-        Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-        if( d != null && d.PlaceHolderParent == transform )
+        public void OnPointerExit( PointerEventData eventData )
         {
-            d.PlaceHolderParent = d.ParentToReturnTo;
-        }
-    }
+            if( eventData.pointerDrag == null )
+                return;
 
-    public void OnDrop( PointerEventData eventData )
-    {
-        Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-		
-        if( d == null )
--            return;
--        
--        d.ParentToReturnTo = transform;
--        d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
--
--        if( gameObject.tag == "Board" && d.gameObject.tag == "HandCard" )
--            d.gameObject.tag = "almostBoardCard";
+            Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
+            if( d != null && d.PlaceHolderParent == transform )
+            {
+                d.PlaceHolderParent = d.ParentToReturnTo;
+            }
+        }
+
+        public void OnDrop( PointerEventData eventData )
+        {
+            Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
+
+            if( d == null )
+                return;
+
+            d.ParentToReturnTo = transform;
+            d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
+
+            if( gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
+                d.gameObject.tag = "almostBoardCard";
+        }
     }
 }

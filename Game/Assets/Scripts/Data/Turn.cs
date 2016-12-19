@@ -15,7 +15,5 @@ namespace Data
         public static TurnType First;
         public static int CurrentTurn;
         public static TurnType CurrentPhase;
-
-        
     }
 }
