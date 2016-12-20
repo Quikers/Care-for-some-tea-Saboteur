@@ -26,6 +26,7 @@
 
     <div id="api-content">
         <h1>API Documentation</h1>
+        <p>If any of the API requests fail, the returned value is the following:</p><pre>false</pre>
         <?php
         
         $i = 0;

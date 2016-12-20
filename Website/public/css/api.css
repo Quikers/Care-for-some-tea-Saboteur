@@ -31,6 +31,12 @@ a.jumpTo:before {
     content:"";
 }
 
+a.method.jumpTo:before {
+    padding: 0;
+    display: block;
+    content: "";
+}
+
 a.method:after {
     display:block;
     content: "";
@@ -113,4 +119,8 @@ a.method:after {
 
 pre {
     font-size: 15px;
+}
+
+strong {
+    padding: 0 !important;
 }
