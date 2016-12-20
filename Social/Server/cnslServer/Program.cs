@@ -16,7 +16,7 @@ namespace cnslServer
     //submit data port = 25003;
     class Program
     {
-        private static List<Player> PlayerQueue;
+        private static Dictionary<int, Client> PlayerQueue;
         private static Packet Response;
         private static NetworkStream stream;
         private static Dictionary<int, Client> OnlinePlayers;
@@ -25,9 +25,8 @@ namespace cnslServer
         static void Main(string[] args)
         {   
             OnlinePlayers = new Dictionary<int, Client>();
-
-            PlayerQueue = new List<Player>();
-            PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10});
+            
+            //PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10});
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
@@ -49,39 +48,13 @@ namespace cnslServer
                 if (PlayerQueue.Count < 2) continue;
 
                 Match match = new Match();
-                match.player1 = PlayerQueue[0];
-                match.player2 = PlayerQueue[1];
+                match.Client1 = PlayerQueue[0];
+                match.Client2 = PlayerQueue[1];
 
                 StartMatch(match);
-                Console.WriteLine("Match has been started between UserID {0} and {1}", match.player1.UserID, match.player2.UserID);
-                PlayerQueue.Remove(match.player1);
-                PlayerQueue.Remove(match.player2);
-            }
-        }
-
-        private static async void AddPlayersToQueue()
-        {
-            int loopcount = 0;
-
-            while (true)
-            {
-                if (loopcount == 200000000) loopcount = 0;
-                else
-                {
-                    loopcount++;
-                    continue;
-                }
-
-                Player player = new Player()
-                {
-                    UserID = loopcount,
-                    SelectedDeck = null,
-                    CurrentEnergy = 10,
-                    MaxEnergy = 10
-                };
-
-                PlayerQueue.Add(player);
-                //Console.WriteLine("Loopcount: 20000000");
+                Console.WriteLine("Match has been started between UserID {0} and {1}", match.Client1.UserID, match.Client2.UserID);
+                PlayerQueue.Remove(match.Client1.UserID);
+                PlayerQueue.Remove(match.Client2.UserID);
             }
         }
         
@@ -108,7 +81,7 @@ namespace cnslServer
             try
             {
                 Packet packet2 = new Packet();
-                packet2.From = match.player2.LocalIP;
+                packet2.From = match.Client2.Socket.Client.;
                 packet2.To = match.player1.LocalIP;
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();

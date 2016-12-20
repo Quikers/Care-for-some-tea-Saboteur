@@ -1,6 +1,6 @@
 <?php
 
-define('URL', 'http://careforsometeasaboteur.com/');
+define('URL', 'http://' . $_SERVER["HTTP_HOST"] . '/');
 
 define('LIBS', 'data/libs/');
 define('CONTROLLERS', 'data/controllers/');

@@ -1,86 +1,89 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+namespace Game
 {
-    public Transform ParentToReturnTo = null;
-    public Transform PlaceHolderParent = null;
-
-    GameObject _placeHolder = null;
-
-    public void OnBeginDrag( PointerEventData eventData )
+    public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
-            return;
+        public Transform ParentToReturnTo = null;
+        public Transform PlaceHolderParent = null;
 
-        _placeHolder = new GameObject( "Place Holder" );
-        _placeHolder.transform.SetParent( transform.parent, false );
-        LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
-        le.preferredWidth = GetComponent<LayoutElement>().preferredWidth;
-        le.preferredHeight= GetComponent<LayoutElement>().preferredHeight;
+        GameObject _placeHolder = null;
 
-        le.flexibleWidth = 0;
-        le.flexibleHeight = 0;
-
-        _placeHolder.transform.SetSiblingIndex( transform.GetSiblingIndex() );
-
-        ParentToReturnTo = transform.parent;
-        PlaceHolderParent = ParentToReturnTo;
-        transform.SetParent( Utilities.Find.InParents<Canvas>( gameObject ).transform );
-
-        GetComponent<CanvasGroup>().blocksRaycasts = false;
-    }
-
-    public void OnDrag( PointerEventData eventData )
-    {
-        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
-            return;
-
-        RectTransform rt = GetComponent<RectTransform>();
-
-        Vector3 globalMousePos;
-
-        if( RectTransformUtility.ScreenPointToWorldPointInRectangle( rt, eventData.position, eventData.pressEventCamera, out globalMousePos))
+        public void OnBeginDrag( PointerEventData eventData )
         {
-            rt.position = globalMousePos;
-            rt.rotation = transform.rotation;
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
+                return;
+
+            _placeHolder = new GameObject( "Place Holder" );
+            _placeHolder.transform.SetParent( transform.parent, false );
+            LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
+            le.preferredWidth = GetComponent<LayoutElement>().preferredWidth;
+            le.preferredHeight= GetComponent<LayoutElement>().preferredHeight;
+
+            le.flexibleWidth = 0;
+            le.flexibleHeight = 0;
+
+            _placeHolder.transform.SetSiblingIndex( transform.GetSiblingIndex() );
+
+            ParentToReturnTo = transform.parent;
+            PlaceHolderParent = ParentToReturnTo;
+            transform.SetParent( Utilities.Find.InParents<Canvas>( gameObject ).transform );
+
+            GetComponent<CanvasGroup>().blocksRaycasts = false;
         }
 
-        if( _placeHolder.transform.parent != PlaceHolderParent )
+        public void OnDrag( PointerEventData eventData )
         {
-            _placeHolder.transform.SetParent( PlaceHolderParent );
-        }
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard") )
+                return;
 
-        int newSiblingIndex = PlaceHolderParent.childCount;
+            RectTransform rt = GetComponent<RectTransform>();
 
-        for( int i = 0; i < PlaceHolderParent.childCount; i++ )
-        {
-            if( transform.position.x < PlaceHolderParent.GetChild( i ).position.x )
+            Vector3 globalMousePos;
+
+            if( RectTransformUtility.ScreenPointToWorldPointInRectangle( rt, eventData.position, eventData.pressEventCamera, out globalMousePos))
             {
-                newSiblingIndex = i;
-
-                if( _placeHolder.transform.GetSiblingIndex() < newSiblingIndex )
-                    newSiblingIndex--;
-
-                break;
+                rt.position = globalMousePos;
+                rt.rotation = transform.rotation;
             }
+
+            if( _placeHolder.transform.parent != PlaceHolderParent )
+            {
+                _placeHolder.transform.SetParent( PlaceHolderParent );
+            }
+
+            int newSiblingIndex = PlaceHolderParent.childCount;
+
+            for( int i = 0; i < PlaceHolderParent.childCount; i++ )
+            {
+                if( transform.position.x < PlaceHolderParent.GetChild( i ).position.x )
+                {
+                    newSiblingIndex = i;
+
+                    if( _placeHolder.transform.GetSiblingIndex() < newSiblingIndex )
+                        newSiblingIndex--;
+
+                    break;
+                }
+            }
+            _placeHolder.transform.SetSiblingIndex( newSiblingIndex );
         }
-        _placeHolder.transform.SetSiblingIndex( newSiblingIndex );
-    }
 
-    public void OnEndDrag( PointerEventData eventData )
-    {
-        if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.tag == "BoardCard" )
-            return;
+        public void OnEndDrag( PointerEventData eventData )
+        {
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
+                return;
 
-        transform.SetParent( ParentToReturnTo, true );
-        transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
+            transform.SetParent( ParentToReturnTo, true );
+            transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
+            GetComponent<CanvasGroup>().blocksRaycasts = true;
 
-        if( gameObject.tag == "almostBoardCard" )
-            gameObject.tag = "BoardCard";
+            if( gameObject.CompareTag( "almostBoardCard" ) )
+                gameObject.tag = "BoardCard";
 
-        Destroy( _placeHolder );
+            Destroy( _placeHolder );
+        }
     }
 }

@@ -31,7 +31,7 @@ class Account extends Controller {
             header("Location:" . URL . "dashboard");
         } else {
             $_SESSION["loggedIn"] = false;
-            $_SESSION["message"] = "<h3 style=\"color: red; text-align: center; font-weight: 100;\">Invalid username or password.</h3>";
+            $_SESSION["message"] = "<h3 style=\"color: red; text-align: center; font-weight: 100;\">Invalid e-mail or password.</h3>";
             
             print_r($_SESSION);
             header("Location:" . URL . "account");

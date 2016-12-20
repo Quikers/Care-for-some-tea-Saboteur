@@ -10,16 +10,7 @@ namespace Library
         public int ID;
         public int EnergyCost;
         Effect Effect;
-
-        public void Play()
-        {
-
-        }
-
-        public void Discard()
-        {
-
-        }
+        
     }
 
     public enum Effect

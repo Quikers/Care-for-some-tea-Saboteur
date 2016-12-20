@@ -1,66 +1,69 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class TurnController : MonoBehaviour
+namespace Game
 {
-    public Text PhaseValueText;
-    public Text TurnValueText;
-    public Button NextTurnButton;
-
-    int a = 0;
-    void Start()
+    public class TurnController : MonoBehaviour
     {
-        Data.Turn.First = Random.Range( -1, 1 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
-        CurrentTurn = 1;
-    }
-    void Update()
-    {
-        Debug.Log( Data.Turn.CurrentPhase );
-        if( Data.Turn.CurrentPhase != Data.TurnType.RemotePlayer ) return;
+        public Text PhaseValueText;
+        public Text TurnValueText;
+        public Button NextTurnButton;
 
-        if( a >= 500)
+        int a = 0;
+        void Start()
         {
-            Data.Turn.CurrentPhase = Data.TurnType.LocalPlayer;
-            PhaseValueText.text = Data.TurnType.LocalPlayer.ToString();
-            a = 0;
+            Data.Turn.First = Random.Range( -1, 1 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
+            CurrentTurn = 1;
         }
-        a++;
-    }
-
-    Data.TurnType CurrentPhase
-    {
-        get { return Data.Turn.CurrentPhase; }
-        set
+        void Update()
         {
-            Data.Turn.CurrentPhase = value;
-            PhaseValueText.text = value.ToString();
+            // this is only for now. Will be changed and later thank god for that.
+            if( Data.Turn.CurrentPhase != Data.TurnType.RemotePlayer ) return;
+
+            if( a >= 500)
+            {
+                Data.Turn.CurrentPhase = Data.TurnType.LocalPlayer;
+                PhaseValueText.text = Data.TurnType.LocalPlayer.ToString();
+                a = 0;
+            }
+            a++;
         }
-    }
 
-    int CurrentTurn
-    {
-        get { return Data.Turn.CurrentTurn; }
-        set
+        Data.TurnType CurrentPhase
         {
-            TurnValueText.text = value.ToString();
-            Data.Turn.CurrentTurn = value;
-
-            PhaseValueText.text = Data.Turn.First.ToString();
-            Data.Turn.CurrentPhase = Data.Turn.First;
+            get { return Data.Turn.CurrentPhase; }
+            set
+            {
+                Data.Turn.CurrentPhase = value;
+                PhaseValueText.text = value.ToString();
+            }
         }
-    }
 
-    public void UserEndTurn()
-    {
-        if( CurrentPhase == Data.TurnType.RemotePlayer ) return;
-
-        if( Data.Turn.First == Data.TurnType.LocalPlayer )
+        int CurrentTurn
         {
-            CurrentPhase = Data.TurnType.RemotePlayer;
+            get { return Data.Turn.CurrentTurn; }
+            set
+            {
+                TurnValueText.text = value.ToString();
+                Data.Turn.CurrentTurn = value;
+
+                PhaseValueText.text = Data.Turn.First.ToString();
+                Data.Turn.CurrentPhase = Data.Turn.First;
+            }
         }
-        else
+
+        public void UserEndTurn()
         {
-            CurrentTurn += 1;
+            if( CurrentPhase == Data.TurnType.RemotePlayer ) return;
+
+            if( Data.Turn.First == Data.TurnType.LocalPlayer )
+            {
+                CurrentPhase = Data.TurnType.RemotePlayer;
+            }
+            else
+            {
+                CurrentTurn += 1;
+            }
         }
     }
 }

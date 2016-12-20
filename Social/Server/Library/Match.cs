@@ -7,7 +7,7 @@ namespace Library
 {
     public class Match
     {
-        public Player player1;
-        public Player player2;
+        public Client Client1;
+        public Client Client2;
     }
 }

@@ -29,7 +29,12 @@
                 <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?><p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p><?php } ?>
                 <center>
                     <div class="li <?= strtolower($this->title) == "home" ? " active" : "" ?>"><a href="<?= URL ?>home">Home</a></div>
-                    <div class="li <?= strtolower($this->title) == "content" ? " active" : "" ?>"><a href="<?= URL ?>content">Content</a></div>
+                    <div class="li <?= strtolower($this->title) == "content" ? " active" : "" ?>"><a class="dropdown" href="<?= URL ?>content">Content
+                            <div class="dropdown-content" style="display: none;">
+                                <div class="li-dropdown">Test</div>
+                            </div>
+                        </a>
+                    </div>
                     <div class="li <?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
                 </center>
                 <div class="li <?= strtolower($this->title) == "account" ? " active" : "" ?>"><a href="<?= URL ?><?= $_SESSION["loggedIn"] == "1" ? "dashboard" : "account" ?>">Account</a></div>
