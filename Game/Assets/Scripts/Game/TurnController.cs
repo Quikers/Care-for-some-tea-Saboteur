@@ -9,10 +9,10 @@ namespace Game
         public Text TurnValueText;
         public Button NextTurnButton;
 
-        int a = 0;
+        int a;
         void Start()
         {
-            Data.Turn.First = Random.Range( -1, 1 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
+            Data.Turn.First = Random.Range( 0, 2 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
             CurrentTurn = 1;
         }
         void Update()
@@ -34,6 +34,8 @@ namespace Game
             get { return Data.Turn.CurrentPhase; }
             set
             {
+                if( value == Data.TurnType.LocalPlayer )
+
                 Data.Turn.CurrentPhase = value;
                 PhaseValueText.text = value.ToString();
             }
