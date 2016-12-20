@@ -2,7 +2,7 @@
 
 namespace Data
 {
-    public struct Player
+    struct Player
     {
     }
 }
