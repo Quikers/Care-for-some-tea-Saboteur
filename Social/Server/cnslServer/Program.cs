@@ -250,11 +250,10 @@ namespace cnslServer
                             break;
                         }
                     case TcpMessageType.Login:
-                        {
-                            string username = packet.Variables["Username"];
+                        {  
+                             
                             int userID = int.Parse(packet.Variables["UserID"]);
-                            string email = packet.Variables["Email"];
-                            string password = packet.Variables["Password"];
+                            string username = packet.Variables["Username"];
 
                             Client _client = new Client
                             {
