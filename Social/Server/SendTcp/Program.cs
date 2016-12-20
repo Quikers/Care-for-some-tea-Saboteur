@@ -13,15 +13,16 @@ namespace SendTcp
     {
         static void Main(string[] args)
         {
-            Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.AddPlayerToQueue, new[] { "UserID", "3", "IP", "127.0.0.1"});
+            //Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.AddPlayerToQueue, new[] { "UserID", "3", "IP", "127.0.0.1"});
+            Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
 
             // Create a TcpClient.
             // Note, for this client to work you need to have a TcpServer 
             // connected to the same address as specified by the server, port
             // combination.
 
-            string server = "213.46.57.198";
-            //string server = "127.0.0.1";
+            //string server = "213.46.57.198";
+            string server = "127.0.0.1";
             //string server = "0.0.0.0";
             Int32 port = 25002;
             
