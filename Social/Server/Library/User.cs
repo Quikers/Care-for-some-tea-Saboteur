@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace Library
 {
@@ -17,12 +16,6 @@ namespace Library
         public User()
         {
 
-        }
-
-        public User(string json)
-        {
-            User user = new User();
-            user = JsonConvert.DeserializeObject<User>(json);
         }
 
         public override string ToString()

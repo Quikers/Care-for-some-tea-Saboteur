@@ -81,14 +81,14 @@ namespace cnslServer
             try
             {
                 Packet packet2 = new Packet();
-                packet2.From = match.Client2.Socket.Client.;
-                packet2.To = match.player1.LocalIP;
+                packet2.From = match.Client2.Socket.Client.LocalEndPoint.ToString();
+                packet2.To = match.Client1.Socket.Client.LocalEndPoint.ToString();
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
-                variables2.Add("User1ID", match.player1.UserID.ToString());
-                variables2.Add("User1IP", match.player1.LocalIP);
-                variables2.Add("User2ID", match.player2.UserID.ToString());
-                variables2.Add("User2IP", match.player2.LocalIP.ToString());
+                variables2.Add("User1ID", match.Client1.UserID.ToString());
+                variables2.Add("User1IP", match.Client1.Socket.Client.LocalEndPoint.ToString());
+                variables2.Add("User2ID", match.Client2.UserID.ToString());
+                variables2.Add("User2IP", match.Client2.Socket.Client.LocalEndPoint.ToString());
                 
                 packet2.Variables = variables2;
 
@@ -235,14 +235,16 @@ namespace cnslServer
 
                     case TcpMessageType.AddPlayerToQueue:
                         {
-                            Player player = new Player();
-                            player.UserID = int.Parse(packet.Variables["UserID"]);
-                            player.LocalIP = packet.Variables["IP"];
-                            PlayerQueue.Add(player);
-                            Console.WriteLine("UserID {0} has been added to the player queue", player.UserID.ToString());
+                            if (!PlayerQueue.ContainsKey(client.UserID))
+                            {
+                                PlayerQueue.Add(client.UserID, client);
+                                Console.WriteLine("UserID {0} has been added to the player queue", client.UserID.ToString());
+                                //SendSuccessResponse(packet);
+                            }
+                            
                             //Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
                             //SendTcp.SendPacket(Response);
-                            SendSuccessResponse(packet);
+                            
                             break;
                         }
                     case TcpMessageType.Login:
