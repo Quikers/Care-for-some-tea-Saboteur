@@ -235,6 +235,8 @@ namespace cnslServer
 
                     case TcpMessageType.AddPlayerToQueue:
                         {
+                            client.UserID = int.Parse(packet.Variables["UserID"]);
+
                             if (!PlayerQueue.ContainsKey(client.UserID))
                             {
                                 PlayerQueue.Add(client.UserID, client);
@@ -290,5 +292,6 @@ namespace cnslServer
             Packet packet = new Packet("Server", ReceivedPacket.From, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
             SendTcp.SendPacket(packet);
         }
+        
     }
 }

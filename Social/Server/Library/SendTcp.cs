@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Library
 {
     public static class SendTcp
     {
+        //Packet packet = new Packet("mij", "server", TcpMessageType.Login, new[] { "UserID", "3" });
+
         public static void SendPacket(Packet packet)
         {   
             //string server = "127.0.0.1";

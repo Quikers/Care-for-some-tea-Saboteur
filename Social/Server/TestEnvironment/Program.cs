@@ -12,19 +12,19 @@ namespace TestEnvironment
     {
         static void Main(string[] args)
         {
-            string response = SendWebRequest.GetResponse("http://careforsometeasaboteur.com/api/getuserbyusername/Shifted");
+            //string response = SendWebRequest.GetResponse("http://careforsometeasaboteur.com/api/getuserbyusername/Shifted");
 
-            if(response == null)
-            {
-                Console.WriteLine("Could not find player.");
-            }
-            else
-            {
-                User user = JsonConvert.DeserializeObject<User>(response);
-                Console.WriteLine(user.ToString());
-            }
+            //if(response == null)
+            //{
+            //    Console.WriteLine("Could not find player.");
+            //}
+            //else
+            //{
+            //    User user = JsonConvert.DeserializeObject<User>(response);
+            //    Console.WriteLine(user.ToString());
+            //}
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
         }
     }

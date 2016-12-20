@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-namespace TestEnvironment
+namespace cnslServer
 {
     public static class SendWebRequest
     {

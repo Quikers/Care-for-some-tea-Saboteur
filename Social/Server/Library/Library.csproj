@@ -44,6 +44,7 @@
     <Compile Include="Match.cs" />
     <Compile Include="Minion.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="SendTcp.cs" />
     <Compile Include="SpellCard.cs" />
     <Compile Include="TcpMessage.cs" />
     <Compile Include="User.cs" />

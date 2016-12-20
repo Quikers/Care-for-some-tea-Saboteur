@@ -7,9 +7,9 @@ namespace cnslServer
 {
     public class Authentication
     {
-        public bool Login(string Username, string Password)
+        public bool Login(string Email, string Password)
         {
-            if (Username == null || Password == null) return false;
+            if (Email == null || Password == null) return false;
             else return false; //Under construction!
 
         }
