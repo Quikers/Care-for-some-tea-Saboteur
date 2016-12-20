@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-namespace Library
+namespace TestEnvironment
 {
     public static class SendWebRequest
     {
