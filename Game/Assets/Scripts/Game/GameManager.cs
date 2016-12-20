@@ -4,14 +4,7 @@ namespace Game
 {
     public class GameManager : MonoBehaviour
     {
-        void Start()
-        {
-            
-        }
+        public static int AmountOfCardsNextTurn;
 
-        void Update()
-        {
-            
-        }
     }
 }

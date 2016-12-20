@@ -1,13 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
 
 public class LoginManager : MonoBehaviour
 {
-    public Text email;
+    public string message;
+
+    public Text Email;
+    public InputField Password;
     public void Login()
     {
-        Utilities.API.UserbyEmail( email.text );
+        string Login = Utilities.API.UserbyEmail( Email.text, Password.text );
+
+        if( Login == null )
+        {
+            message = "Could not connect to server.";
+            Debug.Log( message );
+        }
+            
 
     }
 }
