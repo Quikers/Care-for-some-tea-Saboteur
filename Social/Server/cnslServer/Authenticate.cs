@@ -10,7 +10,11 @@ namespace cnslServer
         public bool Login(string Email, string Password)
         {
             if (Email == null || Password == null) return false;
-            else return false; //Under construction!
+
+            string response = SendWebRequest.GetResponse("http://careforsometeasaboteur.com/api/checklogin/Sjoerdk@outlook.com/Sjoerd123");
+
+            if (response == "false") return false;
+            else return true;
 
         }
     }

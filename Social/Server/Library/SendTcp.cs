@@ -8,10 +8,10 @@ namespace Library
 {
     public static class SendTcp
     {
-        //Packet packet = new Packet("mij", "server", TcpMessageType.Login, new[] { "UserID", "3" });
-
         public static void SendPacket(Packet packet)
-        {   
+        {
+            //Packet _packet = new Packet("mij", "server", TcpMessageType.Login, new[] { "UserID", "3" });
+
             //string server = "127.0.0.1";
             //string server = "0.0.0.0";
             Int32 port = 25002;

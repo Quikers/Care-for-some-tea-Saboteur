@@ -251,21 +251,28 @@ namespace cnslServer
                         }
                     case TcpMessageType.Login:
                         {
+                            string username = packet.Variables["Username"];
+                            int userID = int.Parse(packet.Variables["UserID"]);
+                            string email = packet.Variables["Email"];
+                            string password = packet.Variables["Password"];
+
                             Client _client = new Client
                             {
-                                UserID = int.Parse(packet.Variables["UserID"]),
-                                Username = packet.Variables["Username"],
+                                UserID = userID,
+                                Username = username,
                                 Socket = client.Socket
-                                
                             };
+
                             if (!OnlinePlayers.ContainsKey(_client.UserID))
                             {
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
+                                SendSuccessResponse(packet);
                             }
                             else if (OnlinePlayers.ContainsKey(_client.UserID))
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
+                                SendSuccessResponse(packet);
                             }
 
                             //OnlinePlayers.Add(packet.Variables["UserID"]);
@@ -273,8 +280,19 @@ namespace cnslServer
                         }
                     case TcpMessageType.Logout:
                         {
+                            int userID = int.Parse(packet.Variables["UserID"]);
+
+                            if (OnlinePlayers.ContainsKey(userID))
+                            {
+                                OnlinePlayers.Remove(userID);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Player tried to log out while its not logged in.");
+                            }
+
+                            SendSuccessResponse(packet);
                             client.Socket.Close();
-                            OnlinePlayers.Remove(client.UserID);
                             break;
                         }
                 }
