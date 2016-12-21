@@ -25,7 +25,7 @@ namespace cnslServer
         static void Main(string[] args)
         {   
             OnlinePlayers = new Dictionary<int, Client>();
-            
+            PlayerQueue = new Dictionary<int, Client>();
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
