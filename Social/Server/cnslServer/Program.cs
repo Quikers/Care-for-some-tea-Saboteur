@@ -96,7 +96,7 @@ namespace cnslServer
             }
             catch
             {
-                Console.WriteLine("Unable to connect players. Check if the Player.UserID and Player.IP are not empty.");
+                Console.WriteLine("Unable to connect players. Check if the UserID or Socket are not empty.");
             }
             
         }
