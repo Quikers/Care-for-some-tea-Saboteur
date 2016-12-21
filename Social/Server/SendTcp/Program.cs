@@ -33,8 +33,8 @@ namespace SendTcp
 
             if(packet.To == "Server" || packet.To == "server")
             {
-                //string server = "213.46.57.198";
-                ip = "127.0.0.1";
+                ip = "213.46.57.198";
+                //ip = "127.0.0.1";
                 //string server = "0.0.0.0";
             }
             else

@@ -192,11 +192,16 @@ namespace cnslServer
                             int targetUserID = int.Parse(packet.To);
                             string chatmessage = packet.Variables["Chatmessage"];
 
-                            if (!OnlinePlayers.ContainsKey(targetUserID)) return;
+                            if (!OnlinePlayers.ContainsKey(targetUserID))
+                            {
+                                Console.WriteLine("UserID {0} tried to send a message to offline");
+                                return;
+                            } 
                             else
                             {
                                 SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }));
                                 SendTcp.SendPacket(packet);
+                                Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
                             }
 
                             //SendSuccessResponse(packet);
@@ -286,6 +291,8 @@ namespace cnslServer
                             if (OnlinePlayers.ContainsKey(userID))
                             {
                                 OnlinePlayers.Remove(userID);
+                                Console.WriteLine("UserID {0} logged out", userID);
+                                SendSuccessResponse(packet);
                             }
                             else
                             {
