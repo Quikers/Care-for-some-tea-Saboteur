@@ -30,7 +30,7 @@ namespace SendTcp
             
             Library.SendTcp.SendPacket(login, client, false);
             Library.SendTcp.SendPacket(sendmsg, client, false);
-            Library.SendTcp.SendPacket(logout, client, false);
+            //Library.SendTcp.SendPacket(logout, client, false);
 
             Console.ReadLine();
            
