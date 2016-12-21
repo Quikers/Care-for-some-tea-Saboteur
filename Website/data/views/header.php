@@ -19,7 +19,37 @@
 </head>
 <body style="display: none;">
 
-    <?php Session::init(); ?>
+    <?php Session::init();
+    
+    $active["home"] = "";
+    $active["content"] = "";
+    $active["cards"] = "";
+    $active["decks"] = "";
+    $active["contact"] = "";
+    $active["account"] = "";
+    $active["dashboard"] = "";
+    $active["profile"] = "";
+    $active["mycards"] = "";
+    $active["mydecks"] = "";
+    
+    switch(strtolower($this->title)) {
+        case "home":
+            $active["home"] = " active";
+            break;
+        case "content": case "cards": case "decks":
+            $active["content"] = " active";
+            $active[strtolower($this->title)] = " active";
+            break;
+        case "contact":
+            $active["contact"] = " active";
+            break;
+        case "account": case "profile": case "dashboard": case "mycards": case "mydecks":
+            $active["account"] = " active";
+            $active[strtolower($this->title)] = " active";
+            break;
+    }
+    
+    ?>
     
     <div id="header">
         <div id="logo"></div>
@@ -28,30 +58,45 @@
             <div id="li-container">
                 <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?><p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p><?php } ?>
                 <center>
-                    <div class="li <?= strtolower($this->title) == "home" ? " active" : "" ?>"><a href="<?= URL ?>home">Home</a></div>
-                    <div class="li dropdown <?= strtolower($this->title) == "content" ? " active" : "" ?>">
+                    <div class="li<?= $active["home"] ?>"><a href="<?= URL ?>home">Home</a></div>
+                    <div class="li dropdown<?= $active["content"] ?>">
                         Content
-                        <div class="dropdown-content" style="display: none;">
-                            <div class="li-dropdown"><a href="<?= URL ?>content/cards">Cards</a></div>
-                            <div class="li-dropdown"><a href="<?= URL ?>content/decks">Decks</a></div>
+                        <div class="dropdown-content">
+                            <div class="li-dropdown<?= $active["cards"] ?>"><a href="<?= URL ?>content/cards">Cards</a></div>
+                            <div class="li-dropdown<?= $active["decks"] ?>"><a href="<?= URL ?>content/decks">Decks</a></div>
                         </div>
                     </div>
-                    <div class="li <?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
+                    <div class="li<?= $active["contact"] ?>"><a href="<?= URL ?>contact">Contact</a></div>
                 </center>
                 <?php if ($_SESSION["loggedIn"] != 1) { ?>
-                <div class="li <?= strtolower($this->title) == "account" ? " active" : "" ?>"><a href="<?= URL ?><?= $_SESSION["loggedIn"] == "1" ? "dashboard" : "account" ?>">Account</a></div>
+                <div class="li<?= $active["account"] ?>"><a href="<?= URL ?><?= $_SESSION["loggedIn"] == "1" ? "dashboard" : "account" ?>">Account</a></div>
                 <?php } else { ?>
-                <div class="li <?= strtolower($this->title) == "account" ? " active" : "" ?>">
+                <div class="li dropdown<?= $active["account"] ?>">
                     Account
-                    <div class="dropdown-content" style="display: none;">
-                        <div class="li-dropdown"><a href="<?= URL ?>content/cards">Cards</a></div>
-                        <div class="li-dropdown"><a href="<?= URL ?>content/decks">Decks</a></div>
+                    <div class="dropdown-content">
+                        <div class="li-dropdown<?= $active["profile"] ?>"><a href="<?= URL ?>dashboard/profile">Profile</a></div>
+                        <div class="li-dropdown<?= $active["mycards"] ?>"><a href="<?= URL ?>dashboard/mycards">My Cards</a></div>
+                        <div class="li-dropdown<?= $active["mydecks"] ?>"><a href="<?= URL ?>dashboard/mydecks">My Decks</a></div>
                     </div>
                 </div>
                 <?php } ?>
             </div>
         </div>
     </div>
+    
+<script>
+    
+$(document).ready(function () {
+    $(".dropdown").mouseenter(function () {
+        $(this).find(".dropdown-content").addClass("show");
+    });
+    
+    $(".dropdown").mouseleave(function () {
+        $(this).find(".dropdown-content").removeClass("show");
+    });
+});
+
+</script>
 
     <div id="content">
     

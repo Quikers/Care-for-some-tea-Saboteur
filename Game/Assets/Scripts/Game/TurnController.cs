@@ -34,8 +34,8 @@ namespace Game
             get { return Data.Turn.CurrentPhase; }
             set
             {
-                if( value == Data.TurnType.LocalPlayer )
-
+                //if( value == Data.TurnType.LocalPlayer )
+                    //Game
                 Data.Turn.CurrentPhase = value;
                 PhaseValueText.text = value.ToString();
             }

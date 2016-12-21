@@ -26,12 +26,12 @@ namespace Utilities
         }
     }
 
-    public static class API
+    public static class Api
     {
         public static string UserbyEmail( string email, string password )
         {
             WebRequest request = WebRequest.Create( "http://careforsometeasaboteur.com/api/checklogin/" + email + "/" + password );
-            Debug.Log( "http://careforsometeasaboteur.com/api/checklogin/" + email + "/" + password );
+
             request.Credentials = CredentialCache.DefaultCredentials;
             WebResponse response = request.GetResponse();
 
@@ -44,8 +44,8 @@ namespace Utilities
                 reader.Close();
                 response.Close();
                 return responseFromServer;
-
             }
+
             response.Close();
             return null;
         }

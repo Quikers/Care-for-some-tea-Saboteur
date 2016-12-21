@@ -8,8 +8,7 @@ class Dashboard extends Controller {
     
     public function index() {
         if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") {
-            $this->view->title = "Dashboard";
-            $this->view->render("dashboard/index");
+            header("Location:" . URL . "dashboard/profile");
         } else { header("Location:" . URL . "home"); }
     }
 

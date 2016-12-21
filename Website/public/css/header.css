@@ -74,74 +74,39 @@ html, body {
     font-family: Helvetica;
     
     cursor: default;
+    
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
 }
 
 #header #nav #li-container>.li {
     position: absolute;
     top: 0;
     right: 0;
-    
-    overflow: hidden;
 }
 
-#header #nav #li-container .li:hover {
-    background: rgba(255, 255, 255, 0.7);
+.li:hover {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: black !important;
 }
 
-#header #nav #li-container .li:active {
+.li:active {
     background: rgba(255, 255, 255, 0.8);
 }
 
-#header #nav #li-container .li.active {
+.li.active {
     background: rgba(255, 255, 255, 0.8);
 }
 
-.dropdown-content {
-    position: absolute;
-    top: 29px;
-    left: 0;
-    right: 0;
-}
-
-.li-dropdown {
-    display: block;
-    position: relative;
-    left: 0;
-    right: 0;
-    
-    background: rgb(240, 240, 240);
-    
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    
-    transition: 150ms;
-}
-
-.li-dropdown:first-of-type() {
-    border-top: 0;
-}
-
-.li-dropdown:hover {
-    background: rgb(200, 200, 200);
-}
-
-#header #nav #li-container .dropdown:hover {
-    background: rgba(255, 255, 255, 0.7);
-    color: black;
-}
-
-#header #nav #li-container .dropdown:hover .dropdown-content {
-    display: inline-block !important;
-}
-
-#header #nav #li-container .li a {
+.li a {
     display: inline-block;
     
     width: 100%;
     height: 100%;
     
     transition: 150ms;
-    
-    margin-top: -2px;
     
     color: rgb(150,150,150);
     text-align: center;
@@ -151,12 +116,51 @@ html, body {
     cursor: pointer;
 }
 
-#header #nav #li-container .li a:hover {
+.li a:hover {
     text-decoration: none;
     color: black;
 }
 
-#header #nav #li-container .li.active a {
+.li.active {
+    color: black !important;
+}
+
+.dropdown {
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 29px;
+    left: 0;
+    right: 0;
+}
+
+.dropdown-content .li-dropdown {
+    display: block;
+    position: relative;
+    left: 0;
+    right: 0;
+    
+    background: rgb(240, 240, 240);
+    color: rgb(150,150,150) !important;
+    
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    
+    transition: 150ms;
+}
+
+.dropdown-content .li-dropdown.active>a {
+    color: black;
+}
+
+.dropdown-content .li-dropdown:first-of-type() {
+    border-top: 0;
+}
+
+.dropdown-content .li-dropdown:hover {
+    background-color: rgb(200, 200, 200);
     color: black;
 }
 
