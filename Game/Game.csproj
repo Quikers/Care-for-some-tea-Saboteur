@@ -89,6 +89,7 @@
     <Compile Include="Assets\Scripts\Game\DropZone.cs" />
     <Compile Include="Assets\Scripts\Game\GameManager.cs" />
     <Compile Include="Assets\Scripts\Game\TurnController.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LoginInfoManager.cs" />
     <Compile Include="Assets\Scripts\MainMenu\LoginManager.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
   </ItemGroup>
