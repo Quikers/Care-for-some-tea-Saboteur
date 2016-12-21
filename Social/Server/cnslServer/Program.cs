@@ -117,7 +117,7 @@ namespace cnslServer
                 server.Start();
 
                 // Buffer for reading data
-                Byte[] bytes = new Byte[256];
+                Byte[] bytes = new Byte[1024];
                 String data = null;
 
                 // Enter the listening loop.
@@ -150,16 +150,13 @@ namespace cnslServer
                         HandlePacket(new Packet(data), new Client {Socket = client });
 
                         // Send back a response.
-                        if(Response != null)
-                        {
-                            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Response.ToString());
-                            stream.Write(msg, 0, msg.Length);
-                            Console.WriteLine("Sent: {0}", Response.ToString());
-                        }
+                        //if(Response != null)
+                        //{
+                        //    byte[] msg = System.Text.Encoding.ASCII.GetBytes(Response.ToString());
+                        //    stream.Write(msg, 0, msg.Length);
+                        //    Console.WriteLine("Sent: {0}", Response.ToString());
+                        //}
                     }
-
-                    // Shutdown and end connection
-                    client.Close();
                 }
             }
             catch (SocketException e)
@@ -199,8 +196,8 @@ namespace cnslServer
                             } 
                             else
                             {
-                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }));
-                                SendTcp.SendPacket(packet);
+                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), client);
+                                SendTcp.SendPacket(packet, client);
                                 Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
                             }
 
@@ -248,7 +245,7 @@ namespace cnslServer
                             {
                                 PlayerQueue.Add(client.UserID, client);
                                 Console.WriteLine("UserID {0} has been added to the player queue", client.UserID.ToString());
-                                SendSuccessResponse(packet);
+                                SendSuccessResponse(packet, client);
                             }
                             
                             //Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
@@ -257,8 +254,8 @@ namespace cnslServer
                             break;
                         }
                     case TcpMessageType.Login:
-                        {  
-                             
+                        {
+                            Console.WriteLine("HandlePacket Login");
                             int userID = int.Parse(packet.Variables["UserID"]);
                             string username = packet.Variables["Username"];
 
@@ -269,16 +266,23 @@ namespace cnslServer
                                 Socket = client.Socket
                             };
 
+                            Console.WriteLine("HandlePacket Login Ifstatement");
                             if (!OnlinePlayers.ContainsKey(_client.UserID))
                             {
+
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
-                                SendSuccessResponse(packet);
+                                SendSuccessResponse(packet, client);
+                                Console.WriteLine("HandlePacket Login Ifstatement in if statement");
+
+                                _client.Listen = new Thread(() => ListenToClient(_client));
+                                _client.Listen.Start();
+                                Console.WriteLine("Luisteren naar client: {0}", _client.UserID);
                             }
                             else if (OnlinePlayers.ContainsKey(_client.UserID))
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
-                                SendSuccessResponse(packet);
+                                //SendSuccessResponse(packet);
                             }
 
                             //OnlinePlayers.Add(packet.Variables["UserID"]);
@@ -290,16 +294,18 @@ namespace cnslServer
 
                             if (OnlinePlayers.ContainsKey(userID))
                             {
-                                OnlinePlayers.Remove(userID);
                                 Console.WriteLine("UserID {0} logged out", userID);
-                                SendSuccessResponse(packet);
+                                SendSuccessResponse(packet, client);
+
+                                OnlinePlayers[userID].Listen.Abort();
+                                OnlinePlayers.Remove(userID);
                             }
                             else
                             {
                                 Console.WriteLine("Player tried to log out while its not logged in.");
                             }
 
-                            SendSuccessResponse(packet);
+                            SendSuccessResponse(packet, client);
                             client.Socket.Close();
                             break;
                         }
@@ -313,10 +319,36 @@ namespace cnslServer
             
         }
 
-        private static void SendSuccessResponse(Packet ReceivedPacket)
+        private static void ListenToClient(Client client)
+        {
+            Console.WriteLine("ListenToClientMethod van {0}", client.UserID);
+            while (true)
+            {
+                byte[] bytes = new byte[1024];
+                string data;
+
+                // Get a stream object for reading and writing
+                stream = client.Socket.GetStream();
+
+                int i;
+
+                // Loop to receive all the data sent by the client.
+                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                {
+                    // Translate data bytes to a ASCII string.
+                    data = new Packet(Encoding.ASCII.GetString(bytes, 0, i)).ToString();
+                    Console.WriteLine("Received: {0}", data);
+
+                    // Process the data sent by the client.
+                    HandlePacket(new Packet(data), client);
+                }
+            }
+        }
+
+        private static void SendSuccessResponse(Packet ReceivedPacket, Client client)
         {
             Packet packet = new Packet("Server", ReceivedPacket.To, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
-            SendTcp.SendPacket(packet);
+            SendTcp.SendPacket(packet, client);
         }
 
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
