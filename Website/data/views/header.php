@@ -29,17 +29,25 @@
                 <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?><p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p><?php } ?>
                 <center>
                     <div class="li <?= strtolower($this->title) == "home" ? " active" : "" ?>"><a href="<?= URL ?>home">Home</a></div>
-                    <div class="li <?= strtolower($this->title) == "content" ? " active" : "" ?>"><a class="dropdown" href="<?= URL ?>content">Content
-                            <div class="dropdown-content" style="display: none;">
-                                <div class="li-dropdown">Test</div>
-                            </div>
-                        </a>
+                    <div class="li dropdown <?= strtolower($this->title) == "content" ? " active" : "" ?>">
+                        Content
+                        <div class="dropdown-content" style="display: none;">
+                            <div class="li-dropdown"><a href="<?= URL ?>content/cards">Cards</a></div>
+                            <div class="li-dropdown"><a href="<?= URL ?>content/decks">Decks</a></div>
+                        </div>
                     </div>
                     <div class="li <?= strtolower($this->title) == "contact" ? " active" : "" ?>"><a href="<?= URL ?>contact">Contact</a></div>
                 </center>
+                <?php if ($_SESSION["loggedIn"] != 1) { ?>
                 <div class="li <?= strtolower($this->title) == "account" ? " active" : "" ?>"><a href="<?= URL ?><?= $_SESSION["loggedIn"] == "1" ? "dashboard" : "account" ?>">Account</a></div>
-                <?php if ($_SESSION["loggedIn"] != true) { ?>
                 <?php } else { ?>
+                <div class="li <?= strtolower($this->title) == "account" ? " active" : "" ?>">
+                    Account
+                    <div class="dropdown-content" style="display: none;">
+                        <div class="li-dropdown"><a href="<?= URL ?>content/cards">Cards</a></div>
+                        <div class="li-dropdown"><a href="<?= URL ?>content/decks">Decks</a></div>
+                    </div>
+                </div>
                 <?php } ?>
             </div>
         </div>

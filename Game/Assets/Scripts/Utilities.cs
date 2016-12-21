@@ -28,9 +28,10 @@ namespace Utilities
 
     public static class API
     {
-        public static void UserbyEmail( string email )
+        public static string UserbyEmail( string email, string password )
         {
-            WebRequest request = WebRequest.Create( "http://careforsometeasaboteur.com/api/getuserbyemail/" + email );
+            WebRequest request = WebRequest.Create( "http://careforsometeasaboteur.com/api/checklogin/" + email + "/" + password );
+            Debug.Log( "http://careforsometeasaboteur.com/api/checklogin/" + email + "/" + password );
             request.Credentials = CredentialCache.DefaultCredentials;
             WebResponse response = request.GetResponse();
 
@@ -40,12 +41,13 @@ namespace Utilities
                 StreamReader reader = new StreamReader( dataStream );
 
                 string responseFromServer = reader.ReadToEnd();
-                Debug.Log( responseFromServer );
                 reader.Close();
+                response.Close();
+                return responseFromServer;
+
             }
-
-
             response.Close();
+            return null;
         }
     }
 }
