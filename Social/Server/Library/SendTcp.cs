@@ -11,12 +11,14 @@ namespace Library
         public static void SendPacket(Packet packet)
         {
             //Packet _packet = new Packet("mij", "server", TcpMessageType.Login, new[] { "UserID", "3" });
-
+            
             //string server = "127.0.0.1";
             //string server = "0.0.0.0";
             Int32 port = 25002;
+            string ip = packet.To;
+            
 
-            TcpClient client = new TcpClient(packet.To, port);
+            TcpClient client = new TcpClient(ip, port);
 
             // Translate the passed message into ASCII and store it as a Byte array.
             Byte[] data = System.Text.Encoding.ASCII.GetBytes(packet.ToString());

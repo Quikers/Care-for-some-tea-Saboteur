@@ -189,13 +189,16 @@ namespace cnslServer
                         {
                             //============Under construction
 
-                            string from = packet.From;
-                            //string to = OnlinePlayers.Where(x => x.Key == int.Parse(packet.To)).FirstOrDefault().Value.;
+                            int fromUserID = int.Parse(packet.From);
+                            int targetUserID = int.Parse(packet.To);
                             string chatmessage = packet.Variables["Chatmessage"];
-                            
-                            
 
-                            SendTcp.SendPacket(packet); 
+                            if (!OnlinePlayers.ContainsKey(targetUserID)) return;
+                            else
+                            {
+                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }));
+                                SendTcp.SendPacket(packet);
+                            }
 
                             //SendSuccessResponse(packet);
                             //response.From = from;
@@ -224,12 +227,12 @@ namespace cnslServer
 
                     case TcpMessageType.PlayerUpdate:
                         {
-                            Player player = new Player();
-                            player.UserID = int.Parse(packet.Variables["UserID"]);
-                            player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
-                            player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
-                            player.CurrentHealth = int.Parse(packet.Variables["CurrentHealth"]);
-                            player.MaxHealth = int.Parse(packet.Variables["MaxHealth"]);
+                            //Player player = new Player();
+                            //player.UserID = int.Parse(packet.Variables["UserID"]);
+                            //player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
+                            //player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
+                            //player.CurrentHealth = int.Parse(packet.Variables["CurrentHealth"]);
+                            //player.MaxHealth = int.Parse(packet.Variables["MaxHealth"]);
                             break;
                         }
 
@@ -241,7 +244,7 @@ namespace cnslServer
                             {
                                 PlayerQueue.Add(client.UserID, client);
                                 Console.WriteLine("UserID {0} has been added to the player queue", client.UserID.ToString());
-                                //SendSuccessResponse(packet);
+                                SendSuccessResponse(packet);
                             }
                             
                             //Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
@@ -306,8 +309,14 @@ namespace cnslServer
 
         private static void SendSuccessResponse(Packet ReceivedPacket)
         {
-            Packet packet = new Packet("Server", ReceivedPacket.From, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
+            Packet packet = new Packet("Server", ReceivedPacket.To, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
             SendTcp.SendPacket(packet);
+        }
+
+        private static Client GetClientFromOnlinePlayersByUserID(int UserID)
+        {
+            if (!OnlinePlayers.ContainsKey(UserID)) return null;
+            else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
         }
         
     }
