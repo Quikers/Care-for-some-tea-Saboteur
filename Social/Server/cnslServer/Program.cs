@@ -26,7 +26,6 @@ namespace cnslServer
         {   
             OnlinePlayers = new Dictionary<int, Client>();
             
-            //PlayerQueue.Add(new Player("1.1.1.1") { UserID = 10});
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
@@ -282,7 +281,7 @@ namespace cnslServer
                         }
                     case TcpMessageType.Logout:
                         {
-                            int userID = int.Parse(packet.Variables["UserID"]);
+                            int userID = int.Parse(packet.From);
 
                             if (OnlinePlayers.ContainsKey(userID))
                             {

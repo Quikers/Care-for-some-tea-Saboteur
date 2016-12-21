@@ -14,19 +14,44 @@ namespace SendTcp
         static void Main(string[] args)
         {
             //Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.AddPlayerToQueue, new[] { "UserID", "3", "IP", "127.0.0.1"});
-            Packet packet = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
+            Packet login = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
+            Packet sendmsg = new Packet("3", "Server", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
+            Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
+
+
+            SendTcp(login);
+            SendTcp(sendmsg);
+            SendTcp(logout);
+
+            Console.ReadLine();
+           
+        }
+
+        private static void SendTcp(Packet packet)
+        {
+            string ip = string.Empty;
+
+            if(packet.To == "Server" || packet.To == "server")
+            {
+                //string server = "213.46.57.198";
+                ip = "127.0.0.1";
+                //string server = "0.0.0.0";
+            }
+            else
+            {
+                ip = packet.To;
+            }
 
             // Create a TcpClient.
             // Note, for this client to work you need to have a TcpServer 
             // connected to the same address as specified by the server, port
             // combination.
 
-            //string server = "213.46.57.198";
-            string server = "127.0.0.1";
-            //string server = "0.0.0.0";
+
+
             Int32 port = 25002;
-            
-            TcpClient client = new TcpClient(server, port);
+
+            TcpClient client = new TcpClient(ip, port);
 
             // Translate the passed message into ASCII and store it as a Byte array.
             Byte[] data = System.Text.Encoding.ASCII.GetBytes(packet.ToString());
@@ -60,9 +85,6 @@ namespace SendTcp
                            // Note, for this client to work you need to have a TcpServer 
                            // connected to the same address as specified by the server, port
                            // combination.
-
-            Console.ReadLine();
-           
         }
     }
 }

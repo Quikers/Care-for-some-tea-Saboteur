@@ -12,11 +12,18 @@ namespace Library
         {
             //Packet _packet = new Packet("mij", "server", TcpMessageType.Login, new[] { "UserID", "3" });
             
-            //string server = "127.0.0.1";
-            //string server = "0.0.0.0";
+            
             Int32 port = 25002;
             string ip = packet.To;
-            
+
+            if (packet.To == "Server")
+            {
+                ip = "213.46.57.198";
+                //string server = "127.0.0.1";
+                //string server = "0.0.0.0";
+            }
+
+
 
             TcpClient client = new TcpClient(ip, port);
 
