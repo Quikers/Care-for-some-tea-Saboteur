@@ -25,7 +25,7 @@ namespace SendTcp
             client.Socket.Connect("213.46.57.198", 25002);
 
             Packet login = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
-            Packet sendmsg = new Packet("3", "Server", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
+            Packet sendmsg = new Packet("3", "2", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
             Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
             
             Library.SendTcp.SendPacket(login, client, false);
