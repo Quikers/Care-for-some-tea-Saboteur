@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using Library;
 
 namespace SendTcp
@@ -31,17 +32,30 @@ namespace SendTcp
 
             Library.SendTcp.SendPacket(login, client.Socket);
             Library.SendTcp.SendPacket(sendmsg, client.Socket);
+            Library.SendTcp.SendPacket(addtoqueue, client.Socket);
             //Library.SendTcp.SendPacket(logout, client.Socket);
 
-            Packet response = Library.SendTcp.ReceivePacket(client.Socket);
+            Thread thread = new Thread(() => Listen(client.Socket));
+            thread.Start();
+
+            do
+            {
+                Console.ReadLine();
+            } while (true);
+            
+           
+        }
+
+        private static void Listen(TcpClient client)
+        {
+            Packet response = Library.SendTcp.ReceivePacket(client);
             if (response.Type == TcpMessageType.MatchStart)
             {
                 Console.WriteLine("Match is starting with {0}", response.Variables["UserID"]);
-            } 
-
-            Console.ReadLine();
-           
+            }
         }
+
+
 
         //private static void SendTcp(Packet packet)
         //{

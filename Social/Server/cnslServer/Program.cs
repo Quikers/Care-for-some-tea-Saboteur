@@ -180,7 +180,7 @@ namespace cnslServer
                             } 
                             else
                             {
-                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), client.Socket);
+                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
                                 SendSuccessResponse(packet, client);
                                 Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
                             }
