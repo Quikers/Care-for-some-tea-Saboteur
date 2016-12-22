@@ -24,13 +24,19 @@ namespace SendTcp
 
             client.Socket.Connect("213.46.57.198", 25002);
 
-            Packet login = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
+            Packet login = new Packet("3", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
             Packet sendmsg = new Packet("3", "2", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
             Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
             
             Library.SendTcp.SendPacket(login, client.Socket);
             Library.SendTcp.SendPacket(sendmsg, client.Socket);
             //Library.SendTcp.SendPacket(logout, client.Socket);
+
+            Packet response = Library.SendTcp.ReceivePacket(client.Socket);
+            if (response.Type == TcpMessageType.MatchStart)
+            {
+                Console.WriteLine("Match is starting with {0}", response.Variables["UserID"]);
+            } 
 
             Console.ReadLine();
            

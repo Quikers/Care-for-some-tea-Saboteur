@@ -15,7 +15,7 @@ namespace Library {
         MatchStart = 7,
         Response = 8,
         Login = 9,
-        Logout = 10
+        Logout = 10,
     }
 
     public static class PacketParser {

@@ -51,6 +51,7 @@ namespace cnslServer
                 match.Client2 = PlayerQueue[1];
 
                 StartMatch(match);
+                
                 Console.WriteLine("Match has been started between UserID {0} and {1}", match.Client1.UserID, match.Client2.UserID);
                 PlayerQueue.Remove(match.Client1.UserID);
                 PlayerQueue.Remove(match.Client2.UserID);
@@ -59,36 +60,29 @@ namespace cnslServer
         
         private static void StartMatch(Match match)
         {
-            //player 1 wordt automatisch in de code aangemaakt voor test purposes
+            // Send response to player 1
+            Packet packet1 = new Packet();
+            packet1.From = "Server";
+            packet1.To = match.Client1.UserID.ToString();
+            packet1.Type = TcpMessageType.MatchStart;
+            var variables = new Dictionary<string, string>();
+            variables.Add("User2ID", match.Client2.UserID.ToString());
+            variables.Add("User2IP", match.Client2.Socket.Client.LocalEndPoint.ToString());
+            packet1.Variables = variables;
 
-            //// Send response to player 1
-            //Packet packet1 = new Packet();
-            //packet1.From = match.player2.UserID.ToString();
-            //packet1.To = match.player1.UserID.ToString();
-            //packet1.Type = TcpMessageType.MatchStart;
-            //var variables = new Dictionary<string, string>();
-            //variables.Add("User1ID", match.player1.UserID.ToString());
-            //variables.Add("User1IP", match.player1.IP);
-            //variables.Add("User2ID", match.player2.UserID.ToString());
-            //variables.Add("User2IP", match.player2.IP.ToString());
-            //packet1.Variables = variables;
-
-            //byte[] msg1 = System.Text.Encoding.ASCII.GetBytes(packet1.ToString());
-            //stream.Write(msg1, 0, packet1.ToString().Length);
+            byte[] msg1 = System.Text.Encoding.ASCII.GetBytes(packet1.ToString());
+            stream.Write(msg1, 0, packet1.ToString().Length);
 
             // Send response to player 2
             try
             {
                 Packet packet2 = new Packet();
-                packet2.From = match.Client2.Socket.Client.LocalEndPoint.ToString();
+                packet2.From = "Server";
                 packet2.To = match.Client1.Socket.Client.LocalEndPoint.ToString();
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("User1ID", match.Client1.UserID.ToString());
                 variables2.Add("User1IP", match.Client1.Socket.Client.LocalEndPoint.ToString());
-                variables2.Add("User2ID", match.Client2.UserID.ToString());
-                variables2.Add("User2IP", match.Client2.Socket.Client.LocalEndPoint.ToString());
-                
                 packet2.Variables = variables2;
 
                 byte[] msg2 = System.Text.Encoding.ASCII.GetBytes(packet2.ToString());
@@ -219,7 +213,7 @@ namespace cnslServer
 
                     case TcpMessageType.AddPlayerToQueue:
                         {
-                            client.UserID = int.Parse(packet.Variables["UserID"]);
+                            client.UserID = int.Parse(packet.From);
 
                             if (!PlayerQueue.ContainsKey(client.UserID))
                             {
@@ -236,7 +230,7 @@ namespace cnslServer
                     case TcpMessageType.Login:
                         {
                             Console.WriteLine("HandlePacket Login");
-                            int userID = int.Parse(packet.Variables["UserID"]);
+                            int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
 
                             Client _client = new Client
