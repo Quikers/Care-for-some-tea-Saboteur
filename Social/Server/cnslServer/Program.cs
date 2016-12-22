@@ -46,9 +46,16 @@ namespace cnslServer
             {
                 if (PlayerQueue.Count < 2) continue;
 
+                Console.WriteLine("\nMatchmaking queue:\n");
+                foreach(KeyValuePair<int, Client> pair in PlayerQueue)
+                {
+                    Console.WriteLine(pair.Value.UserID + " - " + pair.Value.Username);
+                }
+                Console.WriteLine();
+
                 Match match = new Match();
-                match.Client1 = PlayerQueue[0];
-                match.Client2 = PlayerQueue[1];
+                match.Client1 = PlayerQueue.ElementAt(0).Value;
+                match.Client2 = PlayerQueue.ElementAt(1).Value;
 
                 StartMatch(match);
                 
@@ -60,33 +67,30 @@ namespace cnslServer
         
         private static void StartMatch(Match match)
         {
-            // Send response to player 1
-            Packet packet1 = new Packet();
-            packet1.From = "Server";
-            packet1.To = match.Client1.UserID.ToString();
-            packet1.Type = TcpMessageType.MatchStart;
-            var variables = new Dictionary<string, string>();
-            variables.Add("User2ID", match.Client2.UserID.ToString());
-            variables.Add("User2IP", match.Client2.Socket.Client.LocalEndPoint.ToString());
-            packet1.Variables = variables;
+            try { 
+                // Send response to player 1
+                Packet packet1 = new Packet();
+                packet1.From = "Server";
+                packet1.To = match.Client1.UserID.ToString();
+                packet1.Type = TcpMessageType.MatchStart;
+                var variables = new Dictionary<string, string>();
+                variables.Add("UserID", match.Client2.UserID.ToString());
+                variables.Add("UserIP", match.Client2.Socket.Client.LocalEndPoint.ToString());
+                packet1.Variables = variables;
 
-            byte[] msg1 = System.Text.Encoding.ASCII.GetBytes(packet1.ToString());
-            stream.Write(msg1, 0, packet1.ToString().Length);
+                SendTcp.SendPacket(packet1, match.Client1.Socket);
 
-            // Send response to player 2
-            try
-            {
+                // Send response to player 2
                 Packet packet2 = new Packet();
                 packet2.From = "Server";
                 packet2.To = match.Client1.Socket.Client.LocalEndPoint.ToString();
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
-                variables2.Add("User1ID", match.Client1.UserID.ToString());
-                variables2.Add("User1IP", match.Client1.Socket.Client.LocalEndPoint.ToString());
+                variables2.Add("UserID", match.Client1.UserID.ToString());
+                variables2.Add("UserIP", match.Client1.Socket.Client.LocalEndPoint.ToString());
                 packet2.Variables = variables2;
 
-                byte[] msg2 = System.Text.Encoding.ASCII.GetBytes(packet2.ToString());
-                stream.Write(msg2, 0, packet2.ToString().Length);
+                SendTcp.SendPacket(packet2, match.Client2.Socket);
             }
             catch
             {
@@ -160,15 +164,12 @@ namespace cnslServer
                 IsClientValid(int.Parse(packet.To));
             }
 
-
             try
             {
                 switch (packet.Type)
                 {
                     case TcpMessageType.ChatMessage:
                         {
-                            //============Under construction
-
                             int fromUserID = int.Parse(packet.From);
                             int targetUserID = int.Parse(packet.To);
                             string chatmessage = packet.Variables["Chatmessage"];
@@ -180,15 +181,15 @@ namespace cnslServer
                             } 
                             else
                             {
+                                //Send Packet to destination
                                 SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
+
+                                //Send response to sender
                                 SendSuccessResponse(packet, client);
+
                                 Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
                             }
-
-                            //SendSuccessResponse(packet);
-                            //response.From = from;
-                            //response.To = to;
-                            //response.Variables = 
+                            
                             break;
                         }
 
@@ -231,9 +232,11 @@ namespace cnslServer
                                 Console.WriteLine("UserID {0} has been added to the player queue", client.UserID.ToString());
                                 SendSuccessResponse(packet, client);
                             }
-                            
-                            //Response = new Packet("Server", player.LocalIP, TcpMessageType.Response, new string[] {"Operation", "AddPlayerToQueue", "Result", "Success" });
-                            //SendTcp.SendPacket(Response);
+                            else if (PlayerQueue.ContainsKey(client.UserID))
+                            {
+                                Console.WriteLine("UserID {0} tried to add himself to the queue while he's already queued up!");
+                                SendSuccessResponse(packet, client);
+                            }
                             
                             break;
                         }
@@ -266,7 +269,7 @@ namespace cnslServer
                             else if (OnlinePlayers.ContainsKey(_client.UserID))
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
-                                //SendSuccessResponse(packet);
+                                SendSuccessResponse(packet, client);
                             }
 
                             Console.WriteLine("Online players:\n");
@@ -275,9 +278,7 @@ namespace cnslServer
                                 Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
                             }
                             Console.WriteLine("");
-
-
-                            //OnlinePlayers.Add(packet.Variables["UserID"]);
+                            
                             break;
                         }
                     case TcpMessageType.Logout:
@@ -307,14 +308,30 @@ namespace cnslServer
                             client.Socket.Close();
                             break;
                         }
+                    case TcpMessageType.CancelMatchmaking:
+                        {
+                            if (PlayerQueue.ContainsKey(int.Parse(packet.From)))
+                            {
+                                PlayerQueue.Remove(int.Parse(packet.From));
+                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
+                                SendTcp.SendPacket(_response, client.Socket);
+                            }
+                            else
+                            {
+                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
+                                SendTcp.SendPacket(_response, client.Socket);
+                            }
+                            break;
+                        }
                 }
+
+                Console.WriteLine("====================================================");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Could not handle packet. Please check the packet syntax.\n\n{0}", ex.ToString());
                 return;
             }
-            
         }
 
         private static void ListenToClient(Client client)
@@ -339,10 +356,8 @@ namespace cnslServer
 
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
-            return OnlinePlayers[UserID];
-
             if (!OnlinePlayers.ContainsKey(UserID)) return null;
-            else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
+            else return OnlinePlayers[UserID];
         }
 
         private static bool IsClientValid(int UserID)
@@ -362,6 +377,30 @@ namespace cnslServer
                 return false;
             }
             
+        }
+
+        private static void SendPlayerList(Dictionary<int, Client> PlayerList)
+        {
+            Dictionary<string, string> players = new Dictionary<string, string>();
+
+            foreach(var player in OnlinePlayers)
+            {
+                string usrID = player.Key.ToString();
+                string usrName = player.Value.Username;
+
+                players.Add(usrID, usrName);
+            }
+
+            Packet packet = new Packet("Server", "Everyone", TcpMessageType.Message, players);
+            Broadcast(packet);
+        }
+
+        private static void Broadcast(Packet packet)
+        { 
+            foreach (var player in OnlinePlayers)
+            {
+                SendTcp.SendPacket(packet, player.Value.Socket);
+            }
         }
         
     }
