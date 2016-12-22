@@ -24,7 +24,7 @@ namespace TestUserLogin
 
             Packet login = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Login, new[] { "UserID", client.UserID.ToString(), "Username", client.Username });
             Packet logout = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Logout, new Dictionary<string, string>());
-            Packet chatMessage = new Packet(client.UserID.ToString(), "Server", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hallo dit is een chatmessage van " + client.Username });
+            Packet chatMessage = new Packet(client.UserID.ToString(), "3", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hallo dit is een chatmessage van " + client.Username });
             Packet queue = new Packet(client.UserID.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new Dictionary<string, string>());
 
             Thread listen = new Thread(() => ListenForMessages(client.Socket));
@@ -64,18 +64,26 @@ namespace TestUserLogin
 
         private static void ListenForMessages(TcpClient client) {
             while (client.Connected) {
-                Packet packet = SendTcp.ReceivePacket(client);
+                Packet packet = new Packet();
 
-                switch (packet.Type) {
-                    default:
-                        Console.WriteLine("Packet type \"" + packet.Type + "\" was not recognized.");
-                        break;
-                    case TcpMessageType.ChatMessage:
-                        Console.WriteLine("\n" + packet.Variables["Chatmessage"] + "\n");
-                        break;
-                    case TcpMessageType.MatchStart:
-                        Console.WriteLine("The match has started!");
-                        break;
+                try {
+                    packet = SendTcp.ReceivePacket(client);
+
+                    switch (packet.Type) {
+                        default:
+                            Console.WriteLine("Packet type \"" + packet.Type + "\" was not recognized.");
+                            break;
+                        case TcpMessageType.ChatMessage:
+                            Console.WriteLine("\n" + packet.From + ": " + packet.Variables["Chatmessage"] + "\n");
+                            break;
+                        case TcpMessageType.MatchStart:
+                            Console.WriteLine("The match has started!");
+                            break;
+                    }
+                } catch (Exception ex) {
+                    Console.WriteLine("\n" + packet + "\n\n" + ex + "\n");
+
+                    while (client.Connected) client.Close();
                 }
             }
         }
