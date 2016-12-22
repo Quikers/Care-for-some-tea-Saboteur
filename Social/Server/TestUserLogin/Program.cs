@@ -20,6 +20,8 @@ namespace TestUserLogin
                 Socket = new TcpClient()
             };
 
+            AppDomain.CurrentDomain.ProcessExit += (o,e) => CurrentDomain_ProcessExit(null, null, client);
+
             client.Socket.Connect("213.46.57.198", 25002);
 
             Packet login = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Login, new[] { "UserID", client.UserID.ToString(), "Username", client.Username });
@@ -45,6 +47,7 @@ namespace TestUserLogin
                         break;
                     case "logout":
                         SendTcp.SendPacket(logout, client.Socket);
+                        while (client.Socket.Connected) client.Socket.Close();
                         break;
                     case "chatmessage":
                         SendTcp.SendPacket(chatMessage, client.Socket);
@@ -86,6 +89,11 @@ namespace TestUserLogin
                     while (client.Connected) client.Close();
                 }
             }
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e, Client client) {
+            SendTcp.SendPacket(new Packet(client.UserID.ToString(), "Server", TcpMessageType.Logout, new Dictionary<string, string>()), client.Socket);
+            while (client.Socket.Connected) client.Socket.Close();
         }
     }
 }
