@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Library;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace TestUserLogin
 {
@@ -14,20 +15,69 @@ namespace TestUserLogin
         {
             Client client = new Client
             {
-                UserID = 3,
-                Username = "Shifted",
+                UserID = 2,
+                Username = "Quikers",
                 Socket = new TcpClient()
             };
 
             client.Socket.Connect("213.46.57.198", 25002);
 
-            Packet login = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted"});
-            Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
+            Packet login = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Login, new[] { "UserID", client.UserID.ToString(), "Username", client.Username });
+            Packet logout = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Logout, new Dictionary<string, string>());
+            Packet chatMessage = new Packet(client.UserID.ToString(), "Server", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hallo dit is een chatmessage van " + client.Username });
+            Packet queue = new Packet(client.UserID.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new Dictionary<string, string>());
 
-            SendTcp.SendPacket(login, client.Socket);
-            Console.WriteLine("Proberen in te loggen. Er zal geen reactie komen. Type logout om weer uit te loggen.");
-            if (Console.ReadLine() == "logout") SendTcp.SendPacket(logout, client.Socket);
-            
+            Thread listen = new Thread(() => ListenForMessages(client.Socket));
+            listen.Start();
+
+            Console.WriteLine("Client started, waiting for input...");
+
+            bool isActive = true;
+            while (isActive) {
+                string result = Console.ReadLine();
+
+                switch (result) {
+                    default:
+                        Console.WriteLine("Command \"" + result + "\" was not recognized.");
+                        break;
+                    case "login":
+                        SendTcp.SendPacket(login, client.Socket);
+                        break;
+                    case "logout":
+                        SendTcp.SendPacket(logout, client.Socket);
+                        break;
+                    case "chatmessage":
+                        SendTcp.SendPacket(chatMessage, client.Socket);
+                        break;
+                    case "queue":
+                        SendTcp.SendPacket(queue, client.Socket);
+                        break;
+                    case "exit": case "quit": case "close":
+                        isActive = false;
+                        break;
+                }
+            }
+
+            SendTcp.SendPacket(logout, client.Socket);
+            while (client.Socket.Connected) client.Socket.Close();
+        }
+
+        private static void ListenForMessages(TcpClient client) {
+            while (client.Connected) {
+                Packet packet = SendTcp.ReceivePacket(client);
+
+                switch (packet.Type) {
+                    default:
+                        Console.WriteLine("Packet type \"" + packet.Type + "\" was not recognized.");
+                        break;
+                    case TcpMessageType.ChatMessage:
+                        Console.WriteLine("\n" + packet.Variables["Chatmessage"] + "\n");
+                        break;
+                    case TcpMessageType.MatchStart:
+                        Console.WriteLine("The match has started!");
+                        break;
+                }
+            }
         }
     }
 }
