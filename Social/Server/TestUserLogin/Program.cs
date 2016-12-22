@@ -21,12 +21,12 @@ namespace TestUserLogin
 
             client.Socket.Connect("213.46.57.198", 25002);
 
-            Packet login = new Packet("test user", "Server", TcpMessageType.Login, new[] { "UserID", "2", "Username", "Quikers"});
-            Packet logout = new Packet("2", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
+            Packet login = new Packet("Sjoerd", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted"});
+            Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
 
-            SendTcp.SendPacket(login, client);
+            SendTcp.SendPacket(login, client.Socket);
             Console.WriteLine("Proberen in te loggen. Er zal geen reactie komen. Type logout om weer uit te loggen.");
-            if (Console.ReadLine() == "logout") SendTcp.SendPacket(logout, client);
+            if (Console.ReadLine() == "logout") SendTcp.SendPacket(logout, client.Socket);
             
         }
     }

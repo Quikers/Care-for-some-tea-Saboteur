@@ -127,20 +127,8 @@ namespace cnslServer
                     Console.WriteLine("Incoming connection detected.");
                     Response = null;
 
-                    // Buffer for reading data
-                    Byte[] bytes = new Byte[1024];
-                    String data = null;
-
-                    //Console.WriteLine(">>>>>>>>>>>>>" + client.Client.RemoteEndPoint.ToString());
-
-                    // Get a stream object for reading and writing
-                    stream = client.GetStream();
-
-                    int read = stream.Read(bytes, 0, bytes.Length);
-                    data = Encoding.ASCII.GetString(new List<byte>(bytes).GetRange(0, read).ToArray());
-                    Console.WriteLine("Received: {0}", data);
-
-                    HandlePacket(new Packet(data), new Client {Socket = client });
+                    Packet packet = SendTcp.ReceivePacket(client);
+                    HandlePacket(packet, new Client {Socket = client });
 
                     // Send back a response.
                     //if(Response != null)
@@ -183,13 +171,13 @@ namespace cnslServer
 
                             if (!OnlinePlayers.ContainsKey(targetUserID))
                             {
-                                Console.WriteLine("UserID {0} tried to send a message to offline");
+                                Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
                                 return;
                             } 
                             else
                             {
-                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), client);
-                                SendTcp.SendPacket(packet, client);
+                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), GetClientFromOnlinePlayersByUserID(targetUserID).Socket.Client.LocalEndPoint.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), client.Socket);
+                                SendSuccessResponse(packet, client);
                                 Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
                             }
 
@@ -264,7 +252,7 @@ namespace cnslServer
 
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
-                                SendSuccessResponse(packet, client, false);
+                                SendSuccessResponse(packet, client);
                                 Console.WriteLine("HandlePacket Login Ifstatement in if statement");
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
@@ -276,6 +264,14 @@ namespace cnslServer
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
                                 //SendSuccessResponse(packet);
                             }
+
+                            Console.WriteLine("Online players:\n");
+                            foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
+                            {
+                                Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
+                            }
+                            Console.WriteLine("");
+
 
                             //OnlinePlayers.Add(packet.Variables["UserID"]);
                             break;
@@ -289,23 +285,29 @@ namespace cnslServer
                                 Console.WriteLine("UserID {0} logged out", userID);
                                 SendSuccessResponse(packet, client);
 
-                                OnlinePlayers[userID].Listen.Abort();
+                                OnlinePlayers[userID].Socket.Close();
                                 OnlinePlayers.Remove(userID);
+
+                                Console.WriteLine("Online players:\n");
+                                foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
+                                {
+                                    Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
+                                }
+                                Console.WriteLine("");
                             }
                             else
                             {
                                 Console.WriteLine("Player tried to log out while its not logged in.");
                             }
 
-                            SendSuccessResponse(packet, client);
                             client.Socket.Close();
                             break;
                         }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Could not handle packet. Please check the packet syntax.");
+                Console.WriteLine("Could not handle packet. Please check the packet syntax.\n\n{0}", ex.ToString());
                 return;
             }
             
@@ -313,38 +315,28 @@ namespace cnslServer
 
         private static void ListenToClient(Client client)
         {
-            Console.WriteLine("ListenToClientMethod van {0}", client.UserID);
-            while (true)
+            while (client.Socket.Connected)
             {
-                byte[] bytes = new byte[1024];
-                string data;
-
-                // Get a stream object for reading and writing
-                stream = client.Socket.GetStream();
-
-                int i;
-
-                // Loop to receive all the data sent by the client.
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                try {
+                    Packet packet = SendTcp.ReceivePacket(client.Socket);
+                    HandlePacket(packet, client);
+                } catch (Exception ex)
                 {
-                    // Translate data bytes to a ASCII string.
-                    data = new Packet(Encoding.ASCII.GetString(bytes, 0, i)).ToString();
-                    Console.WriteLine("Received: {0}", data);
-
-                    // Process the data sent by the client.
-                    HandlePacket(new Packet(data), client);
+                    client.Socket.Close();
                 }
             }
         }
 
-        private static void SendSuccessResponse(Packet ReceivedPacket, Client client, bool receive = true)
+        private static void SendSuccessResponse(Packet ReceivedPacket, Client client)
         {
             Packet packet = new Packet("Server", ReceivedPacket.To, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
-            SendTcp.SendPacket(packet, client, receive);
+            SendTcp.SendPacket(packet, client.Socket);
         }
 
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
+            return OnlinePlayers[UserID];
+
             if (!OnlinePlayers.ContainsKey(UserID)) return null;
             else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
         }

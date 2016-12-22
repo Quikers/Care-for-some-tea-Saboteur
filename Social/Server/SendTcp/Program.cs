@@ -28,9 +28,9 @@ namespace SendTcp
             Packet sendmsg = new Packet("3", "2", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
             Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
             
-            Library.SendTcp.SendPacket(login, client, false);
-            Library.SendTcp.SendPacket(sendmsg, client, false);
-            //Library.SendTcp.SendPacket(logout, client, false);
+            Library.SendTcp.SendPacket(login, client.Socket);
+            Library.SendTcp.SendPacket(sendmsg, client.Socket);
+            //Library.SendTcp.SendPacket(logout, client.Socket);
 
             Console.ReadLine();
            
