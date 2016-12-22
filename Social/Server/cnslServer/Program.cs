@@ -149,7 +149,17 @@ namespace cnslServer
             if (packet == null) return;
             Packet response = new Packet();
             response.Type = TcpMessageType.Response;
-            
+
+            if (packet.From != "Server")
+            {
+                IsClientValid(int.Parse(packet.From));
+            }
+
+            if (packet.To != "Server")
+            {
+                IsClientValid(int.Parse(packet.To));
+            }
+
 
             try
             {
@@ -333,6 +343,25 @@ namespace cnslServer
 
             if (!OnlinePlayers.ContainsKey(UserID)) return null;
             else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
+        }
+
+        private static bool IsClientValid(int UserID)
+        {
+            if (!OnlinePlayers.ContainsKey(UserID)) return false;
+
+            Client user = OnlinePlayers[UserID];
+
+            if (user.Socket.Connected)
+            {
+                return true;
+            }
+            else
+            {   //Remove client
+                user.Socket.Close();
+                OnlinePlayers.Remove(UserID);
+                return false;
+            }
+            
         }
         
     }
