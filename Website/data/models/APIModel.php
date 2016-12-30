@@ -195,15 +195,21 @@ class APIModel extends Model {
                 false
             );
             
-            foreach ($row as $key => $deck) {
-                $card_deck_relArr = $this->GetCardDeckRelByDeckID(array($deck["id"]));
-            
-                $cardArr = array();
-                foreach ($card_deck_relArr as $card_deck_rel) {
-                    array_push($cardArr, $this->GetCardByCardID(array($card_deck_rel["cardid"])));
+            if (count($row) > 0) {
+                foreach ($row as $key => $deck) {
+                    $card_deck_relArr = $this->GetCardDeckRelByDeckID(array($deck["id"]));
+
+                    $cardArr = array();
+                    if (count($card_deck_relArr) > 0 && $card_deck_relArr != false) {
+                        foreach ($card_deck_relArr as $card_deck_rel) {
+                            array_push($cardArr, $this->GetCardByCardID(array($card_deck_rel["cardid"])));
+                        }
+
+                        $row[$key]["cards"] = $cardArr;
+                    }
                 }
-                
-                $row[$key]["cards"] = $cardArr;
+            } else {
+                return false;
             }
             
             if ($row != array()) { array_push($result, $row); }
