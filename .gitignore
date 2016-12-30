@@ -9,6 +9,8 @@ bin/
 ExportedObj/
 .consulo/
 *.suo
+Game/*.csproj
+Game/*.sln
 *.tmp
 *.user
 *.userprefs
