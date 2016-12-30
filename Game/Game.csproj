@@ -81,17 +81,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Data\Card.cs" />
+    <Compile Include="Assets\Scripts\Data\Deck.cs" />
+    <Compile Include="Assets\Scripts\Data\Minion.cs" />
     <Compile Include="Assets\Scripts\Data\Network.cs" />
     <Compile Include="Assets\Scripts\Data\Player.cs" />
     <Compile Include="Assets\Scripts\Data\Turn.cs" />
     <Compile Include="Assets\Scripts\Data\User.cs" />
+    <Compile Include="Assets\Scripts\Game\DeckManager.cs" />
     <Compile Include="Assets\Scripts\Game\Draggable.cs" />
     <Compile Include="Assets\Scripts\Game\DropZone.cs" />
     <Compile Include="Assets\Scripts\Game\GameManager.cs" />
     <Compile Include="Assets\Scripts\Game\TurnController.cs" />
     <Compile Include="Assets\Scripts\MainMenu\LoginInfoManager.cs" />
     <Compile Include="Assets\Scripts\MainMenu\LoginManager.cs" />
-    <Compile Include="Assets\Scripts\Utilities.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Api.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Utilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

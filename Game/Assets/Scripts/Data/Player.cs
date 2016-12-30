@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-
-namespace Data
+﻿namespace Data
 {
     struct Player
     {
+        public Deck CurrentDeck;
+
     }
 }

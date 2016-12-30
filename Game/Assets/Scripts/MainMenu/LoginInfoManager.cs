@@ -17,7 +17,7 @@ public class LoginInfoManager : MonoBehaviour
         EmailText.text = Data.User.Email;
     }
 
-    public void Logout()
+    public void Logout( GameObject LoginCover)
     {
         Data.User.Empty();
 
@@ -26,5 +26,6 @@ public class LoginInfoManager : MonoBehaviour
         EmailText.gameObject.SetActive( false );
         LogoutButton.gameObject.SetActive( false );
 
+        LoginCover.SetActive( true );
     }
 }

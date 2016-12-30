@@ -24,7 +24,7 @@ namespace MainMenu
 
         public void Login()
         {
-            string login = Utilities.Api.UserbyEmail( Email.text, Password.text );
+            string login = Utilities.Api.User.UserbyEmail( Email.text, Password.text );
 
             if( login == null )
             {
@@ -36,8 +36,6 @@ namespace MainMenu
             try
             {
                 TempUserData temp = JsonUtility.FromJson< TempUserData >( login );
-
-                Debug.Log( temp.id );
                 
                 Data.User.Email = temp.email;
                 Data.User.TimeCreated = temp.created;
