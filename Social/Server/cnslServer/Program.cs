@@ -125,6 +125,7 @@ namespace cnslServer
                     Response = null;
 
                     Packet packet = SendTcp.ReceivePacket(client);
+                    if (packet == null) continue;
                     HandlePacket(packet, new Client {Socket = client });
 
                     // Send back a response.
@@ -335,6 +336,7 @@ namespace cnslServer
             {
                 try {
                     Packet packet = SendTcp.ReceivePacket(client.Socket);
+                    if (packet == null) continue;
                     HandlePacket(packet, client);
                 } catch (Exception ex)
                 {

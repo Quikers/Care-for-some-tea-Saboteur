@@ -53,6 +53,7 @@ namespace SendTcp
             while (client.Connected)
             {
                 Packet response = Library.SendTcp.ReceivePacket(client);
+                if (response == null) continue;
                 if (response.Type == TcpMessageType.MatchStart)
                 {
                     Console.WriteLine("Match is starting with {0}", response.Variables["UserID"]);
