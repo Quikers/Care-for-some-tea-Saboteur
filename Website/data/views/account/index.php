@@ -18,7 +18,7 @@ if (isset($this->login)) {
     <div id="login-container">
         <h2 class="changeView">Login<i class="fa fa-chevron-down fa-smfnt"></i></h2>
         <form method="POST" action="<?= URL ?>account/login">
-            <input required class="form-control" type="text" name="email" id="iEmail" value="<?= $email ?? "" ?>" placeholder="E-mail" autofocus><br>
+            <input required class="form-control" type="text" name="email" id="iEmail" value="<?= $email ?? "" ?>" placeholder="E-mail" <?php if (isset($_GET["type"]) && $_GET["type"] != "register") { echo "autofocus"; } ?>><br>
             <input required class="form-control" type="password" name="password" id="iPassword" value="<?= $password ?? "" ?>" placeholder="Password"><br>
             <input class="btn btn-default form-control" type="submit" id="iSubmit" value="Login">
         </form>
@@ -27,7 +27,7 @@ if (isset($this->login)) {
     <div id="register-container">
         <h2 class="changeView">Registration<i class="fa fa-chevron-up fa-smfnt"></i></h2><br>
         <form method="POST" action="<?= URL ?>account/register" style="display: none;">
-            <input required class="form-control" type="email"     name="email"     id="iEmail"     placeholder="E-mail"><br>
+            <input required class="form-control" type="email"     name="email"     id="iEmail"     placeholder="E-mail" <?php if (isset($_GET["type"]) && $_GET["type"] == "register") { echo "autofocus"; } ?>><br>
             <input required class="form-control" type="text"      name="username"  id="iUsername"  placeholder="Username"><br>
             <input required class="form-control" type="password"  name="password"  id="iPassword"  placeholder="Password"><br>
             <input required class="form-control" type="password"  name="passwordConfirm"  id="iPasswordConfirm"  placeholder="Confirm password"><br>
@@ -49,10 +49,14 @@ $(document).ready(function () {
     });
 
     $(".changeView").click(function(event) {
+        ChangeView();
+    });
+    
+    function ChangeView() {
         var focussedItem;
 
         if ($("#login-container form").css("display") === "none") {
-            focussedItem = $("#login-container #iUsername");
+            focussedItem = $("#login-container #iEmail");
 
             $("#register-container form").slideUp();
             $("#login-container form").slideDown();
@@ -72,7 +76,9 @@ $(document).ready(function () {
         up.addClass("fa-chevron-down");
 
         $(focussedItem).focus();
-    });
+    }
+    
+    <?php if (isset($_GET["type"]) && $_GET["type"] == "register") { echo "ChangeView();"; } ?>
 });
 
 
