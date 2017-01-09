@@ -23,6 +23,7 @@ namespace Library
 
             Console.WriteLine("Received: {0}", data);
 
+            if (data == null || data == "" || data == string.Empty) return null;
             return new Packet(data);
         }
 

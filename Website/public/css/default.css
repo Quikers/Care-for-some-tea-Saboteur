@@ -127,3 +127,24 @@ input[type="text"], input[type="password"], input[type="email"] {
     font-size: 20px;
     padding: 5px;
 }
+
+.forms {
+    margin: 50px 0;
+}
+
+.forms input {
+    margin-bottom: 20px;
+    font-size: 15px;
+    padding: 5px;
+}
+
+.forms input[type="submit"] {
+    margin-left: 160px;
+    padding: 2px 20px;
+}
+
+.forms label {
+    width: 150px;
+    text-align: right;
+    margin-right: 10px;
+}

@@ -71,6 +71,7 @@ namespace TestUserLogin
 
                 try {
                     packet = SendTcp.ReceivePacket(client);
+                    if (packet == null) continue;
 
                     switch (packet.Type) {
                         default:

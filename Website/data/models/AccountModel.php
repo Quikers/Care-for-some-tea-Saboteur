@@ -42,5 +42,26 @@ class AccountModel extends Model {
         
         return $lastID != $newID ? $newID : 0;
     }
+    
+    public function UpdateUserField($field, $value) {
+        $result = array();
+        
+        $this->db->Query(
+            'UPDATE `users` SET `:field` = :value WHERE id = :userid',
+            array(
+                "field" => $field,
+                "value" => $value,
+                "userid" => $_SESSION["user"]["id"]
+            ),
+            false
+        );
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
 
 }
