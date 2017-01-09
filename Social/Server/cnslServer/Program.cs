@@ -113,12 +113,11 @@ namespace cnslServer
 
                 // Start listening for client requests.
                 server.Start();
+                Console.WriteLine("TcpListener started. Waiting for a connection... ");
 
                 // Enter the listening loop.
                 while (true)
                 {
-                    Console.WriteLine("TcpListener started. Waiting for a connection... ");
-
                     // Perform a blocking call to accept requests.
                     // You could also user server.AcceptSocket() here.
                     TcpClient client = server.AcceptTcpClient();
@@ -154,15 +153,8 @@ namespace cnslServer
             Packet response = new Packet();
             response.Type = TcpMessageType.Response;
 
-            if (packet.From != "Server")
-            {
-                IsClientValid(int.Parse(packet.From));
-            }
-
-            if (packet.To != "Server")
-            {
-                IsClientValid(int.Parse(packet.To));
-            }
+            if (packet.From != "Server") IsClientValid(int.Parse(packet.From));
+            if (packet.To != "Server") IsClientValid(int.Parse(packet.To));
 
             try
             {
@@ -241,8 +233,7 @@ namespace cnslServer
                             break;
                         }
                     case TcpMessageType.Login:
-                        {
-                            Console.WriteLine("HandlePacket Login");
+                        {   
                             int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
 
@@ -253,32 +244,36 @@ namespace cnslServer
                                 Socket = client.Socket
                             };
 
-                            Console.WriteLine("HandlePacket Login Ifstatement");
+                           
                             if (!OnlinePlayers.ContainsKey(_client.UserID))
                             {
-
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
                                 SendSuccessResponse(packet, client);
-                                Console.WriteLine("HandlePacket Login Ifstatement in if statement");
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
                                 _client.Listen.Start();
-                                Console.WriteLine("Luisteren naar client: {0}", _client.UserID);
+                                
                             }
                             else if (OnlinePlayers.ContainsKey(_client.UserID))
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
-                                SendSuccessResponse(packet, client);
+
+                                if (IsClientValid(_client.UserID))
+                                {
+                                    SendSuccessResponse(packet, client);
+                                } 
+                                else
+                                {
+                                    Packet error = new Packet();
+                                    packet.From = "Server";
+                                    packet.To = _client.UserID.ToString();
+                                    Console.WriteLine("{0} tried to log in while its already logged in. Its socket isn't valid anymore", _client.Username);
+                                    SendTcp.SendPacket(error, _client.Socket);
+                                }
                             }
 
-                            Console.WriteLine("Online players:\n");
-                            foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
-                            {
-                                Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
-                            }
-                            Console.WriteLine("");
-                            
+                            ShowOnlinePlayers();
                             break;
                         }
                     case TcpMessageType.Logout:
@@ -401,6 +396,16 @@ namespace cnslServer
             {
                 SendTcp.SendPacket(packet, player.Value.Socket);
             }
+        }
+
+        private static void ShowOnlinePlayers()
+        {
+            Console.WriteLine("Online players:\n");
+            foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
+            {
+                Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
+            }
+            Console.WriteLine("");
         }
         
     }
