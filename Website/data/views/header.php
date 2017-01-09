@@ -32,20 +32,21 @@
     $active["mycards"] = "";
     $active["mydecks"] = "";
     
-    switch(strtolower($this->title)) {
+    switch(str_replace(" ", "", strtolower($this->title))) {
+        default: echo str_replace(" ", "", strtolower($this->title)); break;
         case "home":
             $active["home"] = " active";
             break;
         case "content": case "cards": case "decks":
             $active["content"] = " active";
-            $active[strtolower($this->title)] = " active";
+            $active[str_replace(" ", "", strtolower($this->title))] = " active";
             break;
         case "contact":
             $active["contact"] = " active";
             break;
         case "account": case "profile": case "dashboard": case "mycards": case "mydecks":
             $active["account"] = " active";
-            $active[strtolower($this->title)] = " active";
+            $active[str_replace(" ", "", strtolower($this->title))] = " active";
             break;
     }
     

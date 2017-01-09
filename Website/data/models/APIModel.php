@@ -2,8 +2,24 @@
 
 class APIModel extends Model {
     
+    public $AccountModel;
+    public $ContentModel;
+    
     function __construct() {
         parent::__construct();
+        
+        $this->IncludeModel("Account");
+        $this->IncludeModel("Content");
+        
+        $this->AccountModel = new AccountModel();
+        $this->ContentModel = new ContentModel();
+    }
+    
+    private function IncludeModel($model) {
+        if ($model == "" || !file_exists("data/models/" . $model . "Model.php")) { return false; }
+        
+        require_once "data/models/" . $model . "Model.php";
+        return true;
     }
     
     public function GetLastInsertedUser() {
@@ -79,9 +95,7 @@ class APIModel extends Model {
     }
     
     public function CheckLogin($email, $password) {
-        require "AccountModel.php";
-        $AccountModel = new AccountModel();
-        $result = $AccountModel->Login($email, $password);
+        $result = $this->AccountModel->Login($email, $password);
         
         if ($result != false) {
             if (count($result) == 1) { return $result[0]; }
@@ -92,26 +106,7 @@ class APIModel extends Model {
     }
     
     public function GetCardDeckRelByCardID($cardidArr) {
-        $result = array();
-        
-        foreach ($cardidArr as $cardid) {
-            $row = $this->db->Query(
-                'SELECT * FROM `cards_decks_rel` WHERE `cardid` = :cardid',
-                array(
-                    "cardid" => $cardid
-                ),
-                false
-            );
-            
-            if ($row != array()) { array_push($result, $row); }
-        }
-        
-        if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
-            else { return $result; }
-        } else {
-            return false;
-        }
+        return $this->ContentModel->GetCardDeckRelations("cardid", $cardidArr);
     }
     
     public function GetCardDeckRelByDeckID($deckidArr) {

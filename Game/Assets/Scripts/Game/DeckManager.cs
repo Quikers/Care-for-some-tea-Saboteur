@@ -17,6 +17,5 @@ public class DeckManager : MonoBehaviour
         string[] fromJsonDeck = JsonUtility.FromJson< string[] >( Utilities.Api.Deck.GetDeckByUserId( Data.User.Id ) );
         Debug.Log( Utilities.Api.Deck.GetDeckByUserId( Data.User.Id ) );
         Debug.Log( fromJsonDeck );
-
     }
 }

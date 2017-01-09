@@ -19,13 +19,19 @@ class ContentModel extends Model {
         }
     }
     
-    public function GetCardDeckRelations($where = array()) {
-        $result = $this->db->Query(
-            'SELECT * FROM cards_decks_rel' . $where != array() ? ' WHERE `' . $where[0] . '` = :where' : '',
-            array(
-                "where" => $where[1]
-            )
-        );
+    public function GetCardDeckRelations($where = "cardid", $valueArr = array()) {
+        $result = array();
+        
+        foreach ($valueArr as $value) {
+                $row = $this->db->Query('SELECT * FROM cards_decks_rel WHERE `' . $where . '` = :where',
+                array(
+                    "where" => $value
+                ),
+                false
+            );
+            
+            if ($row != array()) { array_push($result, $row); }
+        }
         
         if ($result != array() && $result != null) {
             return $result;

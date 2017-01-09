@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Library;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginInfoManager : MonoBehaviour
@@ -19,7 +20,7 @@ public class LoginInfoManager : MonoBehaviour
 
     public void Logout( GameObject LoginCover)
     {
-        Data.User.Empty();
+        SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Logout, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
 
         LoginButton.gameObject.SetActive( true );
 
@@ -27,5 +28,7 @@ public class LoginInfoManager : MonoBehaviour
         LogoutButton.gameObject.SetActive( false );
 
         LoginCover.SetActive( true );
+
+        Data.User.Empty();
     }
 }
