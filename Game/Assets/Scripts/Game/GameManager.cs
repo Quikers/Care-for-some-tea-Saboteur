@@ -5,6 +5,11 @@ namespace Game
     public class GameManager : MonoBehaviour
     {
         public static int AmountOfCardsNextTurn;
+        
+
+        void Awake()
+        {
+        }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Library;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
@@ -11,5 +12,13 @@ public class MainMenuManager : MonoBehaviour
     public void LoadScene( int SceneId )
     {
         SceneManager.LoadScene( SceneId );
+    }
+
+    public void AddToQueue( int DeckId )
+    {
+        if( Data.User.Id == 0 ) return;
+        SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+
+        Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
     }
 }
