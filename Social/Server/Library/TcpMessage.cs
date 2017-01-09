@@ -17,7 +17,10 @@ namespace Library {
         Login = 9,
         Logout = 10,
         Playerlist = 11,
-        CancelMatchmaking
+        CancelMatchmaking = 12,
+        Error = 13,
+
+        PlayCard = 14
     }
 
     public static class PacketParser {

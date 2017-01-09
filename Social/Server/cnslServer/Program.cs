@@ -205,13 +205,7 @@ namespace cnslServer
                         break;
 
                     case TcpMessageType.PlayerUpdate:
-                        {
-                            //Player player = new Player();
-                            //player.UserID = int.Parse(packet.Variables["UserID"]);
-                            //player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
-                            //player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
-                            //player.CurrentHealth = int.Parse(packet.Variables["CurrentHealth"]);
-                            //player.MaxHealth = int.Parse(packet.Variables["MaxHealth"]);
+                        {   
                             break;
                         }
 
@@ -234,9 +228,15 @@ namespace cnslServer
                             break;
                         }
                     case TcpMessageType.Login:
-                        {   
+                        {
                             int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
+                            
+                            if (!packet.Variables.ContainsKey("Username") || username != "" || username != string.Empty)
+                            {
+                                Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] { "ErrorMessage", "Please provide a valid username" });
+                                SendTcp.SendPacket(error, client.Socket);
+                            }
 
                             Client _client = new Client
                             {
@@ -254,9 +254,11 @@ namespace cnslServer
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
                                 _client.Listen.Start();
+
+                                
                                 
                             }
-                            else if (OnlinePlayers.ContainsKey(_client.UserID))
+                            else
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
 
@@ -269,6 +271,7 @@ namespace cnslServer
                                     Packet error = new Packet();
                                     packet.From = "Server";
                                     packet.To = _client.UserID.ToString();
+                                    packet.Type = TcpMessageType.Error;
                                     Console.WriteLine("{0} tried to log in while its already logged in. Its socket isn't valid anymore", _client.Username);
                                     SendTcp.SendPacket(error, _client.Socket);
                                 }
@@ -298,7 +301,7 @@ namespace cnslServer
                             }
                             else
                             {
-                                Console.WriteLine("Player tried to log out while its not logged in.");
+                                Console.WriteLine("Player tried to log out while its not logged in. \n\n");
                             }
 
                             client.Socket.Close();
@@ -321,7 +324,7 @@ namespace cnslServer
                         }
                 }
 
-                Console.WriteLine("====================================================");
+                Console.WriteLine("========================End of message============================");
             }
             catch (Exception ex)
             {
