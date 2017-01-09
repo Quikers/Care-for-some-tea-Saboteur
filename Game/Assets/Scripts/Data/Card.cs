@@ -4,6 +4,7 @@ namespace Data
 {
     enum EffectType
     {
+        Attack,
         Battlecry,
         Deathrattle,
         Healing,
