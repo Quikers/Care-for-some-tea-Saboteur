@@ -20,11 +20,8 @@ namespace cnslServer
         private static Dictionary<int, Client> OnlinePlayers;
         private static List<Match> ActiveGames;
         private static List<Match> PendingGames;
-
-        private static Packet Response;
-        private static NetworkStream stream;
         
-
+        private static NetworkStream stream;
 
         static void Main(string[] args)
         {   
@@ -130,10 +127,11 @@ namespace cnslServer
                     // You could also user server.AcceptSocket() here.
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine("Incoming connection detected.");
-                    Response = null;
+                    
 
                     Packet packet = SendTcp.ReceivePacket(client);
                     if (packet == null) continue;
+
                     HandlePacket(packet, new Client {Socket = client });
 
                     // Send back a response.
@@ -175,12 +173,14 @@ namespace cnslServer
                             int targetUserID = int.Parse(packet.To);
                             string chatmessage = packet.Variables["Chatmessage"];
 
-                            if (!OnlinePlayers.ContainsKey(targetUserID))
+                            //Check if user is offline
+                            if (!IsClientValid(targetUserID))
                             {
                                 Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
+                                SendErrorToClient("Server", client, "Chatmessage failed. User is offline.");
                                 return;
                             } 
-                            else
+                            else //if online
                             {
                                 //Send Packet to destination
                                 SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
@@ -223,6 +223,7 @@ namespace cnslServer
                             Client player = null;
                             Client opponent = null;
 
+                            //Check which Client is Client1 or Client2
                             if (client == match.Client1)
                             {
                                 player = match.Client1;
@@ -271,6 +272,8 @@ namespace cnslServer
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(minionPlayed, opponent.Socket);
+
+                                                    SendSuccessResponse(packet, client);
                                                     break;
                                                 }
                                             case "Spell":
@@ -292,6 +295,8 @@ namespace cnslServer
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(spellPlayed, opponent.Socket);
+
+                                                    SendSuccessResponse(packet, client);
                                                     break;
                                                 }
                                         }
@@ -318,6 +323,8 @@ namespace cnslServer
 
                                         //Send packet to opponent
                                         SendTcp.SendPacket(attack, opponent.Socket);
+
+                                        SendSuccessResponse(packet, client);
                                         break;
                                     }
                             }
@@ -362,7 +369,7 @@ namespace cnslServer
                             };
 
                            
-                            if (!OnlinePlayers.ContainsKey(_client.UserID))
+                            if (!IsClientValid(_client.UserID))
                             {
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
@@ -397,7 +404,7 @@ namespace cnslServer
                         {
                             int userID = int.Parse(packet.From);
 
-                            if (OnlinePlayers.ContainsKey(userID))
+                            if (IsClientValid(userID))
                             {
                                 Console.WriteLine("UserID {0} logged out", userID);
                                 SendSuccessResponse(packet, client);
@@ -439,10 +446,9 @@ namespace cnslServer
                         {
                             int fromUserID = int.Parse(packet.From);
                             int toUserID = int.Parse(packet.To);
-
-                            if (!OnlinePlayers.ContainsKey(fromUserID)) break;
-                            if (!OnlinePlayers.ContainsKey(toUserID)) break;
-
+                            
+                            if (!IsClientValid(toUserID)) break;
+                            
                             if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null)
                             {
                                 break;
@@ -475,7 +481,7 @@ namespace cnslServer
                             var pendinggame = PendingGames.Where(x => x.Client1 == client).FirstOrDefault();
                             if(pendinggame != null)PendingGames.Remove(pendinggame);
 
-                            if (OnlinePlayers.ContainsKey(int.Parse(packet.To)))
+                            if (IsClientValid(int.Parse(packet.To)))
                             {
                                 var toClient = OnlinePlayers[int.Parse(packet.To)];
 
@@ -491,22 +497,33 @@ namespace cnslServer
                         }
                     case TcpMessageType.AcceptIncomingGameInvite:
                         {
-                            int senderID = int.Parse(packet.To);
-                            Match game = PendingGames.Where(x => x.Client1.UserID == senderID).FirstOrDefault();
-                            if (game != null)
+                            if (IsClientValid(int.Parse(packet.To)))
                             {
-                                PendingGames.Remove(game);
-                                StartMatch(game);
+                                int senderID = int.Parse(packet.To);
+                                Match game = PendingGames.Where(x => x.Client1.UserID == senderID).FirstOrDefault();
+                                if (game != null)
+                                {
+                                    PendingGames.Remove(game);
+                                    StartMatch(game);
+                                }
+                                break;
                             }
-                            break;
+                            else
+                            {
+                                SendErrorToClient("Server", client, "Could not send game invite response. Target user is offline.");
+                                break;
+                            }
+
+                            
                         }
                     case TcpMessageType.RefuseIncomingGameInvite:
                         {
                             int from = int.Parse(packet.From);
                             int to = int.Parse(packet.To);
-                            Client toClient = OnlinePlayers[to];
-                            if (toClient == null) break;
 
+                            if (!IsClientValid(to)) break;
+                            Client toClient = OnlinePlayers[to];
+                            
                             //Send Refusal
                             Packet refuse = new Packet()
                             {
@@ -572,13 +589,13 @@ namespace cnslServer
 
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
-            if (!OnlinePlayers.ContainsKey(UserID)) return null;
+            if (!IsClientValid(UserID)) return null;
             else return OnlinePlayers[UserID];
         }
 
         private static bool IsClientValid(int UserID)
         {
-            if (!OnlinePlayers.ContainsKey(UserID)) return false;
+            if (!IsClientValid(UserID)) return false;
 
             Client user = OnlinePlayers[UserID];
 
@@ -627,6 +644,12 @@ namespace cnslServer
                 Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
             }
             Console.WriteLine("");
+        }
+
+        private static void SendErrorToClient(string from, Client to,  string errormessage)
+        {
+            Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] {"ErrorMessage", errormessage });
+            SendTcp.SendPacket(packet, to.Socket);
         }
         
     }
