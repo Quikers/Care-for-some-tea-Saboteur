@@ -19,6 +19,7 @@ namespace cnslServer
         private static Dictionary<int, Client> PlayerQueue;
         private static Dictionary<int, Client> OnlinePlayers;
         private static List<Match> ActiveGames;
+        private static List<Match> PendingGames;
 
         private static Packet Response;
         private static NetworkStream stream;
@@ -319,7 +320,6 @@ namespace cnslServer
                                         SendTcp.SendPacket(attack, opponent.Socket);
                                         break;
                                     }
-                                    
                             }
 
                             break;
@@ -370,9 +370,6 @@ namespace cnslServer
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
                                 _client.Listen.Start();
-
-                                
-                                
                             }
                             else
                             {
@@ -438,9 +435,112 @@ namespace cnslServer
                             }
                             break;
                         }
+                    case TcpMessageType.SendGameInvite:
+                        {
+                            int fromUserID = int.Parse(packet.From);
+                            int toUserID = int.Parse(packet.To);
+
+                            if (!OnlinePlayers.ContainsKey(fromUserID)) break;
+                            if (!OnlinePlayers.ContainsKey(toUserID)) break;
+
+                            if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Match match = new Match()
+                                {
+                                    Client1 = client,
+                                    Client2 = OnlinePlayers[toUserID]
+                                };
+
+                                PendingGames.Add(match);
+
+                                //Create packet and send to Client2
+                                Packet invite = new Packet()
+                                {
+                                    From = fromUserID.ToString(),
+                                    To = toUserID.ToString(),
+                                    Type = TcpMessageType.SendGameInvite
+                                };
+
+                                SendTcp.SendPacket(invite, match.Client2.Socket);
+
+                                break;
+                            }
+                        }
+                    case TcpMessageType.CancelGameInvite:
+                        {
+                            var pendinggame = PendingGames.Where(x => x.Client1 == client).FirstOrDefault();
+                            if(pendinggame != null)PendingGames.Remove(pendinggame);
+
+                            if (OnlinePlayers.ContainsKey(int.Parse(packet.To)))
+                            {
+                                var toClient = OnlinePlayers[int.Parse(packet.To)];
+
+                                Packet cancel = new Packet()
+                                {
+                                    From = packet.From,
+                                    To = packet.To,
+                                    Type = TcpMessageType.CancelGameInvite
+                                };
+                                SendTcp.SendPacket(cancel, toClient.Socket);
+                            }
+                            break;
+                        }
+                    case TcpMessageType.AcceptIncomingGameInvite:
+                        {
+                            int senderID = int.Parse(packet.To);
+                            Match game = PendingGames.Where(x => x.Client1.UserID == senderID).FirstOrDefault();
+                            if (game != null)
+                            {
+                                PendingGames.Remove(game);
+                                StartMatch(game);
+                            }
+                            break;
+                        }
+                    case TcpMessageType.RefuseIncomingGameInvite:
+                        {
+                            int from = int.Parse(packet.From);
+                            int to = int.Parse(packet.To);
+                            Client toClient = OnlinePlayers[to];
+                            if (toClient == null) break;
+
+                            //Send Refusal
+                            Packet refuse = new Packet()
+                            {
+                                From = packet.From,
+                                To = packet.To,
+                                Type = TcpMessageType.RefuseIncomingGameInvite
+                            };
+                            SendTcp.SendPacket(refuse, toClient.Socket);
+
+                            //Remove game from PendinGames
+                            Match pendinggame = PendingGames.Where(x => x.Client1 == toClient).FirstOrDefault();
+                            if(pendinggame != null) PendingGames.Remove(pendinggame);
+                            break;
+                        }
+                    case TcpMessageType.SendFriendRequest:
+                        {
+                            break;
+                        }
+                    case TcpMessageType.CancelFriendRequest:
+                        {
+                            break;
+                        }
+                    case TcpMessageType.RefuseFriendRequest:
+                        {
+                            break;
+                        }
+                    case TcpMessageType.AcceptFriendRequest:
+                        {
+                            break;
+                        }
+                    
                 }
 
-                Console.WriteLine("========================End of message============================");
+                Console.WriteLine("====================================================");
             }
             catch (Exception ex)
             {

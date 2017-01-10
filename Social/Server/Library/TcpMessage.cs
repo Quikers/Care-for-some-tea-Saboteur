@@ -18,7 +18,15 @@ namespace Library {
         Logout = 10,
         Playerlist = 11,
         CancelMatchmaking = 12,
-        Error = 13
+        Error = 13,
+        SendGameInvite = 14,
+        CancelGameInvite = 15,
+        RefuseIncomingGameInvite = 16,
+        AcceptIncomingGameInvite = 17,
+        SendFriendRequest = 18,
+        CancelFriendRequest = 19,
+        RefuseFriendRequest = 20,
+        AcceptFriendRequest = 21
     }
 
     public enum PlayerAction
