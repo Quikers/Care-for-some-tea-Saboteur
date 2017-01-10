@@ -13,7 +13,7 @@ namespace cnslServer
 {
 
     //receive data port = 25002;
-    //submit data port = 25003;
+    //submit data port = 25003;;
     class Program
     {
         private static Dictionary<int, Client> PlayerQueue;
