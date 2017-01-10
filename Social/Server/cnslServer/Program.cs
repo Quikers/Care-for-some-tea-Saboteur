@@ -17,15 +17,19 @@ namespace cnslServer
     class Program
     {
         private static Dictionary<int, Client> PlayerQueue;
+        private static Dictionary<int, Client> OnlinePlayers;
+        private static List<Match> ActiveGames;
+
         private static Packet Response;
         private static NetworkStream stream;
-        private static Dictionary<int, Client> OnlinePlayers;
+        
 
 
         static void Main(string[] args)
         {   
             OnlinePlayers = new Dictionary<int, Client>();
             PlayerQueue = new Dictionary<int, Client>();
+            ActiveGames = new List<Match>();
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
@@ -91,6 +95,9 @@ namespace cnslServer
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
+
+                //Add match to ActiveGames list.
+                ActiveGames.Add(match);
             }
             catch
             {
@@ -194,10 +201,10 @@ namespace cnslServer
 
                     case TcpMessageType.Message:
                         {
-                            int from = int.Parse(packet.From);
-                            int to = int.Parse(packet.To);
-                            string message = packet.Variables["Message"];
-                            string IPdestination = packet.Variables["IPdestination"];
+                            //int from = int.Parse(packet.From);
+                            //int to = int.Parse(packet.To);
+                            //string message = packet.Variables["Message"];
+                            //string IPdestination = packet.Variables["IPdestination"];
                             break;
                         }
 
@@ -205,7 +212,117 @@ namespace cnslServer
                         break;
 
                     case TcpMessageType.PlayerUpdate:
-                        {   
+                        {
+                            if (!packet.Variables.ContainsKey("PlayerAction")) break;
+
+                            //Get match
+                            Match match = ActiveGames.Where(x => x.Client1 == client || x.Client2 == client).FirstOrDefault();
+                            if (match == null) break;
+
+                            Client player = null;
+                            Client opponent = null;
+
+                            if (client == match.Client1)
+                            {
+                                player = match.Client1;
+                                opponent = match.Client2;
+                            }
+                            else if (client == match.Client2)
+                            {
+                                player = match.Client2;
+                                opponent = match.Client1;
+                            }                                
+                            else break;
+
+                            //Switch PlayerAction
+                            switch (packet.Variables["PlayerAction"])
+                            {
+                                case "PlayCard":
+                                    {
+                                        if (!packet.Variables.ContainsKey("CardType")) break;
+
+                                        switch (packet.Variables["CardType"])
+                                        {
+                                            case "Minion":
+                                                {
+                                                    //Check requirements of incoming packet
+                                                    if (!packet.Variables.ContainsKey("Health")
+                                                        || (!packet.Variables.ContainsKey("Attack"))
+                                                        || (!packet.Variables.ContainsKey("EnergyCost"))
+                                                        || (!packet.Variables.ContainsKey("EffectType")) 
+                                                        || (!packet.Variables.ContainsKey("Effect")))
+                                                        return;
+
+                                                    //Create packet for opponent
+                                                    Packet minionPlayed = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "Health", packet.Variables["Health"],
+                                                            "Attack", packet.Variables["Attack"],
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "EffectType", packet.Variables["EffectType"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                                    //Send packet to opponent
+                                                    SendTcp.SendPacket(minionPlayed, opponent.Socket);
+                                                    break;
+                                                }
+                                            case "Spell":
+                                                {
+                                                    //Check requirements of incoming packet
+                                                    if ( (!packet.Variables.ContainsKey("EnergyCost")) || (!packet.Variables.ContainsKey("Effect")) ) break;
+
+                                                    //Create packet for opponent
+                                                    Packet spellPlayed = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                                    //Send packet to opponent
+                                                    SendTcp.SendPacket(spellPlayed, opponent.Socket);
+                                                    break;
+                                                }
+                                        }
+                                        break;
+                                    }
+                                case "Attack":
+                                    {
+                                        //Check requirements for incoming packet
+                                        if((!packet.Variables.ContainsKey("AttackingMinionID"))
+                                            || (!packet.Variables.ContainsKey("TargetMinionID")))                                          
+                                        return;
+
+                                        //Create packet for opponent
+                                        Packet attack = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                        //Send packet to opponent
+                                        SendTcp.SendPacket(attack, opponent.Socket);
+
+                                        return;
+                                    }
+                                    
+                            }
+
                             break;
                         }
 

@@ -18,9 +18,19 @@ namespace Library {
         Logout = 10,
         Playerlist = 11,
         CancelMatchmaking = 12,
-        Error = 13,
+        Error = 13
+    }
 
-        PlayCard = 14
+    public enum PlayerAction
+    {
+        PlayCard = 1,
+        Attack = 2
+    }
+
+    public enum CardType
+    {
+        Minion = 1,
+        Spell = 2
     }
 
     public static class PacketParser {
