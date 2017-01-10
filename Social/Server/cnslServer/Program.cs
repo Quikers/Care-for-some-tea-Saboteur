@@ -299,9 +299,9 @@ namespace cnslServer
                                 case "Attack":
                                     {
                                         //Check requirements for incoming packet
-                                        if((!packet.Variables.ContainsKey("AttackingMinionID"))
-                                            || (!packet.Variables.ContainsKey("TargetMinionID")))                                          
-                                        return;
+                                        if ((!packet.Variables.ContainsKey("AttackingMinionID"))
+                                            || (!packet.Variables.ContainsKey("TargetMinionID")))
+                                            break;
 
                                         //Create packet for opponent
                                         Packet attack = new Packet(
@@ -317,8 +317,7 @@ namespace cnslServer
 
                                         //Send packet to opponent
                                         SendTcp.SendPacket(attack, opponent.Socket);
-
-                                        return;
+                                        break;
                                     }
                                     
                             }
