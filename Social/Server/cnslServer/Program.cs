@@ -8,8 +8,8 @@ using System.Net.Sockets;
 using Library;
 using System.Net;
 
-
-namespace cnslServer
+//namespace cnslServer
+namespace Server
 {
 
     //receive data port = 25002;
@@ -20,7 +20,8 @@ namespace cnslServer
         private static Dictionary<int, Client> OnlinePlayers;
         private static List<Match> ActiveGames;
         private static List<Match> PendingGames;
-        
+        private static Dictionary<Client, Client> PendingInvites;
+
         private static NetworkStream stream;
 
         static void Main(string[] args)
@@ -31,9 +32,6 @@ namespace cnslServer
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
-            
-            //Task AddPlayers = new Task(AddPlayersToQueue);
-            //AddPlayers.Start();
 
             Task Listen = new Task(ListenTcp);
             Listen.Start();
@@ -223,18 +221,19 @@ namespace cnslServer
                             Client player = null;
                             Client opponent = null;
 
-                            //Check which Client is Client1 or Client2
+                            //Check which Client is Client1 and Client2
                             if (client == match.Client1)
                             {
                                 player = match.Client1;
                                 opponent = match.Client2;
                             }
-                            else if (client == match.Client2)
+                            else
                             {
                                 player = match.Client2;
                                 opponent = match.Client1;
-                            }                                
-                            else break;
+                            }
+
+                            if (opponent != null) break;
 
                             //Switch PlayerAction
                             switch (packet.Variables["PlayerAction"])
@@ -327,8 +326,13 @@ namespace cnslServer
                                         SendSuccessResponse(packet, client);
                                         break;
                                     }
+                                case "EndTurn":
+                                    {   
+                                        SendTcp.SendPacket(packet, opponent.Socket);
+                                        SendSuccessResponse(packet, client);
+                                        break;
+                                    }
                             }
-
                             break;
                         }
 
@@ -432,14 +436,9 @@ namespace cnslServer
                             if (PlayerQueue.ContainsKey(int.Parse(packet.From)))
                             {
                                 PlayerQueue.Remove(int.Parse(packet.From));
-                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
-                                SendTcp.SendPacket(_response, client.Socket);
                             }
-                            else
-                            {
-                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
-                                SendTcp.SendPacket(_response, client.Socket);
-                            }
+
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.SendGameInvite:
@@ -463,15 +462,8 @@ namespace cnslServer
 
                                 PendingGames.Add(match);
 
-                                //Create packet and send to Client2
-                                Packet invite = new Packet()
-                                {
-                                    From = fromUserID.ToString(),
-                                    To = toUserID.ToString(),
-                                    Type = TcpMessageType.SendGameInvite
-                                };
-
-                                SendTcp.SendPacket(invite, match.Client2.Socket);
+                                //Send packet to client2
+                                Communicate(packet);
 
                                 break;
                             }
@@ -481,18 +473,7 @@ namespace cnslServer
                             var pendinggame = PendingGames.Where(x => x.Client1 == client).FirstOrDefault();
                             if(pendinggame != null)PendingGames.Remove(pendinggame);
 
-                            if (IsClientValid(int.Parse(packet.To)))
-                            {
-                                var toClient = OnlinePlayers[int.Parse(packet.To)];
-
-                                Packet cancel = new Packet()
-                                {
-                                    From = packet.From,
-                                    To = packet.To,
-                                    Type = TcpMessageType.CancelGameInvite
-                                };
-                                SendTcp.SendPacket(cancel, toClient.Socket);
-                            }
+                            Communicate(packet);
                             break;
                         }
                     case TcpMessageType.AcceptIncomingGameInvite:
@@ -513,13 +494,13 @@ namespace cnslServer
                                 SendErrorToClient("Server", client, "Could not send game invite response. Target user is offline.");
                                 break;
                             }
-
-                            
                         }
                     case TcpMessageType.RefuseIncomingGameInvite:
                         {
                             int from = int.Parse(packet.From);
                             int to = int.Parse(packet.To);
+
+
 
                             if (!IsClientValid(to)) break;
                             Client toClient = OnlinePlayers[to];
@@ -535,23 +516,36 @@ namespace cnslServer
 
                             //Remove game from PendinGames
                             Match pendinggame = PendingGames.Where(x => x.Client1 == toClient).FirstOrDefault();
-                            if(pendinggame != null) PendingGames.Remove(pendinggame);
+                            if (pendinggame != null) PendingGames.Remove(pendinggame);
+
                             break;
                         }
                     case TcpMessageType.SendFriendRequest:
                         {
+                            int targetUserID = int.Parse(packet.To);
+                            if (!IsClientValid(targetUserID))
+                            {
+                                SendErrorToClient("Server", client, "Could not send friend request. Targeted user is offline.");
+                                break;
+                            }
+
+                            Communicate(packet);
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.CancelFriendRequest:
                         {
+                            Communicate(packet);
                             break;
                         }
                     case TcpMessageType.RefuseFriendRequest:
                         {
+                            Communicate(packet);
                             break;
                         }
                     case TcpMessageType.AcceptFriendRequest:
                         {
+                            Communicate(packet);
                             break;
                         }
                     
@@ -576,6 +570,7 @@ namespace cnslServer
                     HandlePacket(packet, client);
                 } catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                     client.Socket.Close();
                 }
             }
@@ -650,6 +645,26 @@ namespace cnslServer
         {
             Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] {"ErrorMessage", errormessage });
             SendTcp.SendPacket(packet, to.Socket);
+        }
+
+        private static bool Communicate(Packet packet)
+        {
+            try
+            {
+                int targetUserID = int.Parse(packet.To);
+                if (!IsClientValid(targetUserID)) return false;
+
+                Client targetClient = GetClientFromOnlinePlayersByUserID(targetUserID);
+                SendTcp.SendPacket(packet, targetClient.Socket);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error in Server > Program.cs > Communicate function. Error: " + ex);
+                return false;
+            }
+           
+
         }
         
     }

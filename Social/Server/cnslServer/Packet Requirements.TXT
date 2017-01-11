@@ -32,6 +32,8 @@ Alles tussen "" representeert een Dictionairy key. Hier moet dus ook een value b
 "AttackingMinionID"
 "TargetMinionID"
 
+===========EndTurn
+
 ==================================AddPlayerToQueue
 
 ==================================CancelMatchmaking
@@ -43,4 +45,8 @@ Alles tussen "" representeert een Dictionairy key. Hier moet dus ook een value b
 
 ==================================SendGameInvite
 
+==================================CancelGameInvite
+
 ==================================AcceptIncomingGameInvite
+
+==================================RefuseIncomingGameInvite
