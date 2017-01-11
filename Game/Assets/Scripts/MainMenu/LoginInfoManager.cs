@@ -18,7 +18,7 @@ public class LoginInfoManager : MonoBehaviour
         EmailText.text = Data.User.Email;
     }
 
-    public void Logout( GameObject LoginCover)
+    public void Logout( GameObject loginCover )
     {
         SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Logout, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
 
@@ -27,7 +27,7 @@ public class LoginInfoManager : MonoBehaviour
         EmailText.gameObject.SetActive( false );
         LogoutButton.gameObject.SetActive( false );
 
-        LoginCover.SetActive( true );
+        loginCover.SetActive( true );
 
         Data.User.Empty();
     }

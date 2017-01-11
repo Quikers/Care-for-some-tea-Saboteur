@@ -26,7 +26,7 @@ namespace MainMenu
 
         public void Login()
         {
-            string login = Utilities.Api.User.UserbyEmail( Email.text, Password.text );
+            string login = Utilities.Api.User.ByEmail( Email.text, Password.text );
 
             if( login == null )
             {
@@ -38,7 +38,7 @@ namespace MainMenu
             try
             {
                 TempUserData temp = JsonUtility.FromJson< TempUserData >( login );
-                
+
                 // transfer data to user object.
                 Data.User.Email = temp.email;
                 Data.User.TimeCreated = temp.created;
@@ -46,23 +46,36 @@ namespace MainMenu
                 Data.User.Username = temp.username;
                 Data.User.AccountType = temp.accountType;
                 Data.User.Id = temp.id;
-
-                // login to social server.
-                SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Login, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
-
-                Packet receive = SendTcp.ReceivePacket( Data.Network.ServerSocket );
-                Debug.Log( receive );
-
             }
             catch( Exception ex )
             {
                 Debug.Log( ex );
+                Utilities.Screen.LogError( ex );
 
                 Data.User.Empty();
                 Email.text = "";
                 Password.text = "";
                 LoginPanel.SetActive( false );
 
+                return;
+            }
+
+            try
+            {
+                // login to social server.
+                SendTcp.SendPacket(
+                    new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Login,
+                        new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+            }
+            catch( Exception ex )
+            {                
+                Debug.Log( ex );
+                Utilities.Screen.LogError( ex );
+
+                Data.User.Empty();
+                Email.text = "";
+                Password.text = "";
+                LoginPanel.SetActive( false );
                 return;
             }
             Email.text = "";

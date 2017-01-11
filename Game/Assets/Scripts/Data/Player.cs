@@ -2,10 +2,9 @@
 
 namespace Data
 {
-    struct Player
+    public struct Player
     {
-        public TcpClient PlayerClient;
-        public Deck CurrentDeck;
-
+        public static TcpClient PlayerClient;
+        public static Deck CurrentDeck;
     }
 }

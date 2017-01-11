@@ -2,6 +2,7 @@
 
 namespace Data
 {
+    [Serializable]
     enum EffectType
     {
         Attack,
@@ -11,13 +12,14 @@ namespace Data
         CanNotAttack
     }
 
-    class Card
+    [Serializable]
+    public class Card
     {
-        int id;
-        int energyCost;
-        EffectType[] effect;
+        public string id;
+        public string energyCost;
+        public string effect;
 
-        int currentAttack;
-        int maxAttack;
+        public string currentAttack;
+        public string maxAttack;
     }
 }

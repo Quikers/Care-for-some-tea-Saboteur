@@ -1,4 +1,5 @@
-﻿using Library;
+﻿using System.Threading;
+using Library;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,5 +21,14 @@ public class MainMenuManager : MonoBehaviour
         SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
 
         Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
+        Thread queueThread = new Thread( CheckQueue );
+    }
+
+    void CheckQueue()
+    {
+        while( true )
+        {
+            Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
+        }
     }
 }

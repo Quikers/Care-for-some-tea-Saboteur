@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Utilities
 {
@@ -20,6 +21,14 @@ namespace Utilities
                 t = t.parent;
             }
             return comp;
+        }
+    }
+
+    public static class Screen
+    {
+        public static void LogError( object message )
+        {
+            GameObject ErrorWindow = new GameObject( "ErrorWindow" );
         }
     }
 }

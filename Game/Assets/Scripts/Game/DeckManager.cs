@@ -1,21 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class DeckManager : MonoBehaviour
+namespace Game
 {
-
-    void Start()
-    {}
-
-    void Update()
-    {}
-
-    void OnEnable()
+    public class DeckManager : MonoBehaviour
     {
-        string[] fromJsonDeck = JsonUtility.FromJson< string[] >( Utilities.Api.Deck.GetDeckByUserId( Data.User.Id ) );
-        Debug.Log( Utilities.Api.Deck.GetDeckByUserId( Data.User.Id ) );
-        Debug.Log( fromJsonDeck );
+        Data.Deck PlayerDeck;
+        int[] DrawnCards = new int[ 20 ];
+
+        void Start()
+        {
+            PlayerDeck = Data.Player.CurrentDeck;
+
+            for( int i = 0; i < 3; i++ )
+            {
+                DrawCard();
+            }
+        }
+
+        void Update()
+        {}
+
+        void DrawCard()
+        {
+            
+        }
+        
     }
 }
