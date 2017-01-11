@@ -59,7 +59,6 @@ namespace SendTcp
                     Console.WriteLine("Match is starting with {0}", response.Variables["UserID"]);
                 }
             }
-            
         }
     }
 }

@@ -17,7 +17,29 @@ namespace Library {
         Login = 9,
         Logout = 10,
         Playerlist = 11,
-        CancelMatchmaking
+        CancelMatchmaking = 12,
+        Error = 13,
+        SendGameInvite = 14,
+        CancelGameInvite = 15,
+        RefuseIncomingGameInvite = 16,
+        AcceptIncomingGameInvite = 17,
+        SendFriendRequest = 18,
+        CancelFriendRequest = 19,
+        RefuseFriendRequest = 20,
+        AcceptFriendRequest = 21,
+        EndTurn = 22
+    }
+
+    public enum PlayerAction
+    {
+        PlayCard = 1,
+        Attack = 2
+    }
+
+    public enum CardType
+    {
+        Minion = 1,
+        Spell = 2
     }
 
     public static class PacketParser {

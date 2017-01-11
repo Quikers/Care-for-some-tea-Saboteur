@@ -8,30 +8,30 @@ using System.Net.Sockets;
 using Library;
 using System.Net;
 
-
-namespace cnslServer
+//namespace cnslServer
+namespace Server
 {
 
     //receive data port = 25002;
-    //submit data port = 25003;
+    //submit data port = 25003;;
     class Program
     {
         private static Dictionary<int, Client> PlayerQueue;
-        private static Packet Response;
-        private static NetworkStream stream;
         private static Dictionary<int, Client> OnlinePlayers;
+        private static List<Match> ActiveGames;
+        private static List<Match> PendingGames;
+        private static Dictionary<Client, Client> PendingInvites;
 
+        private static NetworkStream stream;
 
         static void Main(string[] args)
         {   
             OnlinePlayers = new Dictionary<int, Client>();
             PlayerQueue = new Dictionary<int, Client>();
+            ActiveGames = new List<Match>();
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
-            
-            //Task AddPlayers = new Task(AddPlayersToQueue);
-            //AddPlayers.Start();
 
             Task Listen = new Task(ListenTcp);
             Listen.Start();
@@ -91,6 +91,9 @@ namespace cnslServer
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
+
+                //Add match to ActiveGames list.
+                ActiveGames.Add(match);
             }
             catch
             {
@@ -122,10 +125,11 @@ namespace cnslServer
                     // You could also user server.AcceptSocket() here.
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine("Incoming connection detected.");
-                    Response = null;
+                    
 
                     Packet packet = SendTcp.ReceivePacket(client);
                     if (packet == null) continue;
+
                     HandlePacket(packet, new Client {Socket = client });
 
                     // Send back a response.
@@ -167,12 +171,14 @@ namespace cnslServer
                             int targetUserID = int.Parse(packet.To);
                             string chatmessage = packet.Variables["Chatmessage"];
 
-                            if (!OnlinePlayers.ContainsKey(targetUserID))
+                            //Check if user is offline
+                            if (!IsClientValid(targetUserID))
                             {
                                 Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
+                                SendErrorToClient("Server", client, "Chatmessage failed. User is offline.");
                                 return;
                             } 
-                            else
+                            else //if online
                             {
                                 //Send Packet to destination
                                 SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
@@ -194,10 +200,10 @@ namespace cnslServer
 
                     case TcpMessageType.Message:
                         {
-                            int from = int.Parse(packet.From);
-                            int to = int.Parse(packet.To);
-                            string message = packet.Variables["Message"];
-                            string IPdestination = packet.Variables["IPdestination"];
+                            //int from = int.Parse(packet.From);
+                            //int to = int.Parse(packet.To);
+                            //string message = packet.Variables["Message"];
+                            //string IPdestination = packet.Variables["IPdestination"];
                             break;
                         }
 
@@ -206,12 +212,127 @@ namespace cnslServer
 
                     case TcpMessageType.PlayerUpdate:
                         {
-                            //Player player = new Player();
-                            //player.UserID = int.Parse(packet.Variables["UserID"]);
-                            //player.CurrentEnergy = int.Parse(packet.Variables["CurrentEnergy"]);
-                            //player.MaxEnergy = int.Parse(packet.Variables["MaxEnergy"]);
-                            //player.CurrentHealth = int.Parse(packet.Variables["CurrentHealth"]);
-                            //player.MaxHealth = int.Parse(packet.Variables["MaxHealth"]);
+                            if (!packet.Variables.ContainsKey("PlayerAction")) break;
+
+                            //Get match
+                            Match match = ActiveGames.Where(x => x.Client1 == client || x.Client2 == client).FirstOrDefault();
+                            if (match == null) break;
+
+                            Client player = null;
+                            Client opponent = null;
+
+                            //Check which Client is Client1 and Client2
+                            if (client == match.Client1)
+                            {
+                                player = match.Client1;
+                                opponent = match.Client2;
+                            }
+                            else
+                            {
+                                player = match.Client2;
+                                opponent = match.Client1;
+                            }
+
+                            if (opponent != null) break;
+
+                            //Switch PlayerAction
+                            switch (packet.Variables["PlayerAction"])
+                            {
+                                case "PlayCard":
+                                    {
+                                        if (!packet.Variables.ContainsKey("CardType")) break;
+
+                                        switch (packet.Variables["CardType"])
+                                        {
+                                            case "Minion":
+                                                {
+                                                    //Check requirements of incoming packet
+                                                    if (!packet.Variables.ContainsKey("Health")
+                                                        || (!packet.Variables.ContainsKey("Attack"))
+                                                        || (!packet.Variables.ContainsKey("EnergyCost"))
+                                                        || (!packet.Variables.ContainsKey("EffectType")) 
+                                                        || (!packet.Variables.ContainsKey("Effect")))
+                                                        return;
+
+                                                    //Create packet for opponent
+                                                    Packet minionPlayed = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "Health", packet.Variables["Health"],
+                                                            "Attack", packet.Variables["Attack"],
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "EffectType", packet.Variables["EffectType"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                                    //Send packet to opponent
+                                                    SendTcp.SendPacket(minionPlayed, opponent.Socket);
+
+                                                    SendSuccessResponse(packet, client);
+                                                    break;
+                                                }
+                                            case "Spell":
+                                                {
+                                                    //Check requirements of incoming packet
+                                                    if ( (!packet.Variables.ContainsKey("EnergyCost")) || (!packet.Variables.ContainsKey("Effect")) ) break;
+
+                                                    //Create packet for opponent
+                                                    Packet spellPlayed = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                                    //Send packet to opponent
+                                                    SendTcp.SendPacket(spellPlayed, opponent.Socket);
+
+                                                    SendSuccessResponse(packet, client);
+                                                    break;
+                                                }
+                                        }
+                                        break;
+                                    }
+                                case "Attack":
+                                    {
+                                        //Check requirements for incoming packet
+                                        if ((!packet.Variables.ContainsKey("AttackingMinionID"))
+                                            || (!packet.Variables.ContainsKey("TargetMinionID")))
+                                            break;
+
+                                        //Create packet for opponent
+                                        Packet attack = new Packet(
+                                                        packet.From,
+                                                        opponent.UserID.ToString(),
+                                                        TcpMessageType.PlayerUpdate,
+                                                        new[] {
+                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                                            "CardType", CardType.Minion.ToString(),
+                                                            "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "Effect", packet.Variables["Effect"]
+                                                        });
+
+                                        //Send packet to opponent
+                                        SendTcp.SendPacket(attack, opponent.Socket);
+
+                                        SendSuccessResponse(packet, client);
+                                        break;
+                                    }
+                                case "EndTurn":
+                                    {   
+                                        SendTcp.SendPacket(packet, opponent.Socket);
+                                        SendSuccessResponse(packet, client);
+                                        break;
+                                    }
+                            }
                             break;
                         }
 
@@ -234,9 +355,15 @@ namespace cnslServer
                             break;
                         }
                     case TcpMessageType.Login:
-                        {   
+                        {
                             int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
+                            
+                            if (!packet.Variables.ContainsKey("Username") || username != "" || username != string.Empty)
+                            {
+                                Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] { "ErrorMessage", "Please provide a valid username" });
+                                SendTcp.SendPacket(error, client.Socket);
+                            }
 
                             Client _client = new Client
                             {
@@ -246,7 +373,7 @@ namespace cnslServer
                             };
 
                            
-                            if (!OnlinePlayers.ContainsKey(_client.UserID))
+                            if (!IsClientValid(_client.UserID))
                             {
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
@@ -254,9 +381,8 @@ namespace cnslServer
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
                                 _client.Listen.Start();
-                                
                             }
-                            else if (OnlinePlayers.ContainsKey(_client.UserID))
+                            else
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
 
@@ -269,6 +395,7 @@ namespace cnslServer
                                     Packet error = new Packet();
                                     packet.From = "Server";
                                     packet.To = _client.UserID.ToString();
+                                    packet.Type = TcpMessageType.Error;
                                     Console.WriteLine("{0} tried to log in while its already logged in. Its socket isn't valid anymore", _client.Username);
                                     SendTcp.SendPacket(error, _client.Socket);
                                 }
@@ -281,7 +408,7 @@ namespace cnslServer
                         {
                             int userID = int.Parse(packet.From);
 
-                            if (OnlinePlayers.ContainsKey(userID))
+                            if (IsClientValid(userID))
                             {
                                 Console.WriteLine("UserID {0} logged out", userID);
                                 SendSuccessResponse(packet, client);
@@ -289,16 +416,11 @@ namespace cnslServer
                                 OnlinePlayers[userID].Socket.Close();
                                 OnlinePlayers.Remove(userID);
 
-                                Console.WriteLine("Online players:\n");
-                                foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
-                                {
-                                    Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
-                                }
-                                Console.WriteLine("");
+                                ShowOnlinePlayers();
                             }
                             else
                             {
-                                Console.WriteLine("Player tried to log out while its not logged in.");
+                                Console.WriteLine("User {0} tried to log out while its not logged in. \n\n", packet.From);
                             }
 
                             client.Socket.Close();
@@ -309,16 +431,114 @@ namespace cnslServer
                             if (PlayerQueue.ContainsKey(int.Parse(packet.From)))
                             {
                                 PlayerQueue.Remove(int.Parse(packet.From));
-                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
-                                SendTcp.SendPacket(_response, client.Socket);
+                            }
+
+                            SendSuccessResponse(packet, client);
+                            break;
+                        }
+                    case TcpMessageType.SendGameInvite:
+                        {
+                            int fromUserID = int.Parse(packet.From);
+                            int toUserID = int.Parse(packet.To);
+                            
+                            if (!IsClientValid(toUserID)) break;
+                            
+                            //If pending game already exists, do nothing
+                            if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null)
+                            {
+                                break;
                             }
                             else
                             {
-                                Packet _response = new Packet("Server", packet.From, TcpMessageType.Response, new[] { "Result", "0" });
-                                SendTcp.SendPacket(_response, client.Socket);
+                                //Create new pending game
+                                Match match = new Match()
+                                {
+                                    Client1 = client,
+                                    Client2 = OnlinePlayers[toUserID]
+                                };
+
+                                PendingGames.Add(match);
+
+                                //Send packet to client2
+                                Communicate(packet);
+                                break;
                             }
+                        }
+                    case TcpMessageType.CancelGameInvite:
+                        {
+                            var pendinggame = PendingGames.Where(x => x.Client1 == client).FirstOrDefault();
+                            if(pendinggame != null)PendingGames.Remove(pendinggame);
+
+                            Communicate(packet);
                             break;
                         }
+                    case TcpMessageType.AcceptIncomingGameInvite:
+                        {
+                            if (IsClientValid(int.Parse(packet.To)))
+                            {
+                                int senderID = int.Parse(packet.To);
+                                Match game = PendingGames.Where(x => x.Client1.UserID == senderID).FirstOrDefault();
+                                if (game != null)
+                                {
+                                    PendingGames.Remove(game);
+                                    StartMatch(game);
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                SendErrorToClient("Server", client, "Could not send game invite response. Target user is offline.");
+                                break;
+                            }
+                        }
+                    case TcpMessageType.RefuseIncomingGameInvite:
+                        {
+                            int from = int.Parse(packet.From);
+                            int to = int.Parse(packet.To);
+                            
+                            if (!IsClientValid(to)) break;
+                            Client toClient = OnlinePlayers[to];
+
+                            Communicate(packet);
+
+                            //Remove game from PendinGames
+                            Match pendinggame = PendingGames.Where(x => x.Client1 == toClient).FirstOrDefault();
+                            if (pendinggame != null) PendingGames.Remove(pendinggame);
+
+                            break;
+                        }
+                    case TcpMessageType.SendFriendRequest:
+                        {
+                            int targetUserID = int.Parse(packet.To);
+                            if (!IsClientValid(targetUserID))
+                            {
+                                SendErrorToClient("Server", client, "Could not send friend request. Targeted user is offline.");
+                                break;
+                            }
+
+                            Communicate(packet);
+                            SendSuccessResponse(packet, client);
+                            break;
+                        }
+                    case TcpMessageType.CancelFriendRequest:
+                        {
+                            Communicate(packet);
+                            SendSuccessResponse(packet, client);
+                            break;
+                        }
+                    case TcpMessageType.RefuseFriendRequest:
+                        {
+                            Communicate(packet);
+                            SendSuccessResponse(packet, client);
+                            break;
+                        }
+                    case TcpMessageType.AcceptFriendRequest:
+                        {
+                            Communicate(packet);
+                            SendSuccessResponse(packet, client);
+                            break;
+                        }
+                    
                 }
 
                 Console.WriteLine("====================================================");
@@ -340,6 +560,7 @@ namespace cnslServer
                     HandlePacket(packet, client);
                 } catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                     client.Socket.Close();
                 }
             }
@@ -353,13 +574,13 @@ namespace cnslServer
 
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
-            if (!OnlinePlayers.ContainsKey(UserID)) return null;
+            if (!IsClientValid(UserID)) return null;
             else return OnlinePlayers[UserID];
         }
 
         private static bool IsClientValid(int UserID)
         {
-            if (!OnlinePlayers.ContainsKey(UserID)) return false;
+            if (!IsClientValid(UserID)) return false;
 
             Client user = OnlinePlayers[UserID];
 
@@ -408,6 +629,32 @@ namespace cnslServer
                 Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
             }
             Console.WriteLine("");
+        }
+
+        private static void SendErrorToClient(string from, Client to,  string errormessage)
+        {
+            Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] {"ErrorMessage", errormessage });
+            SendTcp.SendPacket(packet, to.Socket);
+        }
+
+        private static bool Communicate(Packet packet)
+        {
+            try
+            {
+                int targetUserID = int.Parse(packet.To);
+                if (!IsClientValid(targetUserID)) return false;
+
+                Client targetClient = GetClientFromOnlinePlayersByUserID(targetUserID);
+                SendTcp.SendPacket(packet, targetClient.Socket);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error in Server > Program.cs > Communicate function. Error: " + ex);
+                return false;
+            }
+           
+
         }
         
     }

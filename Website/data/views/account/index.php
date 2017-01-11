@@ -41,7 +41,6 @@ if (isset($this->login)) {
 
 $(document).ready(function () {
     $("#register-container #iPasswordConfirm").keyup(function () {
-        console.log("Key Up");
         if ($(this).val() !== $("#register-container #iPassword").val())
             this.setCustomValidity("Passwords Don't Match");
         else

@@ -1,0 +1,52 @@
+Hoe je een packet maakt:
+packet.from moet altijd de userID krijgen van de client die verstuurd. packet.to moet de userID krijgen van de client die ontvangt. 
+Als de packet gericht is aan de server en niet aan een andere player, vul dan "Server" als packet.to in.
+De rest kan verschillen. Voor elke TcpMessagetype bestaat een verschillende structuur.
+Alles tussen "" representeert een Dictionairy key. Hier moet dus ook een value bij komen.
+
+
+====================================ChatMessage
+"Chatmessage"
+
+====================================Error
+"ErrorMessage"
+
+====================================PlayerUpdate
+"PlayerAction" = enum PlayerAction tostring
+
+===========PlayCard
+"CardType" = enum CardType tostring
+
+======Minion
+"Health"
+"Attack"
+"EnergyCost"
+"EffectType" = enum EffectType tostring
+"Effect"
+
+======Spell
+"EnergyCost"
+"Effect"
+
+===========Attack
+"AttackingMinionID"
+"TargetMinionID"
+
+===========EndTurn
+
+==================================AddPlayerToQueue
+
+==================================CancelMatchmaking
+
+==================================Login
+"Username"
+
+==================================Logout
+
+==================================SendGameInvite
+
+==================================CancelGameInvite
+
+==================================AcceptIncomingGameInvite
+
+==================================RefuseIncomingGameInvite

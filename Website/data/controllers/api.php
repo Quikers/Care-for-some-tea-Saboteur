@@ -64,19 +64,36 @@ class API extends Controller {
     
     public function getuserbyuserid($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetUserByUserID(explode(",", $params[0])));
+            $includeFriends = false;
+            
+            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
+            echo json_encode($this->API->GetUserByUserID(explode(",", $params[0]), $includeFriends));
         } else { echo 0; }
     }
     
     public function getuserbyemail($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetUserByEmail(explode(",", $params[0])));
+            $includeFriends = false;
+            
+            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
+            echo json_encode($this->API->GetUserByEmail(explode(",", $params[0]), $includeFriends));
         } else { echo 0; }
     }
     
     public function getuserbyusername($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetUserByUsername(explode(",", $params[0])));
+            $includeFriends = false;
+            
+            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
+            echo json_encode($this->API->GetUserByUsername(explode(",", $params[0]), $includeFriends));
+        } else { echo 0; }
+    }
+    
+    public function getuserfriends($params = null) {
+        if (count($params) > 0) {
+            if (!is_numeric($params[0])) { echo 0; return; }
+            
+            echo json_encode($this->API->GetUserFriendsByUserID($params[0]));
         } else { echo 0; }
     }
     
@@ -112,7 +129,9 @@ class API extends Controller {
     
     public function getdeckbyusername($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetDeckByUsername(explode(",", $params[0])));
+            $user = $this->API->GetUserByUsername(array($params[0]), false);
+            if (isset($user["data"])) { $user = $user["data"][0]["id"]; }
+            echo json_encode($this->API->GetDeckByUserID(array($user)));
         } else { echo 0; }
     }
 
