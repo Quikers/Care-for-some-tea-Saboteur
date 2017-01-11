@@ -416,16 +416,11 @@ namespace Server
                                 OnlinePlayers[userID].Socket.Close();
                                 OnlinePlayers.Remove(userID);
 
-                                Console.WriteLine("Online players:\n");
-                                foreach (KeyValuePair<int, Client> pair in OnlinePlayers)
-                                {
-                                    Console.WriteLine("{0} - {1}", pair.Value.UserID, pair.Value.Username);
-                                }
-                                Console.WriteLine("");
+                                ShowOnlinePlayers();
                             }
                             else
                             {
-                                Console.WriteLine("Player tried to log out while its not logged in. \n\n");
+                                Console.WriteLine("User {0} tried to log out while its not logged in. \n\n", packet.From);
                             }
 
                             client.Socket.Close();
@@ -448,12 +443,14 @@ namespace Server
                             
                             if (!IsClientValid(toUserID)) break;
                             
+                            //If pending game already exists, do nothing
                             if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null)
                             {
                                 break;
                             }
                             else
                             {
+                                //Create new pending game
                                 Match match = new Match()
                                 {
                                     Client1 = client,
@@ -464,7 +461,6 @@ namespace Server
 
                                 //Send packet to client2
                                 Communicate(packet);
-
                                 break;
                             }
                         }
@@ -499,20 +495,11 @@ namespace Server
                         {
                             int from = int.Parse(packet.From);
                             int to = int.Parse(packet.To);
-
-
-
+                            
                             if (!IsClientValid(to)) break;
                             Client toClient = OnlinePlayers[to];
-                            
-                            //Send Refusal
-                            Packet refuse = new Packet()
-                            {
-                                From = packet.From,
-                                To = packet.To,
-                                Type = TcpMessageType.RefuseIncomingGameInvite
-                            };
-                            SendTcp.SendPacket(refuse, toClient.Socket);
+
+                            Communicate(packet);
 
                             //Remove game from PendinGames
                             Match pendinggame = PendingGames.Where(x => x.Client1 == toClient).FirstOrDefault();
@@ -536,16 +523,19 @@ namespace Server
                     case TcpMessageType.CancelFriendRequest:
                         {
                             Communicate(packet);
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.RefuseFriendRequest:
                         {
                             Communicate(packet);
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.AcceptFriendRequest:
                         {
                             Communicate(packet);
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     
