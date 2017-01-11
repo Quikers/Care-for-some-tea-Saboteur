@@ -1,20 +1,16 @@
-<div id="content-body">
-    
-    <div id="container">
-        <h1>Profile</h1><br>
-        <p>On this page you can edit your account information<br><br>If you want something to stay unchanged then leave it blank or don't change it's value.</p>
+<div id="container">
+    <h1>Profile</h1><br>
+    <p>On this page you can edit your account information<br><br>If you want something to stay unchanged then leave it blank or don't change it's value.</p>
 
-        <form class="forms" method="POST" action="<?= URL ?>dashboard/updateprofile">
-            <label for="email">E-mail</label><input id="email" type="text" name="email" autofocus disabled value="<?= $_SESSION["user"]["email"] ?>"> <a href="#" class="edit">edit</a><br>
-            <label for="username">Username</label><input id="username" type="text" name="username" disabled value="<?= $_SESSION["user"]["username"] ?>"> <a href="#" class="edit">edit</a><br>
-            <label for="password">Password</label><input pattern=".{4,}" title="The password needs to be a minimum of 4 characters long." id="password" type="password" name="password"><br>
-            <label for="cPassword">Confirm Password</label><input pattern=".{4,}" title="The password needs to be a minimum of 4 characters long." id="cPassword" type="password" name="cPassword"><br>
-            <p id="password-status">The passwords don't match.</p><br>
-            <input type="submit" value="Update">
-        </form>
-        
-    </div>
-    
+    <form class="forms" method="POST" action="<?= URL ?>dashboard/updateprofile">
+        <label for="email">E-mail</label><input id="email" type="text" name="email" autofocus disabled value="<?= $_SESSION["user"]["email"] ?>"> <a href="#" class="edit">edit</a><br>
+        <label for="username">Username</label><input id="username" type="text" name="username" disabled value="<?= $_SESSION["user"]["username"] ?>"> <a href="#" class="edit">edit</a><br>
+        <label for="password">Password</label><input pattern=".{4,}" title="The password needs to be a minimum of 4 characters long." id="password" type="password" name="password"><br>
+        <label for="cPassword">Confirm Password</label><input pattern=".{4,}" title="The password needs to be a minimum of 4 characters long." id="cPassword" type="password" name="cPassword"><br>
+        <p id="password-status">The passwords don't match.</p><br>
+        <input type="submit" value="Update">
+    </form>
+
 </div>
 
 
