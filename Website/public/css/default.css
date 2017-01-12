@@ -145,7 +145,6 @@ input[type="text"], input[type="password"], input[type="email"] {
 
 .forms label {
     width: 150px;
-    text-align: right;
     margin-right: 10px;
 }
 

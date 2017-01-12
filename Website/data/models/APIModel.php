@@ -181,17 +181,14 @@ class APIModel extends Model {
             array( "userid" => $userid ),
             true
         );
-
-        if (isset($result["id"])) {
-            $card_deck_relArr = $this->GetCardDeckRelByDeckID($result["id"]);
-
-            $result["cards"] = array();
-            if ($card_deck_relArr != false) {
-                foreach ($card_deck_relArr as $card_deck_rel) {
-                    array_push($result["cards"], $this->GetCardByCardID($card_deck_rel["cardid"]));
-                }
+        
+        if (is_numeric(array_keys($result)[0])) {
+            foreach($result as $key => $deck) {
+                $deck["cards"] = array();
+                $result[$key] = $deck;
             }
-
+        } else {
+            $result["cards"] = array();
         }
         
         if ($result != array() && $result != array(array())) {
