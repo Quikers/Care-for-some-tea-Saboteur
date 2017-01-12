@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Data
 {
-    [Serializable]
+    [System.Serializable]
     public struct Deck
     {
-        public string id;
-        public string userid;
+        public int id;
+        public int userid;
         public string deckname;
-        public string activated;
-        public string deleted;
+        public int activated;
+        public int deleted;
         public string created;
         public string editted;
-        public Card[] Cards;
+        public List<Card> cards;
     }
 }

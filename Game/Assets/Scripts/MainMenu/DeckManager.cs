@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace MainMenu
 {
@@ -20,35 +20,24 @@ namespace MainMenu
 
         public void BeginGameWithThisDeck()
         {
-            //UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+            System.Threading.Thread test = new System.Threading.Thread( GetDeck );
+            test.Start();
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+
+        }
+
+        void GetDeck()
+        {
             string json = Utilities.Api.Deck.ByDeckId( _deckId );
-            Debug.Log( json );
-
-            ArrayEntry temp = JsonConvert.DeserializeObject<ArrayEntry>( json );
-            Debug.Log( temp.deckname );
+            deckdata playerDeck = JsonUtility.FromJson<deckdata>( json );
+            Data.Player.CurrentDeck = playerDeck.data[ 0 ];
         }
-        
-        [System.Serializable]
-        public struct ArrayEntry
-        {
-            public string id;
-            public string userid;
-            public string deckname;
-            public string activated;
-            public string deleted;
-            public string created;
-            public string editted;
-            public Card[] Cards;
-        }
-        [System.Serializable]
-        public class Card
-        {
-            public string id;
-            public string energyCost;
-            public string effect;
 
-            public string currentAttack;
-            public string maxAttack;
+        [System.Serializable]
+        public class deckdata
+        {
+            public List<Data.Deck> data;
         }
     }
 }

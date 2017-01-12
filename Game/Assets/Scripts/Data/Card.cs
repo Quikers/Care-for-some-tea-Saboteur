@@ -1,25 +1,26 @@
-﻿using System;
-
-namespace Data
+﻿namespace Data
 {
-    [Serializable]
-    enum EffectType
+    [System.Serializable]
+    public struct effectobject
     {
-        Attack,
-        Battlecry,
-        Deathrattle,
-        Healing,
-        CanNotAttack
+        public int id;
+        public string effect;
     }
 
-    [Serializable]
+    [System.Serializable]
     public class Card
     {
-        public string id;
-        public string energyCost;
-        public string effect;
+        public int id;
+        public int userid;
+        public string cardname;
+        public string cardimage;
+        public effectobject effect;
 
-        public string currentAttack;
-        public string maxAttack;
+        public int attack;
+        public int health;
+        public int activated;
+        public int deleted;
+        public string created;
+        public string editted;
     }
 }

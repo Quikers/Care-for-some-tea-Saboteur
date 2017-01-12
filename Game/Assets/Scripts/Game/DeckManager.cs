@@ -10,7 +10,6 @@ namespace Game
         void Start()
         {
             PlayerDeck = Data.Player.CurrentDeck;
-
             for( int i = 0; i < 3; i++ )
             {
                 DrawCard();
@@ -18,7 +17,9 @@ namespace Game
         }
 
         void Update()
-        {}
+        {
+            Debug.Log( Data.Player.CurrentDeck.deckname );
+        }
 
         void DrawCard()
         {
