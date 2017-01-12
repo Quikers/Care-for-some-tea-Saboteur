@@ -155,9 +155,8 @@ namespace Server
         private static void HandlePacket(Packet packet, Client client)
         {
             if (packet == null) return;
-            Packet response = new Packet();
-            response.Type = TcpMessageType.Response;
 
+            //Check if sender and target are valid
             if (packet.From != "Server" && packet.From != "server" && packet.Type != TcpMessageType.Login) IsClientValid(int.Parse(packet.From));
             if (packet.To != "Server" && packet.To != "server") IsClientValid(int.Parse(packet.To));
 
@@ -233,7 +232,7 @@ namespace Server
                                 opponent = match.Client1;
                             }
 
-                            if (opponent != null) break;
+                            if (opponent == null) break;
 
                             //Switch PlayerAction
                             switch (packet.Variables["PlayerAction"])
@@ -539,7 +538,21 @@ namespace Server
                             SendSuccessResponse(packet, client);
                             break;
                         }
-                    
+                    case TcpMessageType.MatchEnd:
+                        {
+                            int fromUserID = int.Parse(packet.From);
+
+                            //Foreach Match in ActiveGames remove the match that has packet.from as userID for Client1 or Client2.
+                            int loopcount = 0;
+                            foreach(var x in ActiveGames.Where(x => x.Client1.UserID == fromUserID || x.Client2.UserID == fromUserID))
+                            {   
+                                ActiveGames.Remove(x);
+                                loopcount++;
+                                if (loopcount > 2) Console.WriteLine("UserID {0} tried to end the game while no active game was found.", fromUserID);
+                            }
+
+                            break;
+                        }
                 }
 
                 Console.WriteLine("====================================================");

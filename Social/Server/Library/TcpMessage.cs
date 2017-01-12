@@ -27,7 +27,8 @@ namespace Library {
         CancelFriendRequest = 19,
         RefuseFriendRequest = 20,
         AcceptFriendRequest = 21,
-        EndTurn = 22
+        EndTurn = 22,
+        MatchEnd = 23
     }
 
     public enum PlayerAction
