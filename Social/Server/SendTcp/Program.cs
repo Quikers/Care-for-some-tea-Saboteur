@@ -25,8 +25,9 @@ namespace SendTcp
 
             try
             {
-                client.Socket.Connect("213.46.57.198", 25002);
+                //client.Socket.Connect("213.46.57.198", 25002);
                 //client.Socket.Connect("127.0.0.1", 25002);
+                client.Socket.Connect("172.16.80.168", 25002);
             }
             catch(SocketException se)
             {
