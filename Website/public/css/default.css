@@ -160,5 +160,13 @@ input[type="text"], input[type="password"], input[type="email"] {
 }
 
 #container {
-    padding: 20px;
+    margin: 20px auto;
+    padding: 20px 30px 30px;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 550px;
+    
+    box-shadow: 2px 2px 15px #AAAAAA;
+    background: whitesmoke;
 }
