@@ -13,7 +13,7 @@ namespace Server
 {
 
     //receive data port = 25002;
-    //submit data port = 25003;;
+    //submit data port = 25003;
     class Program
     {
         private static Dictionary<int, Client> PlayerQueue;
@@ -158,8 +158,8 @@ namespace Server
             Packet response = new Packet();
             response.Type = TcpMessageType.Response;
 
-            if (packet.From != "Server") IsClientValid(int.Parse(packet.From));
-            if (packet.To != "Server") IsClientValid(int.Parse(packet.To));
+            if (packet.From != "Server" && packet.From != "server" && packet.Type != TcpMessageType.Login) IsClientValid(int.Parse(packet.From));
+            if (packet.To != "Server" && packet.To != "server") IsClientValid(int.Parse(packet.To));
 
             try
             {
@@ -359,7 +359,7 @@ namespace Server
                             int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
                             
-                            if (!packet.Variables.ContainsKey("Username") || username != "" || username != string.Empty)
+                            if (!packet.Variables.ContainsKey("Username") || username == "" || username == string.Empty)
                             {
                                 Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] { "ErrorMessage", "Please provide a valid username" });
                                 SendTcp.SendPacket(error, client.Socket);
@@ -411,12 +411,13 @@ namespace Server
                             if (IsClientValid(userID))
                             {
                                 Console.WriteLine("UserID {0} logged out", userID);
-                                SendSuccessResponse(packet, client);
 
-                                OnlinePlayers[userID].Socket.Close();
+                                OnlinePlayers.Where(x => x.Key == userID).FirstOrDefault().Value.Socket.Close();
                                 OnlinePlayers.Remove(userID);
 
                                 ShowOnlinePlayers();
+
+                                SendSuccessResponse(packet, client);
                             }
                             else
                             {
@@ -454,7 +455,7 @@ namespace Server
                                 Match match = new Match()
                                 {
                                     Client1 = client,
-                                    Client2 = OnlinePlayers[toUserID]
+                                    Client2 = OnlinePlayers.Where(x => x.Key == toUserID).FirstOrDefault().Value
                                 };
 
                                 PendingGames.Add(match);
@@ -497,7 +498,7 @@ namespace Server
                             int to = int.Parse(packet.To);
                             
                             if (!IsClientValid(to)) break;
-                            Client toClient = OnlinePlayers[to];
+                            Client toClient = OnlinePlayers.Where(x => x.Key == to).FirstOrDefault().Value;
 
                             Communicate(packet);
 
@@ -571,18 +572,18 @@ namespace Server
             Packet packet = new Packet("Server", ReceivedPacket.To, TcpMessageType.Response, new[] { "TcpMessageType", ReceivedPacket.Type.ToString() });
             SendTcp.SendPacket(packet, client.Socket);
         }
-
+        
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
             if (!IsClientValid(UserID)) return null;
-            else return OnlinePlayers[UserID];
+            else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
         }
 
         private static bool IsClientValid(int UserID)
         {
-            if (!IsClientValid(UserID)) return false;
-
-            Client user = OnlinePlayers[UserID];
+            if (OnlinePlayers.Count == 0) return false;
+            Client user = OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
+            if (user == null) return false;
 
             if (user.Socket.Connected)
             {
@@ -594,7 +595,6 @@ namespace Server
                 OnlinePlayers.Remove(UserID);
                 return false;
             }
-            
         }
 
         private static void SendPlayerList(Dictionary<int, Client> PlayerList)

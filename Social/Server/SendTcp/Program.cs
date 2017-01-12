@@ -23,7 +23,17 @@ namespace SendTcp
                 Socket = new TcpClient()
             };
 
-            client.Socket.Connect("213.46.57.198", 25002);
+            try
+            {
+                client.Socket.Connect("213.46.57.198", 25002);
+                //client.Socket.Connect("127.0.0.1", 25002);
+            }
+            catch(SocketException se)
+            {
+                Console.WriteLine(se);
+                Console.ReadLine();
+            }
+            
 
             Packet login = new Packet("3", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
             Packet sendmsg = new Packet("3", "2", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
