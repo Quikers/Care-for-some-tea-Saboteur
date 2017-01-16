@@ -18,6 +18,9 @@
 
 
 $(document).ready(function () {
+    var sessionEmail = "<?= $_SESSION["user"]["email"] ?>";
+    var sessionUsername = "<?= $_SESSION["user"]["username"] ?>";
+    
     function CheckPasswordValidity(input) {
         $("#cPassword").attr("required", true);
         
@@ -64,11 +67,7 @@ $(document).ready(function () {
             element.focus();
             element.select();
         }
-        else element.attr("disabled", true);
-    });
-    
-    $("input[type=\"text\"]").blur(function () {
-        $(this).attr("disabled", true);
+        else if (element.val() == sessionEmail || element.val() == sessionUsername) element.attr("disabled", true);
     });
 });
 
