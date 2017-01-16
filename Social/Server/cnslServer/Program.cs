@@ -166,29 +166,41 @@ namespace Server
                 {
                     case TcpMessageType.ChatMessage:
                         {
-                            int fromUserID = int.Parse(packet.From);
-                            int targetUserID = int.Parse(packet.To);
-                            string chatmessage = packet.Variables["Chatmessage"];
+                            //int fromUserID = int.Parse(packet.From);
+                            //int targetUserID = int.Parse(packet.To);
+                            //string chatmessage = packet.Variables["Chatmessage"];
 
-                            //Check if user is offline
-                            if (!IsClientValid(targetUserID))
-                            {
-                                Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
-                                SendErrorToClient("Server", client, "Chatmessage failed. User is offline.");
-                                return;
-                            } 
-                            else //if online
-                            {
-                                //Send Packet to destination
-                                SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
+                            ////Check if user is offline
+                            //if (!IsClientValid(targetUserID))
+                            //{
+                            //    Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
+                            //    SendErrorToClient("Server", client, "Chatmessage failed. User is offline.");
+                            //    return;
+                            //} 
+                            //else //if online
+                            //{
+                            //    //Send Packet to destination
+                            //    SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
 
-                                //Send response to sender
+                            //    //Send response to sender
+                            //    SendSuccessResponse(packet, client);
+
+                            //    Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
+                            //}
+
+                            //break;
+
+                            if (!Communicate(packet))
+                            {
+                                SendErrorToClient("Server", client, packet.Type, "Could not send message to offline user.");
+                                break;
+                            }
+                            else
+                            {
                                 SendSuccessResponse(packet, client);
-
-                                Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
+                                break;
                             }
                             
-                            break;
                         }
 
                     case TcpMessageType.Command:
@@ -215,7 +227,12 @@ namespace Server
 
                             //Get match
                             Match match = ActiveGames.Where(x => x.Client1 == client || x.Client2 == client).FirstOrDefault();
-                            if (match == null) break;
+
+                            if (match == null)
+                            {
+                                SendErrorToClient("Server", client, packet.Type, "Could not find active match");
+                                break;
+                            }
 
                             Client player = null;
                             Client opponent = null;
@@ -232,14 +249,25 @@ namespace Server
                                 opponent = match.Client1;
                             }
 
-                            if (opponent == null) break;
+                            //Check if opponent == null
+                            if (opponent == null)
+                            {
+                                SendErrorToClient(packet.From, client, packet.Type, "Could not connect with opponent");
+                                Console.WriteLine("Error in Program.cs > HandlePacket > PlayerUpdate : opponent == null");
+                                break;
+                            }
 
                             //Switch PlayerAction
                             switch (packet.Variables["PlayerAction"])
                             {
                                 case "PlayCard":
                                     {
-                                        if (!packet.Variables.ContainsKey("CardType")) break;
+                                        if (!packet.Variables.ContainsKey("CardType"))
+                                        {
+                                            SendErrorToClient("Server", client, packet.Type, "Invalid card");
+                                            Console.WriteLine("UserID {0} tried to process an invalid packet.", packet.From);
+                                            break;
+                                        } 
 
                                         switch (packet.Variables["CardType"])
                                         {
@@ -251,7 +279,12 @@ namespace Server
                                                         || (!packet.Variables.ContainsKey("EnergyCost"))
                                                         || (!packet.Variables.ContainsKey("EffectType")) 
                                                         || (!packet.Variables.ContainsKey("Effect")))
+                                                    {
+                                                        SendErrorToClient(packet.From, client, "Invalid packet");
+                                                        Console.WriteLine("UserID {0} tried to process an invalid packet. HandlePacket > PlayerUpdate > PlayCard > Minion", packet.From);
                                                         return;
+                                                    }
+                                                        
 
                                                     //Create packet for opponent
                                                     Packet minionPlayed = new Packet(
@@ -277,7 +310,12 @@ namespace Server
                                             case "Spell":
                                                 {
                                                     //Check requirements of incoming packet
-                                                    if ( (!packet.Variables.ContainsKey("EnergyCost")) || (!packet.Variables.ContainsKey("Effect")) ) break;
+                                                    if ((!packet.Variables.ContainsKey("EnergyCost")) || (!packet.Variables.ContainsKey("Effect")))
+                                                    {
+                                                        Console.WriteLine("UserID {0} tried to process an invalid packet. HandlePacket > PlayerUpdate > PlayCard > Spell", packet.From);
+                                                        SendErrorToClient("Server", client, "Invalid Packet.");
+                                                        break;
+                                                    }
 
                                                     //Create packet for opponent
                                                     Packet spellPlayed = new Packet(
@@ -343,14 +381,13 @@ namespace Server
                             {
                                 PlayerQueue.Add(client.UserID, client);
                                 Console.WriteLine("UserID {0} has been added to the player queue", client.UserID.ToString());
-                                SendSuccessResponse(packet, client);
                             }
                             else if (PlayerQueue.ContainsKey(client.UserID))
                             {
                                 Console.WriteLine("UserID {0} tried to add himself to the queue while he's already queued up!");
-                                SendSuccessResponse(packet, client);
                             }
-                            
+
+                            SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.Login:
@@ -358,12 +395,14 @@ namespace Server
                             int userID = int.Parse(packet.From);
                             string username = packet.Variables["Username"];
                             
+                            //Check for valid username
                             if (!packet.Variables.ContainsKey("Username") || username == "" || username == string.Empty)
                             {
                                 Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] { "ErrorMessage", "Please provide a valid username" });
                                 SendTcp.SendPacket(error, client.Socket);
                             }
 
+                            //Create new Client instance
                             Client _client = new Client
                             {
                                 UserID = userID,
@@ -371,7 +410,7 @@ namespace Server
                                 Socket = client.Socket
                             };
 
-                           
+                            //If client isnt logged in already: log in
                             if (!IsClientValid(_client.UserID))
                             {
                                 OnlinePlayers.Add(_client.UserID, _client);
@@ -381,7 +420,7 @@ namespace Server
                                 _client.Listen = new Thread(() => ListenToClient(_client));
                                 _client.Listen.Start();
                             }
-                            else
+                            else //If client is logged in, check its validity
                             {
                                 Console.WriteLine(_client.Username + " tried to log in while it's already logged in. Login aborted.");
 
@@ -421,6 +460,7 @@ namespace Server
                             else
                             {
                                 Console.WriteLine("User {0} tried to log out while its not logged in. \n\n", packet.From);
+                                SendSuccessResponse(packet, client);
                             }
 
                             client.Socket.Close();
@@ -428,9 +468,10 @@ namespace Server
                         }
                     case TcpMessageType.CancelMatchmaking:
                         {
-                            if (PlayerQueue.ContainsKey(int.Parse(packet.From)))
+                            int fromUserID = int.Parse(packet.From);
+                            if (PlayerQueue.ContainsKey(fromUserID))
                             {
-                                PlayerQueue.Remove(int.Parse(packet.From));
+                                PlayerQueue.Remove(fromUserID);
                             }
 
                             SendSuccessResponse(packet, client);
@@ -440,29 +481,28 @@ namespace Server
                         {
                             int fromUserID = int.Parse(packet.From);
                             int toUserID = int.Parse(packet.To);
-                            
-                            if (!IsClientValid(toUserID)) break;
+
+                            if (!IsClientValid(toUserID))
+                            {
+                                SendErrorToClient("Server", client, packet.Type, "Targeted user is offline.");
+                                break;
+                            }
                             
                             //If pending game already exists, do nothing
-                            if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                //Create new pending game
-                                Match match = new Match()
-                                {
-                                    Client1 = client,
-                                    Client2 = OnlinePlayers.Where(x => x.Key == toUserID).FirstOrDefault().Value
-                                };
+                            if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null) break;
 
-                                PendingGames.Add(match);
+                            //Create new pending game
+                            Match match = new Match()
+                            {
+                                Client1 = client,
+                                Client2 = OnlinePlayers.Where(x => x.Key == toUserID).FirstOrDefault().Value
+                            };
 
-                                //Send packet to client2
-                                Communicate(packet);
-                                break;
-                            }
+                            PendingGames.Add(match);
+
+                            //Send packet to client2
+                            Communicate(packet);
+                            break;
                         }
                     case TcpMessageType.CancelGameInvite:
                         {
@@ -483,6 +523,7 @@ namespace Server
                                     PendingGames.Remove(game);
                                     StartMatch(game);
                                 }
+                                else SendErrorToClient("Server", client, TcpMessageType.AcceptIncomingGameInvite, "Targeted user is offline");
                                 break;
                             }
                             else
@@ -502,7 +543,7 @@ namespace Server
                             Communicate(packet);
 
                             //Remove game from PendinGames
-                            Match pendinggame = PendingGames.Where(x => x.Client1 == toClient).FirstOrDefault();
+                            Match pendinggame = PendingGames.Where(x => x.Client1.UserID == toClient.UserID).FirstOrDefault();
                             if (pendinggame != null) PendingGames.Remove(pendinggame);
 
                             break;
@@ -512,7 +553,7 @@ namespace Server
                             int targetUserID = int.Parse(packet.To);
                             if (!IsClientValid(targetUserID))
                             {
-                                SendErrorToClient("Server", client, "Could not send friend request. Targeted user is offline.");
+                                SendErrorToClient("Server", client, packet.Type, "Could not send friend request. Targeted user is offline.");
                                 break;
                             }
 
@@ -534,8 +575,8 @@ namespace Server
                         }
                     case TcpMessageType.AcceptFriendRequest:
                         {
-                            Communicate(packet);
-                            SendSuccessResponse(packet, client);
+                            if (!Communicate(packet)) SendErrorToClient("Server", client, packet.Type, "Could not accept friend request. Targeted user is offline.");
+                            else SendSuccessResponse(packet, client);
                             break;
                         }
                     case TcpMessageType.MatchEnd:
@@ -548,7 +589,7 @@ namespace Server
                             {   
                                 ActiveGames.Remove(x);
                                 loopcount++;
-                                if (loopcount > 2) Console.WriteLine("UserID {0} tried to end the game while no active game was found.", fromUserID);
+                                if (loopcount > 1) Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd", fromUserID);
                             }
 
                             break;
@@ -646,8 +687,28 @@ namespace Server
 
         private static void SendErrorToClient(string from, Client to,  string errormessage)
         {
-            Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] {"ErrorMessage", errormessage });
-            SendTcp.SendPacket(packet, to.Socket);
+            try
+            {
+                Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] { "ErrorMessage", errormessage });
+                SendTcp.SendPacket(packet, to.Socket);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Error! In Program.cs > SendErrorToClient(). ErrorMessage: {0}", e.ToString());
+            }
+        }
+
+        private static void SendErrorToClient(string from, Client to, TcpMessageType receivedpackettype, string errormessage)
+        {
+            try
+            {
+                Packet packet = new Packet(from, to.UserID.ToString(), TcpMessageType.Error, new[] { "ErrorType", receivedpackettype.ToString(), "ErrorMessage", errormessage });
+                SendTcp.SendPacket(packet, to.Socket);
+            }catch(Exception e)
+            {
+                Console.WriteLine("Error! In Program.cs > SendErrorToClient(). ErrorMessage: {0}", e.ToString());
+            }
+            
         }
 
         private static bool Communicate(Packet packet)
