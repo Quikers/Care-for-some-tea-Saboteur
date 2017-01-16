@@ -63,19 +63,20 @@ namespace MainMenu
             try
             {
                 // login to social server.
-                SendTcp.SendPacket(
-                    new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Login,
-                        new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+                //SendTcp.SendPacket(
+                //    new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Login,
+                //        new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
             }
-            catch( Exception ex )
+            catch( SocketException ex )
             {                
                 Debug.Log( ex );
                 Utilities.Screen.LogError( ex );
 
-                Data.User.Empty();
                 Email.text = "";
                 Password.text = "";
                 LoginPanel.SetActive( false );
+                FindObjectOfType<LoginInfoManager>().Login();
+
                 return;
             }
             Email.text = "";

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -36,9 +37,9 @@ namespace Game
 
         public void OnDrag( PointerEventData eventData )
         {
-            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard") )
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
                 return;
-
+            
             RectTransform rt = GetComponent<RectTransform>();
 
             Vector3 globalMousePos;
@@ -76,14 +77,26 @@ namespace Game
             if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
                 return;
 
+
             transform.SetParent( ParentToReturnTo, true );
             transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
-            GetComponent<CanvasGroup>().blocksRaycasts = true;
+            GetComponent< CanvasGroup >().blocksRaycasts = true;
 
             if( gameObject.CompareTag( "almostBoardCard" ) )
+            {
                 gameObject.tag = "BoardCard";
+                Debug.Log( "Sibling Index: " + transform.GetSiblingIndex() );
+                GameManager.SetPlayerCard( transform.GetSiblingIndex(), GetComponent< CardManager >().CardId );
+            }
 
             Destroy( _placeHolder );
+
+            GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackManager ) );
+            coverImage.transform.SetParent( transform, false );
+            coverImage.GetComponent< Image >().rectTransform.anchorMin = Vector2.zero;
+            coverImage.GetComponent< Image >().rectTransform.anchorMax = Vector2.one;
+            coverImage.GetComponent< Image >().rectTransform.sizeDelta = Vector2.zero;
+            coverImage.GetComponent< CanvasGroup >().alpha = 0;
         }
     }
 }

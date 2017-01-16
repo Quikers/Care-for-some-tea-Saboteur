@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Utilities
 {
-    public static class Find
+    public class Find : MonoBehaviour
     {
         public static T InParents<T>( GameObject go ) where T : Component
         {
@@ -21,6 +21,17 @@ namespace Utilities
                 t = t.parent;
             }
             return comp;
+        }
+
+        public static CardManager CardById( int id )
+        {
+            CardManager[] Cards = FindObjectsOfType< CardManager >();
+            foreach( CardManager cardManager in Cards )
+            {
+                if( cardManager.CardId == id )
+                    return cardManager;
+            }
+            return null;
         }
     }
 
