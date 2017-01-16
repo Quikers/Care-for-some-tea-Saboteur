@@ -17,7 +17,7 @@ class Card {
     function __construct() { }
 
     public $getcardbycardid = "<p>Gets a <strong>card</strong> object from the database by searching for the <strong>card's</strong> <strong>cardID</strong>.<br>You can request multiple <strong>cards</strong> simultaneously by separating the <strong>cardIDs</strong> with a comma.<br><br>Usage:</p><pre>" . URL . "api/getcardbycardid/<strong>:cardid</strong>(,<strong>:cardid</strong>)</pre><br><p>Examples:</p><pre>" . URL . "api/getcardbycardid/1<br>" . URL . "api/getcardbycardid/1,2</pre>";
-    public $getcardbycardname = "<p>Gets a <strong>card</strong> object from the database by searching for the <strong>card's</strong> <strong>cardname</strong>.<br>You can request multiple <strong>cards</strong> simultaneously by separating the <strong>cardnames</strong> with a comma.<br><br>Usage:</p><pre>" . URL . "api/getcardbycardname/<strong>:cardname</strong>(,<strong>:cardname</strong>)</pre><br><p>Examples:</p><pre>" . URL . "api/getcardbycardname/testcard1<br>" . URL . "api/getcardbycardname/testcard1,testcard2</pre>";
+    public $geteffectbyeffectid = "<p>Gets an <strong>effect</strong> object from the database by searching for the <strong>effect's</strong> <strong>effectID</strong>.<br>You can request multiple <strong>effecs</strong> simultaneously by separating the <strong>effectIDs</strong> with a comma.<br><br>Usage:</p><pre>" . URL . "api/geteffectbyeffectid/<strong>:effectid</strong>(,<strong>:effectid</strong>)</pre><br><p>Examples:</p><pre>" . URL . "api/geteffectbyeffectid/1<br>" . URL . "api/geteffectbyeffectid/1,2</pre>";
 }
 
 class Deck {
@@ -65,35 +65,67 @@ class API extends Controller {
     public function getuserbyuserid($params = null) {
         if (count($params) > 0) {
             $includeFriends = false;
+            if (isset($params[1]) && strtolower($params[1]) == "true") { $includeFriends = true; }
             
-            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
-            echo json_encode($this->API->GetUserByUserID(explode(",", $params[0]), $includeFriends));
-        } else { echo 0; }
+            $result = NULL;
+            if (strpos($params[0], ",") != false) {
+                $result["data"] = array();
+                foreach(explode(",", $params[0]) as $userid) { array_push($result["data"], $this->API->GetUserByUserID($userid, $includeFriends)); }
+            } else if (is_numeric($params[0])) {
+                $result = $this->API->GetUserByUserID($params[0], $includeFriends);
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getuserbyemail($params = null) {
         if (count($params) > 0) {
             $includeFriends = false;
+            if (isset($params[1]) && strtolower($params[1]) == "true") { $includeFriends = true; }
             
-            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
-            echo json_encode($this->API->GetUserByEmail(explode(",", $params[0]), $includeFriends));
-        } else { echo 0; }
+            $result = NULL;
+            if (strpos($params[0], ",") != false) {
+                $result["data"] = array();
+                foreach(explode(",", $params[0]) as $userid) { array_push($result["data"], $this->API->GetUserByEmail($userid, $includeFriends)); }
+            } else if (strpos($params[0], "@") != false) {
+                $result = $this->API->GetUserByEmail($params[0], $includeFriends);
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getuserbyusername($params = null) {
         if (count($params) > 0) {
             $includeFriends = false;
+            if (isset($params[1]) && strtolower($params[1]) == "true") { $includeFriends = true; }
             
-            if (isset($params[1]) && $params[1] == "true") { $includeFriends = true; }
-            echo json_encode($this->API->GetUserByUsername(explode(",", $params[0]), $includeFriends));
-        } else { echo 0; }
+            $result = NULL;
+            if (strpos($params[0], ",") != false) {
+                $result["data"] = array();
+                foreach(explode(",", $params[0]) as $userid) { array_push($result["data"], $this->API->GetUserByUsername($userid, $includeFriends)); }
+            } else if (strpos($params[0], "@") != false) {
+                $result = $this->API->GetUserByUsername($params[0], $includeFriends);
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getuserfriends($params = null) {
         if (count($params) > 0) {
-            if (!is_numeric($params[0])) { echo 0; return; }
+            $result = NULL;
+            if (strpos($params[0], ",") != false) {
+                foreach (explode($params[0]) as $userid) { 
+                    if (is_numeric($userid)) { array_push($result["data"], $this->API->GetUserFriendsByUserID($userid)); }
+                    else { echo 0; return; }
+                }
+            } else if (is_numeric($params[0])) {
+                $result = $this->API->GetUserFriendsByUserID($params[0]);
+            } else { echo 0; return; }
             
-            echo json_encode($this->API->GetUserFriendsByUserID($params[0]));
+            echo json_encode($result);
         } else { echo 0; }
     }
     
@@ -105,34 +137,53 @@ class API extends Controller {
     
     public function getcardbycardid($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetCardByCardID(explode(",", $params[0])));
-        } else { echo 0; }
-    }
-    
-    public function getcardbycardname($params = null) {
-        if (count($params) > 0) {
-            echo json_encode($this->API->GetCardByCardName(explode(",", $params[0])));
-        } else { echo 0; }
+            $result = NULL;
+            if (strpos($params[0], ",") != false) {
+                $result["data"] = array();
+                foreach(explode(",", $params[0]) as $cardid) { array_push($result["data"], $this->API->GetCardByCardID($cardid)); }
+            } else if (is_numeric($params[0])) {
+                $result = $this->API->GetCardByCardID($params[0]);
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getdeckbydeckid($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetDeckByDeckID(explode(",", $params[0])));
-        } else { echo 0; }
+            $result = NULL;
+            if (is_numeric($params[0])) {
+                $result = $this->API->GetDeckByDeckID($params[0]);
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getdeckbyuserid($params = null) {
         if (count($params) > 0) {
-            echo json_encode($this->API->GetDeckByUserID(explode(",", $params[0])));
-        } else { echo 0; }
+            $result = NULL;
+            if (is_numeric($params[0])) {
+                $temp = $this->API->GetDeckByUserID($params[0]);
+                $result = array("data" => is_numeric(array_keys($temp)[0]) ? $temp : array($temp));
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
     
     public function getdeckbyusername($params = null) {
         if (count($params) > 0) {
-            $user = $this->API->GetUserByUsername(array($params[0]), false);
-            if (isset($user["data"])) { $user = $user["data"][0]["id"]; }
-            echo json_encode($this->API->GetDeckByUserID(array($user)));
-        } else { echo 0; }
+            $userid = $this->API->GetUserByUsername(array($params[0]), false)["id"];
+            
+            $result = NULL;
+            if (is_numeric($userid)) {
+                $temp = $this->API->GetDeckByUserID($userid);
+                $result = array("data" => is_numeric(array_keys($temp)[0]) ? $temp : array($temp));
+            } else { echo 0; return; }
+            
+            echo json_encode($result);
+        } else { echo 0; return; }
     }
 
 }

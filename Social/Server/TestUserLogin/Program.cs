@@ -22,7 +22,8 @@ namespace TestUserLogin
 
             AppDomain.CurrentDomain.ProcessExit += (o,e) => CurrentDomain_ProcessExit(null, null, client);
 
-            client.Socket.Connect("213.46.57.198", 25002);
+            //client.Socket.Connect("213.46.57.198", 25002);
+            client.Socket.Connect("127.0.0.1", 25002);
 
             Packet login = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Login, new[] { "UserID", client.UserID.ToString(), "Username", client.Username });
             Packet logout = new Packet(client.UserID.ToString(), "Server", TcpMessageType.Logout, new Dictionary<string, string>());

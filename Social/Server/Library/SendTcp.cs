@@ -21,9 +21,9 @@ namespace Library
             int read = stream.Read(bytes, 0, bytes.Length);
             data = Encoding.ASCII.GetString(new List<byte>(bytes).GetRange(0, read).ToArray());
 
-            Console.WriteLine("Received: {0}", data);
-
             if (data == null || data == "" || data == string.Empty) return null;
+
+            Console.WriteLine("Received: {0}", data);
             return new Packet(data);
         }
 

@@ -9,7 +9,7 @@ class Database extends PDO
         $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
     
-    public function Query($sql, $variables,$format = true, $returnLastInsertedID = false, $returnRowCount = false) {
+    public function Query($sql, $variables, $format = true, $returnLastInsertedID = false, $returnRowCount = false) {
         $stmt = $this->prepare($sql);
         $stmt->execute($variables);
         
