@@ -28,7 +28,8 @@ namespace Library {
         RefuseFriendRequest = 20,
         AcceptFriendRequest = 21,
         EndTurn = 22,
-        MatchEnd = 23
+        MatchEnd = 23,
+        Broadcast = 24
     }
 
     public enum PlayerAction
@@ -58,7 +59,8 @@ namespace Library {
                 string[] keyValue = pair.Split(new[] { "\\2\\" }, StringSplitOptions.None);
                 switch (keyValue[0]) {
                     default:
-                        packet.Variables.Add(keyValue[0], keyValue[1]);
+                        if (!packet.Variables.ContainsKey(keyValue[0]))
+                            packet.Variables.Add(keyValue[0], keyValue[1]);
                         break;
                     case "From":
                         packet.From = keyValue[1];
@@ -110,15 +112,18 @@ namespace Library {
                 Variables = variables;
         }
 
-        public Packet(string from, string to, TcpMessageType type, string[] variable) {
+        public Packet(string from, string to, TcpMessageType type, string[] variable)
+        {
             From = from;
             To = to;
             Type = type;
 
             if (variable.Length <= 0)
                 return;
-            for (int i = 0; i < variable.Length; i += 2) {
-                Variables.Add(variable[i], variable[i + 1]);
+            for (int i = 0; i < variable.Length; i += 2)
+            {
+                if (!Variables.ContainsKey(variable[i]))
+                    Variables.Add(variable[i], variable[i + 1]);
             }
         }
 
@@ -133,3 +138,4 @@ namespace Library {
         }
     }
 }
+

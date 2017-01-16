@@ -22,7 +22,7 @@ namespace Server
         private static List<Match> PendingGames;
         private static Dictionary<Client, Client> PendingInvites;
 
-        private static NetworkStream stream;
+        //private static NetworkStream stream;
 
         static void Main(string[] args)
         {   
@@ -75,7 +75,6 @@ namespace Server
                 packet1.Type = TcpMessageType.MatchStart;
                 var variables = new Dictionary<string, string>();
                 variables.Add("UserID", match.Client2.UserID.ToString());
-                variables.Add("UserIP", match.Client2.Socket.Client.LocalEndPoint.ToString());
                 packet1.Variables = variables;
 
                 SendTcp.SendPacket(packet1, match.Client1.Socket);
@@ -87,7 +86,6 @@ namespace Server
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("UserID", match.Client1.UserID.ToString());
-                variables2.Add("UserIP", match.Client1.Socket.Client.LocalEndPoint.ToString());
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
@@ -448,19 +446,15 @@ namespace Server
 
                             if (IsClientValid(userID))
                             {
-                                Console.WriteLine("UserID {0} logged out", userID);
-
                                 OnlinePlayers.Where(x => x.Key == userID).FirstOrDefault().Value.Socket.Close();
                                 OnlinePlayers.Remove(userID);
+                                Console.WriteLine("UserID {0} logged out", userID);
 
                                 ShowOnlinePlayers();
-
-                                SendSuccessResponse(packet, client);
                             }
                             else
                             {
                                 Console.WriteLine("User {0} tried to log out while its not logged in. \n\n", packet.From);
-                                SendSuccessResponse(packet, client);
                             }
 
                             client.Socket.Close();
@@ -594,6 +588,12 @@ namespace Server
 
                             break;
                         }
+                    case TcpMessageType.Broadcast:
+                        {
+                            Task broadcast = new Task(() => Broadcast(packet));
+                            broadcast.Start();
+                            break;
+                        }
                 }
 
                 Console.WriteLine("====================================================");
@@ -671,6 +671,7 @@ namespace Server
         { 
             foreach (var player in OnlinePlayers)
             {
+                packet.Type = TcpMessageType.ChatMessage;
                 SendTcp.SendPacket(packet, player.Value.Socket);
             }
         }
