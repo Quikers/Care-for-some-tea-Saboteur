@@ -23,7 +23,7 @@ namespace Library
 
             if (data == null || data == "" || data == string.Empty) return null;
 
-            Console.WriteLine("Received: {0}", data);
+            //Console.WriteLine("Received: {0}", data);
             return new Packet(data);
         }
 
@@ -39,7 +39,7 @@ namespace Library
             // Send the message to the connected TcpServer. 
             stream.Write(data, 0, data.Length);
 
-            Console.WriteLine("Sent: {0}", packet.ToString());
+            //Console.WriteLine("Sent: {0}", packet.ToString());
         }
     }
 }

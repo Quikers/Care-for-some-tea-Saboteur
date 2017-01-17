@@ -13,6 +13,8 @@ namespace SendTcp
     class Program
     {
         static Client client;
+        static int targetID = 20;
+
 
         static void Main(string[] args)
         {
@@ -37,7 +39,7 @@ namespace SendTcp
             
 
             Packet login = new Packet("3", "Server", TcpMessageType.Login, new[] { "UserID", "3", "Username", "Shifted" });
-            Packet sendmsg = new Packet("3", "2", TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
+            Packet sendmsg = new Packet("3", targetID.ToString(), TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
             Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
             Packet addtoqueue = new Packet("3", "Server", TcpMessageType.AddPlayerToQueue);
 
