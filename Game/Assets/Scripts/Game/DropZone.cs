@@ -5,29 +5,39 @@ namespace Game
 {
     public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        public GameObject CardCamera;
+        public Transform CardArea;
+
         public void OnPointerEnter( PointerEventData eventData )
         {
             if( eventData.pointerDrag == null )
                 return;
 
             Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
-            if( d != null )
-            {
-                d.PlaceHolderParent = transform;
-                d.transform.rotation = transform.rotation;
-            }
+
+            if( d == null ) return;
+
+            d.PlaceHolderParent = CardArea;
+            d.transform.rotation = CardArea.rotation;
+
+            //if( eventData.pointerDrag != null )
+                //CardCamera.SetActive( true );
+
         }
 
         public void OnPointerExit( PointerEventData eventData )
         {
+
             if( eventData.pointerDrag == null )
                 return;
 
             Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
-            if( d != null && d.PlaceHolderParent == transform )
-            {
-                d.PlaceHolderParent = d.ParentToReturnTo;
-            }
+
+            if( d == null || d.PlaceHolderParent != CardArea ) return;
+
+            //CardCamera.SetActive( false );
+
+            d.PlaceHolderParent = d.ParentToReturnTo;
         }
 
         public void OnDrop( PointerEventData eventData )
@@ -37,11 +47,13 @@ namespace Game
             if( d == null )
                 return;
 
-            d.ParentToReturnTo = transform;
-            d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, transform.position.z );
+            d.ParentToReturnTo = CardArea;
+            d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, CardArea.position.z );
 
-            if( gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
+            if( CardArea.gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
+            {
                 d.gameObject.tag = "almostBoardCard";
+            }
         }
     }
 }

@@ -17,13 +17,14 @@ namespace Game
         }
         void Update()
         {
-            // this is only for now. Will be changed and later thank god for that.
-            if( Data.Turn.CurrentPhase != Data.TurnType.RemotePlayer ) return;
+            // this is only for now. Will be changed later and thank god for that.
+            if( CurrentPhase != Data.TurnType.RemotePlayer ) return;
 
             if( a >= 500)
             {
-                Data.Turn.CurrentPhase = Data.TurnType.LocalPlayer;
+                CurrentPhase = Data.TurnType.LocalPlayer;
                 PhaseValueText.text = Data.TurnType.LocalPlayer.ToString();
+
                 a = 0;
             }
             a++;
@@ -34,10 +35,16 @@ namespace Game
             get { return Data.Turn.CurrentPhase; }
             set
             {
-                //if( value == Data.TurnType.LocalPlayer )
-                    //Game
                 Data.Turn.CurrentPhase = value;
                 PhaseValueText.text = value.ToString();
+
+                if( value == Data.TurnType.LocalPlayer )
+                {
+                    FindObjectOfType< DeckManager >().DrawCard();
+                    NextTurnButton.interactable = true;
+                }
+                else
+                    NextTurnButton.interactable = false;
             }
         }
 
@@ -49,8 +56,7 @@ namespace Game
                 TurnValueText.text = value.ToString();
                 Data.Turn.CurrentTurn = value;
 
-                PhaseValueText.text = Data.Turn.First.ToString();
-                Data.Turn.CurrentPhase = Data.Turn.First;
+                CurrentPhase = Data.Turn.First;
             }
         }
 

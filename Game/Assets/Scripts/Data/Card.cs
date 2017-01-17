@@ -13,7 +13,7 @@
         public int id;
         public int userid;
         public string cardname;
-        public string cardimage;
+        public int cost;
         public effectobject effect;
 
         public int attack;
