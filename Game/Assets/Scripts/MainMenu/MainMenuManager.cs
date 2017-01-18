@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
+
+    bool gameStart;
     public void LoadScene( string SceneName )
     {
         SceneManager.LoadScene( SceneName );
@@ -15,20 +17,22 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene( SceneId );
     }
 
-    public void AddToQueue( int DeckId )
+    void Update()
     {
-        if( Data.User.Id == 0 ) return;
-        SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
-
-        Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
-        Thread queueThread = new Thread( CheckQueue );
+        if( gameStart )
+            LoadScene( "main" );
     }
 
-    void CheckQueue()
+    public void AddToQueue( int DeckId )
     {
-        while( true )
-        {
-            Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
-        }
+        if( Data.PlayerUser.Id == 0 ) return;
+        SendTcp.SendPacket( new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
+
+        //Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
+    }
+
+    void ServerListener()
+    {
+        GetComponent<NetworkController>().StartListener();
     }
 }

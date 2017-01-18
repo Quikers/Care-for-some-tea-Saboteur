@@ -12,16 +12,23 @@ namespace Game
 
         GameObject _placeHolder = null;
 
+        GameObject _playerDrop;
+
+        void Start()
+        {
+            _playerDrop = Resources.FindObjectsOfTypeAll< DropZone >()[ 1 ].gameObject;
+        }
+
         public void OnBeginDrag( PointerEventData eventData )
         {
             if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
                 return;
 
-            _placeHolder = new GameObject( "Place Holder" );
+            _placeHolder = new GameObject( "Place Holder", typeof( LayoutElement ) );
             _placeHolder.transform.SetParent( transform.parent, false );
-            LayoutElement le = _placeHolder.AddComponent<LayoutElement>();
-            le.preferredWidth = GetComponent<LayoutElement>().preferredWidth;
-            le.preferredHeight= GetComponent<LayoutElement>().preferredHeight;
+            LayoutElement le = _placeHolder.GetComponent< LayoutElement >();
+            le.preferredWidth = GetComponent< LayoutElement >().preferredWidth;
+            le.preferredHeight = GetComponent< LayoutElement >().preferredHeight;
 
             le.flexibleWidth = 0;
             le.flexibleHeight = 0;
@@ -30,9 +37,10 @@ namespace Game
 
             ParentToReturnTo = transform.parent;
             PlaceHolderParent = ParentToReturnTo;
-            transform.SetParent( Utilities.Find.InParents<Canvas>( gameObject ).transform );
+            transform.SetParent( Utilities.Find.InParents< Canvas >( gameObject ).transform );
 
             GetComponent<CanvasGroup>().blocksRaycasts = false;
+            _playerDrop.SetActive( true );
         }
 
         public void OnDrag( PointerEventData eventData )
@@ -69,15 +77,14 @@ namespace Game
                     break;
                 }
             }
-            _placeHolder.transform.SetSiblingIndex( newSiblingIndex );
+             _placeHolder.transform.SetSiblingIndex( newSiblingIndex );
         }
 
         public void OnEndDrag( PointerEventData eventData )
         {
             if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
                 return;
-
-
+            
             transform.SetParent( ParentToReturnTo, true );
             transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
             GetComponent< CanvasGroup >().blocksRaycasts = true;
@@ -87,16 +94,17 @@ namespace Game
                 gameObject.tag = "BoardCard";
                 Debug.Log( "Sibling Index: " + transform.GetSiblingIndex() );
                 GameManager.SetPlayerCard( transform.GetSiblingIndex(), GetComponent< CardManager >().CardId );
+
+                GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackController ) );
+                coverImage.transform.SetParent( transform, false );
+                coverImage.GetComponent<Image>().rectTransform.anchorMin = Vector2.zero;
+                coverImage.GetComponent<Image>().rectTransform.anchorMax = Vector2.one;
+                coverImage.GetComponent<Image>().rectTransform.sizeDelta = Vector2.zero;
+                coverImage.GetComponent<CanvasGroup>().alpha = 0;
+
             }
-
             Destroy( _placeHolder );
-
-            GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackManager ) );
-            coverImage.transform.SetParent( transform, false );
-            coverImage.GetComponent< Image >().rectTransform.anchorMin = Vector2.zero;
-            coverImage.GetComponent< Image >().rectTransform.anchorMax = Vector2.one;
-            coverImage.GetComponent< Image >().rectTransform.sizeDelta = Vector2.zero;
-            coverImage.GetComponent< CanvasGroup >().alpha = 0;
+            _playerDrop.SetActive( false );
         }
     }
 }

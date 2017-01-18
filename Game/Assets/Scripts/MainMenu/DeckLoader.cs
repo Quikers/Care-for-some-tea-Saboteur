@@ -8,7 +8,7 @@ public class DeckLoader : MonoBehaviour
 
     void OnEnable()
     {
-        string json = Utilities.Api.Deck.ByUserId( Data.User.Id );
+        string json = Utilities.Api.Deck.ByUserId( Data.PlayerUser.Id );
         DeckData playerDeck = JsonUtility.FromJson< DeckData >( json );
 
         foreach( var Deck in playerDeck.data )

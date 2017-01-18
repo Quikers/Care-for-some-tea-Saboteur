@@ -3,11 +3,11 @@
 namespace Data
 {
     [Serializable]
-    struct User
+    struct PlayerUser
     {
-        public static int Id;
+        public static int Id = 5;
         public static string Email;
-        public static string Username;
+        public static string Username = "jemoeders";
         public static int AccountType;
         public static string TimeCreated;
         public static string TimeEdited;
@@ -22,5 +22,10 @@ namespace Data
             TimeCreated = "";
             TimeEdited = "";
         }
+    }
+
+    struct EnemyUser
+    {
+        public static int Id;
     }
 }
