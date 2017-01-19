@@ -30,6 +30,8 @@ public class NetworkController : MonoBehaviour
 
                 GameStart = true;
                 break;
+            case TcpMessageType.Command:
+                break;
             default:
                 Debug.Log( recievedPacket );
                 break;

@@ -4,32 +4,76 @@ using UnityEngine.UI;
 public class CardManager : MonoBehaviour
 {
     public int CardId;
-    public string Cardname;
-    public int Cardcost;
-    public Data.effectobject Effect;
+    string cardname;
+    int cardCost;
+    Data.effectobject effect;
+    int attack;
+    int health;
 
-    public int Attack;
-    public int Health;
+    public string Cardname
+    {
+        get { return cardname; }
+        set
+        {
+            CardTitleText.text = value;
+            cardname = value;
+        }
+    }
 
-    public Text CardCost;
-    public Text CardTitle;
-    public Text CardDiscr;
-    public Text CardHealth;
-    public Text CardEnergy;
+    public int CardCost
+    {
+        get { return cardCost; }
+        set
+        {
+            cardCost = value;
+            CardCostText.text = cardCost.ToString();
 
-    public void Instantiate( Data.Card dataObject )
+        }
+    }
+
+    public Data.effectobject Effect
+    {
+        get { return effect; }
+        set
+        {
+            CardDiscrText.text = value.effect;
+            effect = value;
+        }
+    }
+
+    public int Attack
+    {
+        get { return attack; }
+        set
+        {
+            CardAttackText.text = value.ToString();
+            attack = value;
+        }
+    }
+
+    public int Health
+    {
+        get { return health; }
+        set
+        {
+            CardHealthText.text = value.ToString();
+            health = value;
+        }
+    }
+
+    public Text CardCostText;
+    public Text CardTitleText;
+    public Text CardDiscrText;
+    public Text CardHealthText;
+    public Text CardAttackText;
+
+    public void InstantiateCard( Data.Card dataObject )
     {
         CardId = dataObject.id;
-        Cardname = dataObject.cardname;
-        Cardcost = dataObject.cost;
+        Cardname = dataObject.name;
+        CardCost = dataObject.cost;
         Effect = dataObject.effect;
         Attack = dataObject.attack;
         Health = dataObject.health;
-
-        CardTitle.text = Cardname;
-        CardCost.text = Cardcost.ToString();
-        CardDiscr.text = Effect.effect;
-        CardHealth.text = Attack.ToString();
-        CardEnergy.text = Health.ToString();
     }
 }

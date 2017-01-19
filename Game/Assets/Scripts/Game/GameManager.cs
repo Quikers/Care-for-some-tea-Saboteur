@@ -37,10 +37,5 @@ namespace Game
         //    if( !canvasRect.Contains( Input.mousePosition ) )
         //    { }
         //}
-
-        void Awake()
-        {
-        }
-
     }
 }

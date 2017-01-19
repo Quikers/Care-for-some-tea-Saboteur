@@ -7,6 +7,13 @@ namespace Game
     {
         public bool IsAttacking;
 
+        public CardManager cardData;
+
+        void Start()
+        {
+            cardData = GetComponentInParent< CardManager >();
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             Debug.Log( "dinenggg" );

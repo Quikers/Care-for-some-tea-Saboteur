@@ -12,10 +12,9 @@ namespace Game
         bool _startCards;
         void LateUpdate()
         {
-            
-            if( Data.Player.CurrentDeck.deckname == null | _startCards ) return;
-            Debug.Log( Data.Player.CurrentDeck.deckname );
-            Debug.Log( _startCards );
+            Debug.Log( Data.Player.CurrentDeck.name );
+
+            if( Data.Player.CurrentDeck.name == null | _startCards ) return;
 
             for( int i = 0; i < 3; i++ )
             {
@@ -24,22 +23,23 @@ namespace Game
             }
         }
 
-        bool IsInHand(int index)
+        bool IsInHand( int index )
         {
             return DrawnCards.Any( t => t == index );
         }
 
         public void DrawCard()
         {
+            //Instantiate( Card, Vector3.zero, Quaternion.identity );
             if( transform.childCount > 8 ) return;
 
             float randomNum = Random.Range( 0, 19 );
             while( IsInHand( ( int )randomNum ) ) randomNum = Random.Range( 0, 19 );
             Data.Card drawnCard = Data.Player.CurrentDeck.cards[ ( int )randomNum ];
 
-            CardManager card = Instantiate( Card, Vector3.zero, Quaternion.identity ).GetComponent<CardManager>();
+            GameObject card = Instantiate( Card, Vector3.zero, Quaternion.identity );
 
-            card.Instantiate( drawnCard );
+            card.GetComponent<CardManager>().InstantiateCard( drawnCard );
             card.transform.SetParent( transform, false );
         }
         

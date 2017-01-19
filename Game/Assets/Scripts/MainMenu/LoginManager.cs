@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Security.Policy;
 using Library;
 using UnityEngine.UI;
 using UnityEngine;
@@ -26,26 +23,26 @@ namespace MainMenu
 
         public void Login()
         {
-            //string login = Utilities.Api.User.ByEmail( Email.text, Password.text );
+            string login = Utilities.Api.User.ByEmail( Email.text, Password.text );
 
-            //if( login == null )
-            //{
-            //    message = "Could not connect to server.";
-            //    Debug.Log( message );
-            //    return;
-            //}
+            if( login == null )
+            {
+                message = "Could not connect to server.";
+                Debug.Log( message );
+                return;
+            }
 
             try
             {
-                //TempUserData temp = JsonUtility.FromJson< TempUserData >( login );
+                TempUserData temp = JsonUtility.FromJson< TempUserData >( login );
 
-                //// transfer data to user object.
-                //Data.PlayerUser.Email = temp.email;
-                //Data.PlayerUser.TimeCreated = temp.created;
-                //Data.PlayerUser.TimeEdited = temp.editted;
-                //Data.PlayerUser.Username = temp.username;
-                //Data.PlayerUser.AccountType = temp.accountType;
-                //Data.PlayerUser.Id = temp.id;
+                // transfer data to user object.
+                Data.PlayerUser.Email = temp.email;
+                Data.PlayerUser.TimeCreated = temp.created;
+                Data.PlayerUser.TimeEdited = temp.editted;
+                Data.PlayerUser.Username = temp.username;
+                Data.PlayerUser.AccountType = temp.accountType;
+                Data.PlayerUser.Id = temp.id;
             }
             catch( Exception ex )
             {
