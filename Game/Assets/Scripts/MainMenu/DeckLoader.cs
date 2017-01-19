@@ -8,17 +8,21 @@ public class DeckLoader : MonoBehaviour
 
     void OnEnable()
     {
+        GetDecks();
+    }
+
+    public void GetDecks()
+    {
         string json = Utilities.Api.Deck.ByUserId( Data.PlayerUser.Id );
-        DeckData playerDeck = JsonUtility.FromJson< DeckData >( json );
+        DeckData playerDeck = JsonUtility.FromJson<DeckData>( json );
 
         foreach( var Deck in playerDeck.data )
         {
             MainMenu.DeckManager deckManager =
-                Instantiate( DeckSelect, Vector3.zero, Quaternion.identity ).GetComponent< MainMenu.DeckManager >();
+                Instantiate( DeckSelect, Vector3.zero, Quaternion.identity ).GetComponent<MainMenu.DeckManager>();
             deckManager.transform.SetParent( transform, false );
             deckManager.Instantiate( Deck );
         }
-
     }
 
     struct DeckData
