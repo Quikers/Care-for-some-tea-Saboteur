@@ -29,7 +29,8 @@ namespace Library {
         AcceptFriendRequest = 21,
         EndTurn = 22,
         MatchEnd = 23,
-        Broadcast = 24
+        Broadcast = 24,
+        DrawCard = 25
     }
 
     public enum PlayerAction

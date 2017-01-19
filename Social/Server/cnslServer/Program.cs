@@ -75,6 +75,7 @@ namespace Server
                 packet1.Type = TcpMessageType.MatchStart;
                 var variables = new Dictionary<string, string>();
                 variables.Add("UserID", match.Client2.UserID.ToString());
+                variables.Add("Username", match.Client2.Username);
                 packet1.Variables = variables;
 
                 SendTcp.SendPacket(packet1, match.Client1.Socket);
@@ -86,6 +87,7 @@ namespace Server
                 packet2.Type = TcpMessageType.MatchStart;
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("UserID", match.Client1.UserID.ToString());
+                variables2.Add("Username", match.Client1.Username);
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
@@ -118,9 +120,7 @@ namespace Server
 
                 // Enter the listening loop.
                 while (true)
-                {
-                    // Perform a blocking call to accept requests.
-                    // You could also user server.AcceptSocket() here.
+                {   
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine("Incoming connection detected.");
                     
@@ -129,14 +129,6 @@ namespace Server
                     if (packet == null) continue;
 
                     HandlePacket(packet, new Client {Socket = client });
-
-                    // Send back a response.
-                    //if(Response != null)
-                    //{
-                    //    byte[] msg = System.Text.Encoding.ASCII.GetBytes(Response.ToString());
-                    //    stream.Write(msg, 0, msg.Length);
-                    //    Console.WriteLine("Sent: {0}", Response.ToString());
-                    //}
                 }
             }
             catch (SocketException e)
@@ -208,13 +200,7 @@ namespace Server
                         break;
 
                     case TcpMessageType.Message:
-                        {
-                            //int from = int.Parse(packet.From);
-                            //int to = int.Parse(packet.To);
-                            //string message = packet.Variables["Message"];
-                            //string IPdestination = packet.Variables["IPdestination"];
-                            break;
-                        }
+                        break;
 
                     case TcpMessageType.None:
                         break;
@@ -592,6 +578,11 @@ namespace Server
                         {
                             Task broadcast = new Task(() => Broadcast(packet));
                             broadcast.Start();
+                            break;
+                        }
+                    case TcpMessageType.DrawCard:
+                        {
+                            Communicate(packet);
                             break;
                         }
                 }
