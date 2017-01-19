@@ -12,7 +12,7 @@
     {
         public int id;
         public int userid;
-        public string cardname;
+        public string name;
         public int cost;
         public effectobject effect;
 

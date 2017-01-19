@@ -7,7 +7,7 @@ namespace Data
     {
         public int id;
         public int userid;
-        public string deckname;
+        public string name;
         public int activated;
         public int deleted;
         public string created;

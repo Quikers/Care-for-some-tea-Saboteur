@@ -21,11 +21,12 @@ namespace MainMenu
         public void Instantiate( Data.Deck dataObject )
         {
             _deckId = dataObject.id;
-            DeckName = dataObject.deckname;
+            DeckName = dataObject.name;
         }
 
         public void BeginGameWithThisDeck()
         {
+            Debug.Log( _deckId );
             System.Threading.Thread test = new System.Threading.Thread( GetDeck );
             test.Start();
 
@@ -35,8 +36,8 @@ namespace MainMenu
         void GetDeck()
         {
             string json = Utilities.Api.Deck.ByDeckId( _deckId );
-            Data.Deck playerDeck = JsonUtility.FromJson<Data.Deck>( json );
-            Data.Player.CurrentDeck = playerDeck ;
+            Data.Deck playerDeck = JsonUtility.FromJson< Data.Deck >( json );
+            Data.Player.CurrentDeck = playerDeck;
         }
     }
 }

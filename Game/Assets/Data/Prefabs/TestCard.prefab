@@ -272,11 +272,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec04e8e6ee0171b4eb99e3f8e0a8822d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardCost: {fileID: 114839886819511070}
-  CardTitle: {fileID: 114601600248130640}
-  CardDiscr: {fileID: 114754081035282366}
-  CardHealth: {fileID: 114972892900780690}
-  CardEnergy: {fileID: 114751292977018228}
+  CardId: 0
+  CardCostText: {fileID: 114839886819511070}
+  CardTitleText: {fileID: 114601600248130640}
+  CardDiscrText: {fileID: 114754081035282366}
+  CardHealthText: {fileID: 114972892900780690}
+  CardAttackText: {fileID: 114751292977018228}
 --- !u!114 &114839886819511070
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -15,20 +15,16 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene( SceneId );
     }
 
-    public void AddToQueue( int DeckId )
+    public void AddToQueue()
     {
-        if( Data.User.Id == 0 ) return;
-        SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+        if( Data.PlayerUser.Id == 0 ) return;
+        SendTcp.SendPacket( new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
 
-        Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
-        Thread queueThread = new Thread( CheckQueue );
+        //Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
     }
 
-    void CheckQueue()
+    void ServerListener()
     {
-        while( true )
-        {
-            Debug.Log( SendTcp.ReceivePacket( Data.Network.ServerSocket ) );
-        }
+        GetComponent<NetworkController>().StartListener();
     }
 }

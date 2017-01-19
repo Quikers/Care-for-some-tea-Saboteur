@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Security.Policy;
 using Library;
 using UnityEngine.UI;
 using UnityEngine;
@@ -40,19 +37,19 @@ namespace MainMenu
                 TempUserData temp = JsonUtility.FromJson< TempUserData >( login );
 
                 // transfer data to user object.
-                Data.User.Email = temp.email;
-                Data.User.TimeCreated = temp.created;
-                Data.User.TimeEdited = temp.editted;
-                Data.User.Username = temp.username;
-                Data.User.AccountType = temp.accountType;
-                Data.User.Id = temp.id;
+                Data.PlayerUser.Email = temp.email;
+                Data.PlayerUser.TimeCreated = temp.created;
+                Data.PlayerUser.TimeEdited = temp.editted;
+                Data.PlayerUser.Username = temp.username;
+                Data.PlayerUser.AccountType = temp.accountType;
+                Data.PlayerUser.Id = temp.id;
             }
             catch( Exception ex )
             {
                 Debug.Log( ex );
                 Utilities.Screen.LogError( ex );
 
-                Data.User.Empty();
+                Data.PlayerUser.Empty();
                 Email.text = "";
                 Password.text = "";
                 LoginPanel.SetActive( false );
@@ -63,9 +60,9 @@ namespace MainMenu
             try
             {
                 // login to social server.
-                //SendTcp.SendPacket(
-                //    new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Login,
-                //        new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+                SendTcp.SendPacket(
+                    new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.Login,
+                        new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
             }
             catch( SocketException ex )
             {                

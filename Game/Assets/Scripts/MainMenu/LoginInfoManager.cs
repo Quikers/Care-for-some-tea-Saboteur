@@ -15,12 +15,12 @@ public class LoginInfoManager : MonoBehaviour
         EmailText.gameObject.SetActive( true );
         LogoutButton.gameObject.SetActive( true );
 
-        EmailText.text = Data.User.Email;
+        EmailText.text = Data.PlayerUser.Email;
     }
 
     public void Logout( GameObject loginCover )
     {
-        SendTcp.SendPacket( new Packet( Data.User.Id.ToString(), "Server", TcpMessageType.Logout, new[] { "Username", Data.User.Username } ), Data.Network.ServerSocket );
+        SendTcp.SendPacket( new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.Logout, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
 
         LoginButton.gameObject.SetActive( true );
 
@@ -29,6 +29,6 @@ public class LoginInfoManager : MonoBehaviour
 
         loginCover.SetActive( true );
 
-        Data.User.Empty();
+        Data.PlayerUser.Empty();
     }
 }
