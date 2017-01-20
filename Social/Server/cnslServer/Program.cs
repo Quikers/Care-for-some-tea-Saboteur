@@ -36,19 +36,27 @@ namespace Server
 
             Task CheckAllPlayers = new Task(CheckAllPlayersValidation);
             CheckAllPlayers.Start();
-            
-            string input = Console.ReadLine();
-            switch (input)
-            {
-                default: break;
 
-                case "showplayers":
-                    {
-                        ShowOnlinePlayers();
-                        break;
-                    }
-            }
+            //Task readinput = new Task(ReadInput);
+            //readinput.Start();
+
+
+            do
+            {
+                string input = Console.ReadLine();
+                switch (input)
+                {
+                    default: break;
+
+                    case "showplayers":
+                        {
+                            ShowOnlinePlayers();
+                            break;
+                        }
+                }
+            } while (true);
             
+
         }
 
         private static async void HandleMatchmaking()
@@ -722,6 +730,22 @@ namespace Server
 
             Console.WriteLine("UserID {0} logged out.", client.UserID.ToString());
             ShowOnlinePlayers();
+        }
+
+        private static void ReadInput()
+        {
+            do
+            {
+                string input = Console.ReadLine();
+                switch (input)
+                {
+                    default: break;
+
+                    case "showplayers":
+                        ShowOnlinePlayers();
+                        break;
+                }
+            } while (true);
         }
     }
 }
