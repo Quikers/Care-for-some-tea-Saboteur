@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NetworkController : MonoBehaviour
 {
-    public bool GameStart;
+    public static bool GameStart;
 
     public void StartListener()
     {
@@ -25,12 +25,12 @@ public class NetworkController : MonoBehaviour
     {
         switch( recievedPacket.Type )
         {
-            case TcpMessageType.MatchStart :
+            case TcpMessageType.MatchStart:
+                Debug.Log( recievedPacket );
+
                 Data.EnemyUser.Id = int.Parse( recievedPacket.Variables[ "UserID" ] );
 
                 GameStart = true;
-                break;
-            case TcpMessageType.Command:
                 break;
             default:
                 Debug.Log( recievedPacket );

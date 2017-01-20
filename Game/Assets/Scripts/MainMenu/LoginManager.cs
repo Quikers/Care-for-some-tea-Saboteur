@@ -72,14 +72,15 @@ namespace MainMenu
                 Email.text = "";
                 Password.text = "";
                 LoginPanel.SetActive( false );
-                FindObjectOfType<LoginInfoManager>().Login();
+                FindObjectOfType< LoginInfoManager >().Login();
 
                 return;
             }
             Email.text = "";
             Password.text = "";
             LoginPanel.SetActive( false );
-            FindObjectOfType<LoginInfoManager>().Login();
+            FindObjectOfType< LoginInfoManager >().Login();
+            FindObjectOfType< MainMenuManager >().ServerListener();
         }
     }
 }
