@@ -104,7 +104,7 @@ namespace Server
 
         private static void ListenTcp()
         {
-            TcpListener server = null;
+            TcpListener listener = null;
 
             try
             {
@@ -112,16 +112,16 @@ namespace Server
                 Int32 port = 25002;
                 IPAddress localAddr = IPAddress.Parse("0.0.0.0");
                 
-                server = new TcpListener(localAddr, port);
+                listener = new TcpListener(localAddr, port);
 
                 // Start listening for client requests.
-                server.Start();
+                listener.Start();
                 Console.WriteLine("TcpListener started. Waiting for a connection... ");
 
                 // Enter the listening loop.
                 while (true)
                 {   
-                    TcpClient client = server.AcceptTcpClient();
+                    TcpClient client = listener.AcceptTcpClient();
                     Console.WriteLine("Incoming connection detected.");
                     
 
@@ -138,7 +138,7 @@ namespace Server
             finally
             {
                 // Stop listening for new clients.
-                server.Stop();
+                listener.Stop();
             }
         }
 
@@ -147,50 +147,39 @@ namespace Server
             if (packet == null) return;
 
             //Check if sender and target are valid
-            if (packet.From != "Server" && packet.From != "server" && packet.Type != TcpMessageType.Login) IsClientValid(int.Parse(packet.From));
-            if (packet.To != "Server" && packet.To != "server") IsClientValid(int.Parse(packet.To));
+            //From
+            if (packet.From != "Server" && packet.From != "server" && packet.Type != TcpMessageType.Login)
+            {   
+                if (!IsClientValid(int.Parse(packet.From))) return;
+            }
+
+            //To 
+            if (packet.To != "Server" && packet.To != "server") 
+            {
+                if (!IsClientValid(int.Parse(packet.To)))
+                {
+                    SendErrorToClient("Server", client, "Targeted user is offline.");
+                }
+            }
 
             try
             {
                 switch (packet.Type)
                 {
+                    default:
+                        {
+                            Console.WriteLine("Error handling packet.");
+                            break;
+                        }
+
                     case TcpMessageType.ChatMessage:
                         {
-                            //int fromUserID = int.Parse(packet.From);
-                            //int targetUserID = int.Parse(packet.To);
-                            //string chatmessage = packet.Variables["Chatmessage"];
-
-                            ////Check if user is offline
-                            //if (!IsClientValid(targetUserID))
-                            //{
-                            //    Console.WriteLine("UserID {0} tried to send a message to offline UserID {1}", fromUserID, targetUserID);
-                            //    SendErrorToClient("Server", client, "Chatmessage failed. User is offline.");
-                            //    return;
-                            //} 
-                            //else //if online
-                            //{
-                            //    //Send Packet to destination
-                            //    SendTcp.SendPacket(new Packet(fromUserID.ToString(), targetUserID.ToString(), TcpMessageType.ChatMessage, new[] {"Chatmessage", chatmessage }), GetClientFromOnlinePlayersByUserID(targetUserID).Socket);
-
-                            //    //Send response to sender
-                            //    SendSuccessResponse(packet, client);
-
-                            //    Console.WriteLine("Chatmessage sent from {0} to {1}",packet.From, packet.To);
-                            //}
-
-                            //break;
-
                             if (!Communicate(packet))
                             {
                                 SendErrorToClient("Server", client, packet.Type, "Could not send message to offline user.");
-                                break;
                             }
-                            else
-                            {
-                                SendSuccessResponse(packet, client);
-                                break;
-                            }
-                            
+                            else SendSuccessResponse(packet, client);
+                            break;
                         }
 
                     case TcpMessageType.None:
@@ -240,7 +229,7 @@ namespace Server
                                         if (!packet.Variables.ContainsKey("CardType"))
                                         {
                                             SendErrorToClient("Server", client, packet.Type, "Invalid card");
-                                            Console.WriteLine("UserID {0} tried to process an invalid packet.", packet.From);
+                                            Console.WriteLine("UserID {0} tried to process an invalid packet with TcpMessageType.PlayerAction.", packet.From);
                                             break;
                                         } 
 
@@ -373,8 +362,11 @@ namespace Server
                             //Check for valid username
                             if (!packet.Variables.ContainsKey("Username") || username == "" || username == string.Empty)
                             {
-                                Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] { "ErrorMessage", "Please provide a valid username" });
+                                Packet error = new Packet("Server", packet.From, TcpMessageType.Error, new[] {
+                                    "ErrorMessage", "Please provide a valid username"
+                                });
                                 SendTcp.SendPacket(error, client.Socket);
+                                break;
                             }
 
                             //Create new Client instance
@@ -390,6 +382,7 @@ namespace Server
                             {
                                 OnlinePlayers.Add(_client.UserID, _client);
                                 Console.WriteLine(_client.Username + " logged in");
+
                                 SendSuccessResponse(packet, client);
 
                                 _client.Listen = new Thread(() => ListenToClient(_client));
@@ -700,6 +693,5 @@ namespace Server
            
 
         }
-        
     }
 }

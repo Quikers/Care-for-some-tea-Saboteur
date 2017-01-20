@@ -31,6 +31,7 @@ Alles tussen "" representeert een Dictionairy key. Hier moet dus ook een value b
 ===========Attack
 "AttackingMinionID"
 "TargetMinionID"
+Packet p = new Packet("1", "2", TcpMessageType.PlayerUpdate, new[] { "PlayerAction", "Attack", "AttackingMinionID", "5", "TargetMinionID", "8" });
 
 ===========EndTurn
 
