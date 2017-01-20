@@ -69,6 +69,11 @@ $(document).ready(function () {
         }
         else if (element.val() == sessionEmail || element.val() == sessionUsername) element.attr("disabled", true);
     });
+    
+    $("input[type\"email\"], input[type\"text\"]").blur(function () {
+        var element = $(this);
+        if (element.val() == sessionEmail || element.val() == sessionUsername) element.attr("disabled", true);
+    });
 });
 
 
