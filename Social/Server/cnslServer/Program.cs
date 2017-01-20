@@ -20,21 +20,22 @@ namespace Server
         private static Dictionary<int, Client> OnlinePlayers;
         private static List<Match> ActiveGames;
         private static List<Match> PendingGames;
-        
-
-        //private static NetworkStream stream;
 
         static void Main(string[] args)
         {   
             OnlinePlayers = new Dictionary<int, Client>();
             PlayerQueue = new Dictionary<int, Client>();
             ActiveGames = new List<Match>();
+            PendingGames = new List<Match>();
 
             Task Matchmaking = new Task(HandleMatchmaking);
             Matchmaking.Start();
 
             Task Listen = new Task(ListenTcp);
             Listen.Start();
+
+            Task CheckAllPlayers = new Task(CheckAllPlayersValidation);
+            CheckAllPlayers.Start();
             
             Console.ReadLine();
             
@@ -416,10 +417,7 @@ namespace Server
 
                             if (IsClientValid(userID))
                             {
-                                OnlinePlayers.Where(x => x.Key == userID).FirstOrDefault().Value.Socket.Close();
-                                OnlinePlayers.Remove(userID);
-
-                                if (PlayerQueue.ContainsKey(userID)) PlayerQueue.Remove(userID);
+                                Logout(client);
 
                                 Console.WriteLine("UserID {0} logged out", userID);
                                 ShowOnlinePlayers();
@@ -593,8 +591,7 @@ namespace Server
                     HandlePacket(packet, client);
                 } catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
-                    client.Socket.Close();
+                    Logout(client);
                 }
             }
         }
@@ -692,6 +689,34 @@ namespace Server
             }
            
 
+        }
+
+        private static void CheckAllPlayersValidation()
+        {
+            do
+            {
+                foreach (int key in OnlinePlayers.Keys)
+                    IsClientValid(key);
+
+                Thread.Sleep(500);
+
+            } while (true);
+        }
+
+        private static void Logout(Client client)
+        {
+            //Close connection
+            client.Socket.Close();
+
+            //Remove from Pending games
+            foreach (var pendinggame in PendingGames.Where(x => x.Client1.UserID == client.UserID))
+                PendingGames.Remove(pendinggame);
+
+            //Remove from Online Players
+            if(OnlinePlayers.ContainsKey(client.UserID)) OnlinePlayers.Remove(client.UserID);
+
+            Console.WriteLine("UserID {0} logged out.", client.UserID.ToString());
+            ShowOnlinePlayers();
         }
     }
 }
