@@ -37,10 +37,7 @@ namespace Server
             Task CheckAllPlayers = new Task(CheckAllPlayersValidation);
             CheckAllPlayers.Start();
 
-            //Task readinput = new Task(ReadInput);
-            //readinput.Start();
-
-
+           
             do
             {
                 string input = Console.ReadLine();
@@ -55,8 +52,6 @@ namespace Server
                         }
                 }
             } while (true);
-            
-
         }
 
         private static async void HandleMatchmaking()
