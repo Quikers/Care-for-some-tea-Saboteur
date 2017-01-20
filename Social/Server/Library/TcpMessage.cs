@@ -5,12 +5,8 @@ using System.Linq;
 namespace Library {
     public enum TcpMessageType {
         None = 0,
-
-        Command = 1,
-        Message = 2,
         ChatMessage = 3,
         PlayerUpdate = 4,
-        MapData = 5,
         AddPlayerToQueue = 6,
         MatchStart = 7,
         Response = 8,

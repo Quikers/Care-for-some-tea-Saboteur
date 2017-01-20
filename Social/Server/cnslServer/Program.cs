@@ -20,7 +20,7 @@ namespace Server
         private static Dictionary<int, Client> OnlinePlayers;
         private static List<Match> ActiveGames;
         private static List<Match> PendingGames;
-        private static Dictionary<Client, Client> PendingInvites;
+        
 
         //private static NetworkStream stream;
 
@@ -192,15 +192,6 @@ namespace Server
                             }
                             
                         }
-
-                    case TcpMessageType.Command:
-                        break;
-
-                    case TcpMessageType.MapData:
-                        break;
-
-                    case TcpMessageType.Message:
-                        break;
 
                     case TcpMessageType.None:
                         break;
@@ -434,8 +425,10 @@ namespace Server
                             {
                                 OnlinePlayers.Where(x => x.Key == userID).FirstOrDefault().Value.Socket.Close();
                                 OnlinePlayers.Remove(userID);
-                                Console.WriteLine("UserID {0} logged out", userID);
 
+                                if (PlayerQueue.ContainsKey(userID)) PlayerQueue.Remove(userID);
+
+                                Console.WriteLine("UserID {0} logged out", userID);
                                 ShowOnlinePlayers();
                             }
                             else
@@ -478,10 +471,13 @@ namespace Server
                                 Client2 = OnlinePlayers.Where(x => x.Key == toUserID).FirstOrDefault().Value
                             };
 
-                            PendingGames.Add(match);
+                            if(match.Client2 != null)
+                            {
+                                PendingGames.Add(match);
 
-                            //Send packet to client2
-                            Communicate(packet);
+                                //Send packet to client2
+                                Communicate(packet);
+                            }
                             break;
                         }
                     case TcpMessageType.CancelGameInvite:
@@ -503,7 +499,7 @@ namespace Server
                                     PendingGames.Remove(game);
                                     StartMatch(game);
                                 }
-                                else SendErrorToClient("Server", client, TcpMessageType.AcceptIncomingGameInvite, "Targeted user is offline");
+                                else SendErrorToClient("Server", client, TcpMessageType.AcceptIncomingGameInvite, "Could not find pending game.");
                                 break;
                             }
                             else
@@ -518,14 +514,12 @@ namespace Server
                             int to = int.Parse(packet.To);
                             
                             if (!IsClientValid(to)) break;
-                            Client toClient = OnlinePlayers.Where(x => x.Key == to).FirstOrDefault().Value;
 
                             Communicate(packet);
 
                             //Remove game from PendinGames
-                            Match pendinggame = PendingGames.Where(x => x.Client1.UserID == toClient.UserID).FirstOrDefault();
+                            Match pendinggame = PendingGames.Where(x => x.Client1.UserID == to).FirstOrDefault();
                             if (pendinggame != null) PendingGames.Remove(pendinggame);
-
                             break;
                         }
                     case TcpMessageType.SendFriendRequest:
@@ -640,22 +634,6 @@ namespace Server
                 OnlinePlayers.Remove(UserID);
                 return false;
             }
-        }
-
-        private static void SendPlayerList(Dictionary<int, Client> PlayerList)
-        {
-            Dictionary<string, string> players = new Dictionary<string, string>();
-
-            foreach(var player in OnlinePlayers)
-            {
-                string usrID = player.Key.ToString();
-                string usrName = player.Value.Username;
-
-                players.Add(usrID, usrName);
-            }
-
-            Packet packet = new Packet("Server", "Everyone", TcpMessageType.Message, players);
-            Broadcast(packet);
         }
 
         private static void Broadcast(Packet packet)
