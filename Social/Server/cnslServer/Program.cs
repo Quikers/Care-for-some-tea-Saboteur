@@ -37,7 +37,17 @@ namespace Server
             Task CheckAllPlayers = new Task(CheckAllPlayersValidation);
             CheckAllPlayers.Start();
             
-            Console.ReadLine();
+            string input = Console.ReadLine();
+            switch (input)
+            {
+                default: break;
+
+                case "showplayers":
+                    {
+                        ShowOnlinePlayers();
+                        break;
+                    }
+            }
             
         }
 
@@ -398,13 +408,8 @@ namespace Server
                                     SendSuccessResponse(packet, client);
                                 } 
                                 else
-                                {
-                                    Packet error = new Packet();
-                                    packet.From = "Server";
-                                    packet.To = _client.UserID.ToString();
-                                    packet.Type = TcpMessageType.Error;
+                                {   
                                     Console.WriteLine("{0} tried to log in while its already logged in. Its socket isn't valid anymore", _client.Username);
-                                    SendTcp.SendPacket(error, _client.Socket);
                                 }
                             }
 
