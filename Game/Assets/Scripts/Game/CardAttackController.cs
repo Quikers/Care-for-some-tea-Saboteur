@@ -16,7 +16,6 @@ namespace Game
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            Debug.Log( "dinenggg" );
             IsAttacking = true;
         }
 
@@ -28,12 +27,10 @@ namespace Game
             //Vector3 mouseWorld = Camera.main.ScreenToWorldPoint( mousePos );
 
             //Debug.DrawLine( transform.position, mouseWorld, Color.blue );
-            Debug.Log( "dinen" );
         }
 
         public void OnEndDrag( PointerEventData eventData )
         {
-            Debug.Log( "dinenwww" );
             IsAttacking = false;
 
         }

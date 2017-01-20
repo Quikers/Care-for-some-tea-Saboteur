@@ -8,6 +8,12 @@ namespace MainMenu
         [ SerializeField ] int _deckId;
         [ SerializeField ] string _deckName;
 
+        void FixedUpdate()
+        {
+            if( NetCode.NetworkController.GameStart )
+                UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+
+        }
         public string DeckName
         {
             get { return _deckName; }
@@ -23,21 +29,26 @@ namespace MainMenu
             _deckId = dataObject.id;
             DeckName = dataObject.name;
         }
+        public void AddToQueue()
+        {
+            if( Data.PlayerUser.Id == 0 )
+                return;
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
+
+            Resources.FindObjectsOfTypeAll<QueueInfoController>()[ 0 ].gameObject.SetActive( true );
+        }
 
         public void BeginGameWithThisDeck()
         {
-            Debug.Log( _deckId );
-            System.Threading.Thread test = new System.Threading.Thread( GetDeck );
-            test.Start();
+            string json = Utilities.Api.Deck.ByDeckId( _deckId );
+            Data.Deck playerDeck = JsonUtility.FromJson<Data.Deck>( json );
+            Data.Player.CurrentDeck = playerDeck;
 
-            UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+            AddToQueue();
         }
 
         void GetDeck()
         {
-            string json = Utilities.Api.Deck.ByDeckId( _deckId );
-            Data.Deck playerDeck = JsonUtility.FromJson< Data.Deck >( json );
-            Data.Player.CurrentDeck = playerDeck;
         }
     }
 }

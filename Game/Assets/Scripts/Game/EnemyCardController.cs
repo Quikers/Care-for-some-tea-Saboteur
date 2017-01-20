@@ -14,8 +14,6 @@ namespace Game
 
         public void OnDrop( PointerEventData eventData )
         {
-            Debug.Log( "Dignen Drop" );
-
             CardAttackController attackerController = eventData.pointerDrag.GetComponent< CardAttackController >();
             cardData.Health -= attackerController.cardData.Attack;
             attackerController.cardData.Health -= cardData.Attack;

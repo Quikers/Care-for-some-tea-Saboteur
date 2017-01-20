@@ -8,5 +8,6 @@ namespace Data
         public static TcpClient PlayerClient;
 
         public static Deck CurrentDeck;
+        public static int CurrentEnergy;
     }
 }

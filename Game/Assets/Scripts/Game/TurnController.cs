@@ -53,8 +53,8 @@ namespace Game
             get { return Data.Turn.CurrentTurn; }
             set
             {
-                TurnValueText.text = value.ToString();
                 Data.Turn.CurrentTurn = value;
+                TurnValueText.text = Data.Turn.CurrentTurn.ToString();
 
                 CurrentPhase = Data.Turn.First;
             }

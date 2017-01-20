@@ -3,20 +3,26 @@ using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
-    public int CardId;
-    string cardname;
+    [SerializeField] public int CardId;
+    [SerializeField] string cardname;
     int cardCost;
     Data.effectobject effect;
     int attack;
     int health;
+
+    void Update()
+    {
+        if( health <= 0 )
+            Destroy( gameObject );
+    }
 
     public string Cardname
     {
         get { return cardname; }
         set
         {
-            CardTitleText.text = value;
             cardname = value;
+            CardTitleText.text = cardname;
         }
     }
 
@@ -27,7 +33,6 @@ public class CardManager : MonoBehaviour
         {
             cardCost = value;
             CardCostText.text = cardCost.ToString();
-
         }
     }
 
@@ -36,8 +41,8 @@ public class CardManager : MonoBehaviour
         get { return effect; }
         set
         {
-            CardDiscrText.text = value.effect;
             effect = value;
+            CardDiscrText.text = effect.effect;
         }
     }
 
@@ -46,8 +51,8 @@ public class CardManager : MonoBehaviour
         get { return attack; }
         set
         {
-            CardAttackText.text = value.ToString();
             attack = value;
+            CardAttackText.text = attack.ToString();
         }
     }
 
@@ -56,8 +61,8 @@ public class CardManager : MonoBehaviour
         get { return health; }
         set
         {
-            CardHealthText.text = value.ToString();
             health = value;
+            CardHealthText.text = health.ToString();
         }
     }
 
