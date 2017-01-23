@@ -242,7 +242,7 @@ namespace Server
                             {
                                 case "PlayCard":
                                     {
-                                        if (!packet.Variables.ContainsKey("CardType") || (!packet.Variables.ContainsKey("CardID")))
+                                        if (!packet.Variables.ContainsKey("CardType") || (!packet.Variables.ContainsKey("CardID")) || (!packet.Variables.ContainsKey("CardName")))
                                         {
                                             SendErrorToClient("Server", client, packet.Type, "Invalid card");
                                             Console.WriteLine("UserID {0} tried to process an invalid packet with TcpMessageType.PlayerAction.", packet.From);
@@ -250,8 +250,11 @@ namespace Server
                                         }
 
                                         string targetID = null;
+                                        string cardName = null;
                                         if (packet.Variables.ContainsKey("TargetID"))
                                             targetID = packet.Variables["TargetID"];
+
+                                        cardName = packet.Variables["CardName"];
 
                                         switch (packet.Variables["CardType"])
                                         {
@@ -283,7 +286,8 @@ namespace Server
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "EffectType", packet.Variables["EffectType"],
                                                             "Effect", packet.Variables["Effect"],
-                                                            "CardID", packet.Variables["CardID"]
+                                                            "CardID", packet.Variables["CardID"],
+                                                            "CardName", packet.Variables["CardName"]
                                                         });
                                                     if (targetID != null) minionPlayed.Variables.Add("TargetID", targetID);
 
@@ -313,7 +317,8 @@ namespace Server
                                                             "CardType", CardType.Minion.ToString(),
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "Effect", packet.Variables["Effect"],
-                                                            "CardID", packet.Variables["CardID"]
+                                                            "CardID", packet.Variables["CardID"],
+                                                            "CardName", packet.Variables["CardName"]
                                                         });
                                                     if (targetID != null)
                                                         spellPlayed.Variables.Add("TargetID", targetID);
