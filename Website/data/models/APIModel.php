@@ -158,6 +158,34 @@ class APIModel extends Model {
         }
     }
     
+    public function GetCardsByUserID($userid) {
+        $result = $this->db->Query(
+            'SELECT * FROM `cards` WHERE `userid` = :userid',
+            array(
+                "userid" => $userid
+            ),
+            true
+        );
+        
+        
+        if (!isset($result["id"])) {
+            if (count($result) > 0) {
+                foreach ($result as $key => $card) {
+                    $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                }
+            }
+        } else {
+            $result["effect"] = $this->GetCardEffectByEffectID($result["effect"]);
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
     public function GetCardEffectByEffectID($effectid) {
         $result = $this->db->Query(
             'SELECT * FROM `effect_types` WHERE `id` = :effectid',

@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+
 namespace MainMenu
 {
     public class MainMenuManager : MonoBehaviour
     {
+
+
+        void Start()
+        {
+        }
+
         public void LoadScene( string SceneName )
         {
             SceneManager.LoadScene( SceneName );
@@ -23,17 +30,14 @@ namespace MainMenu
     #endif
         }
 
-        public void AddToQueue()
+        void OnApplicationQuit()
         {
-            if( Data.PlayerUser.Id == 0 ) return;
-            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
-
-            Resources.FindObjectsOfTypeAll<QueueInfoController>()[ 0 ].gameObject.SetActive( true );
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
 
         public void ServerListener()
         {
-            GetComponent<NetworkController>().StartListener();
+            NetCode.NetworkController.StartListener();
         }
     }
 }

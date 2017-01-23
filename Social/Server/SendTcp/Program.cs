@@ -42,6 +42,8 @@ namespace SendTcp
             Packet sendmsg = new Packet("3", targetID.ToString(), TcpMessageType.ChatMessage, new[] { "Chatmessage", "Hoi dit is mijn chatmessage" });
             Packet logout = new Packet("3", "Server", TcpMessageType.Logout, new Dictionary<string, string>());
             Packet addtoqueue = new Packet("3", "Server", TcpMessageType.AddPlayerToQueue);
+            Packet endturn = new Packet( "3", "Server", TcpMessageType.PlayerUpdate, new[] { "PlayerAction", "EndTurn" } );
+
 
             Thread listen = new Thread(() => Listen(client.Socket));
             listen.Start();
@@ -58,6 +60,7 @@ namespace SendTcp
                 if (result == "logout") Library.SendTcp.SendPacket(logout, client.Socket);
                 if (result == "msg") Library.SendTcp.SendPacket(sendmsg, client.Socket);
                 if (result == "match") Library.SendTcp.SendPacket(addtoqueue, client.Socket);
+                if( result == "endturn") Library.SendTcp.SendPacket( endturn, client.Socket );
                 if (result == "stresstest")
                 {
                     StressTest();

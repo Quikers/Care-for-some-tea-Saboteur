@@ -4,31 +4,16 @@ namespace Game
 {
     public class GameManager : MonoBehaviour
     {
-        public static int AmountOfCardsNextTurn;
 
-        static int[ , ] cards = new int[ 2, 8 ];
-
-        public static void SetPlayerCard( int index, int id )
+        public static CardManager GetCard( bool playerCard, int id )
         {
-            Debug.Log( "CardId: " + id );
-            if( index == 0)
-                for( int i = 0; i < 7; i++ )
-                {
-                    if( cards[ 0, i + 1 ] != 0 )
-                        cards[ 0, i + 1 ] = cards[ 0, i ];
-                }
-
-            cards[ 0, index ] = id;
-
-            for( int i = 0; i < 7; i++ )
-            {
-                Debug.Log( "Card: " + i + " = " + cards[ 0, i ] );
-            }
+            return Utilities.Find.CardById( id );
         }
 
-        public static CardManager GetCard( bool playerCard, int index )
+
+        void OnApplicationQuit()
         {
-            return Utilities.Find.CardById( cards[ playerCard ? 0 : 1, index ] );
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
 
         //void LateUpdate()

@@ -21,7 +21,8 @@ namespace Game
 
         public void OnBeginDrag( PointerEventData eventData )
         {
-            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) ||
+                GetComponent< CardManager >().CardCost > Data.Player.CurrentEnergy )
                 return;
 
             _placeHolder = new GameObject( "Place Holder", typeof( LayoutElement ) );
@@ -39,13 +40,14 @@ namespace Game
             PlaceHolderParent = ParentToReturnTo;
             transform.SetParent( Utilities.Find.InParents< Canvas >( gameObject ).transform );
 
-            GetComponent<CanvasGroup>().blocksRaycasts = false;
+            GetComponent< CanvasGroup >().blocksRaycasts = false;
             _playerDrop.SetActive( true );
         }
 
         public void OnDrag( PointerEventData eventData )
         {
-            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) ||
+                GetComponent<CardManager>().CardCost > Data.Player.CurrentEnergy )
                 return;
             
             RectTransform rt = GetComponent<RectTransform>();
@@ -82,7 +84,8 @@ namespace Game
 
         public void OnEndDrag( PointerEventData eventData )
         {
-            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) ||
+                GetComponent<CardManager>().CardCost > Data.Player.CurrentEnergy )
                 return;
             
             transform.SetParent( ParentToReturnTo, true );
@@ -93,7 +96,6 @@ namespace Game
             {
                 gameObject.tag = "BoardCard";
                 Debug.Log( "Sibling Index: " + transform.GetSiblingIndex() );
-                GameManager.SetPlayerCard( transform.GetSiblingIndex(), GetComponent< CardManager >().CardId );
 
                 GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackController ) );
                 coverImage.transform.SetParent( transform, false );

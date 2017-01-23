@@ -12,6 +12,20 @@
     background: whitesmoke;
 }
 
+#view-body {
+    margin: 20px auto;
+    padding: 20px 30px 30px;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    min-width: 680px;
+    width: 90%;
+    
+    box-shadow: 2px 2px 15px #AAAAAA;
+    background: whitesmoke;
+}
+
 #message-content {
     display: inline-block;
     margin: 20px 0 0 0;
@@ -168,4 +182,50 @@ input[type="text"], input[type="password"], input[type="email"] {
     
     box-shadow: 2px 2px 15px #AAAAAA;
     background: whitesmoke;
+}
+
+td {
+    padding: 5px !important;
+}
+
+th {
+    padding: 5px !important;
+}
+
+.dataTables_scrollBody table th {
+    padding: 0 !important;
+}
+
+.tinycol {
+    width: 1%;
+    overflow-x: hidden;
+}
+
+.shortcol {
+    min-width: 85px;
+    width: 1%;
+}
+
+.largecol {
+    width: 300px;
+}
+
+.controlcol {
+    width: 1%;
+}
+
+.gotocard {
+    cursor: pointer;
+}
+
+fieldset {
+    margin-top: 10px;
+}
+
+.btn-control {
+    margin-bottom: 20px;
+}
+
+tr:hover td {
+    background: linear-gradient(to bottom,#F0C281 0,#EDB25F 100%);
 }

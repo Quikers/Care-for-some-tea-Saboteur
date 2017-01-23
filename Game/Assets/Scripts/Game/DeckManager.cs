@@ -12,8 +12,6 @@ namespace Game
         bool _startCards;
         void LateUpdate()
         {
-            Debug.Log( Data.Player.CurrentDeck.name );
-
             if( Data.Player.CurrentDeck.name == null | _startCards ) return;
 
             for( int i = 0; i < 3; i++ )
