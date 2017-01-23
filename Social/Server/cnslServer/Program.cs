@@ -247,7 +247,11 @@ namespace Server
                                             SendErrorToClient("Server", client, packet.Type, "Invalid card");
                                             Console.WriteLine("UserID {0} tried to process an invalid packet with TcpMessageType.PlayerAction.", packet.From);
                                             break;
-                                        } 
+                                        }
+
+                                        string targetID = null;
+                                        if (packet.Variables.ContainsKey("TargetID"))
+                                            targetID = packet.Variables["TargetID"];
 
                                         switch (packet.Variables["CardType"])
                                         {
@@ -280,6 +284,7 @@ namespace Server
                                                             "EffectType", packet.Variables["EffectType"],
                                                             "Effect", packet.Variables["Effect"]
                                                         });
+                                                    if (targetID != null) minionPlayed.Variables.Add("TargetID", targetID);
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(minionPlayed, opponent.Socket);
@@ -308,6 +313,9 @@ namespace Server
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "Effect", packet.Variables["Effect"]
                                                         });
+                                                    if (targetID != null)
+                                                        spellPlayed.Variables.Add("TargetID", targetID);
+                                                    
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(spellPlayed, opponent.Socket);
