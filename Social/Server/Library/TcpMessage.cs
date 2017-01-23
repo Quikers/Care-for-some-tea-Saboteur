@@ -45,15 +45,15 @@ namespace Library {
         public static Packet Parse(string data) {
             Packet packet = new Packet();
 
-            if (!data.Contains("\\1\\"))
-                throw new Exception("String does not contain a valid TcpMessage Packet.");
+            if (!data.Contains("\\~\\"))
+                throw new Exception("String does not contain a valid TcpMessage Packet. Error (1)");
 
-            string[] variables = data.Split(new[] { "\\1\\" }, StringSplitOptions.None);
+            string[] variables = data.Split(new[] { "\\~\\" }, StringSplitOptions.None);
             foreach (string pair in variables) {
-                if (!pair.Contains("\\2\\"))
-                    throw new Exception("String does not contain a valid TcpMessage Packet.");
+                if( !pair.Contains( "\\@\\" ) )
+                    throw new Exception( "String does not contain a valid TcpMessage Packet. Error (2)" );
 
-                string[] keyValue = pair.Split(new[] { "\\2\\" }, StringSplitOptions.None);
+                string[] keyValue = pair.Split(new[] { "\\@\\" }, StringSplitOptions.None);
                 switch (keyValue[0]) {
                     default:
                         if (!packet.Variables.ContainsKey(keyValue[0]))
@@ -125,11 +125,11 @@ namespace Library {
         }
 
         public override string ToString() {
-            string str = "From\\2\\" + From + "\\1\\To\\2\\" + To + "\\1\\Type\\2\\" + Type;
+            string str = "From\\@\\" + From + "\\~\\To\\@\\" + To + "\\~\\Type\\@\\" + Type;
 
             if (Variables.Count <= 0)
                 return str;
-            str += "\\1\\" + string.Join("\\1\\", Variables.Select(pair => pair.Key + "\\2\\" + pair.Value).ToArray());
+            str += "\\~\\" + string.Join("\\~\\", Variables.Select(pair => pair.Key + "\\@\\" + pair.Value).ToArray());
 
             return str;
         }
