@@ -171,7 +171,10 @@ class APIModel extends Model {
         if (!isset($result["id"])) {
             if (count($result) > 0) {
                 foreach ($result as $key => $card) {
-                    $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    if ($card["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    }
                 }
             }
         } else {
@@ -210,13 +213,19 @@ class APIModel extends Model {
             true
         );
         
-        if (is_numeric(array_keys($result)[0])) {
-            foreach($result as $key => $deck) {
-                $deck["cards"] = array();
-                $result[$key] = $deck;
+        if (count($result) > 0) {
+            if (is_numeric(array_keys($result)[0])) {
+                foreach($result as $key => $deck) {
+                    if ($deck["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $deck["cards"] = array();
+                        $result[$key] = $deck;
+                    }
+                }
+            } else {
+                $result["cards"] = array();
+                if ($deck["deleted"] == "1") { $result = array(); }
             }
-        } else {
-            $result["cards"] = array();
         }
         
         if ($result != array() && $result != array(array())) {

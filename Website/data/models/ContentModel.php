@@ -60,5 +60,32 @@ class ContentModel extends Model {
             return false;
         }
     }
+    
+    public function Delete($contentType, $value, $hardDelete = false) {
+        $result = NULL;
+        
+        if (!$hardDelete) {
+            $result = $this->db->Query(
+                'UPDATE `' . $contentType . '` SET `deleted` = 1 WHERE `id` = :id',
+                array(
+                    "id" => $value
+                )
+            );
+        } else {
+            $result = $this->db->Query(
+                'DELETE * FROM `' . $contentType . '` WHERE id = :id',
+                array(
+                    "id" => $value
+                )
+            );
+        }
+        
+        
+        if ($result != array() && $result != null) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
 
 }

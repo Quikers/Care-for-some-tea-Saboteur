@@ -214,7 +214,7 @@ th {
     width: 1%;
 }
 
-.gotocard {
+.gotocard, .gotodeck {
     cursor: pointer;
 }
 
