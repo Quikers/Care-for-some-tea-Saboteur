@@ -242,7 +242,7 @@ namespace Server
                             {
                                 case "PlayCard":
                                     {
-                                        if (!packet.Variables.ContainsKey("CardType"))
+                                        if (!packet.Variables.ContainsKey("CardType") || (!packet.Variables.ContainsKey("CardID")))
                                         {
                                             SendErrorToClient("Server", client, packet.Type, "Invalid card");
                                             Console.WriteLine("UserID {0} tried to process an invalid packet with TcpMessageType.PlayerAction.", packet.From);
@@ -282,7 +282,8 @@ namespace Server
                                                             "Attack", packet.Variables["Attack"],
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "EffectType", packet.Variables["EffectType"],
-                                                            "Effect", packet.Variables["Effect"]
+                                                            "Effect", packet.Variables["Effect"],
+                                                            "CardID", packet.Variables["CardID"]
                                                         });
                                                     if (targetID != null) minionPlayed.Variables.Add("TargetID", targetID);
 
@@ -311,7 +312,8 @@ namespace Server
                                                             "PlayerAction", PlayerAction.PlayCard.ToString(),
                                                             "CardType", CardType.Minion.ToString(),
                                                             "EnergyCost", packet.Variables["EnergyCost"],
-                                                            "Effect", packet.Variables["Effect"]
+                                                            "Effect", packet.Variables["Effect"],
+                                                            "CardID", packet.Variables["CardID"]
                                                         });
                                                     if (targetID != null)
                                                         spellPlayed.Variables.Add("TargetID", targetID);
