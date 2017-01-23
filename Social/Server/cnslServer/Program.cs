@@ -90,6 +90,7 @@ namespace Server
                 var variables = new Dictionary<string, string>();
                 variables.Add("UserID", match.Client2.UserID.ToString());
                 variables.Add("Username", match.Client2.Username);
+                variables.Add("Turn", "1");
                 packet1.Variables = variables;
 
                 SendTcp.SendPacket(packet1, match.Client1.Socket);
@@ -102,6 +103,7 @@ namespace Server
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("UserID", match.Client1.UserID.ToString());
                 variables2.Add("Username", match.Client1.Username);
+                variables2.Add("Turn", "2");
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
