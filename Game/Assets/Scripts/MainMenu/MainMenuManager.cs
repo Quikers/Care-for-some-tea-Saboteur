@@ -6,11 +6,6 @@ namespace MainMenu
     public class MainMenuManager : MonoBehaviour
     {
 
-
-        void Start()
-        {
-        }
-
         public void LoadScene( string SceneName )
         {
             SceneManager.LoadScene( SceneName );

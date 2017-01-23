@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Data
 {
-    class Minion : Card
+    class Minion
     {
 
     }

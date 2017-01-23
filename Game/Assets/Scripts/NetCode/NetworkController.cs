@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Library;
 
 namespace NetCode
@@ -7,6 +8,7 @@ namespace NetCode
     {
         public static bool GameStart;
         public static bool EndTurn;
+        public static System.Collections.Generic.List< Data.Card > PlayCardsQueue = new List< Data.Card >();
 
         public static void StartListener()
         {
@@ -29,9 +31,12 @@ namespace NetCode
             {
                 case TcpMessageType.MatchStart:
                     UnityEngine.Debug.Log( "Match Start" );
+                    UnityEngine.Debug.Log( recievedPacket );
 
                     Data.EnemyUser.Id = int.Parse( recievedPacket.Variables[ "UserID" ] );
                     Data.EnemyUser.UserName = recievedPacket.Variables[ "Username" ];
+
+                    Data.Turn.First = ( Data.TurnType )int.Parse( recievedPacket.Variables[ "Turn" ] ) - 1;
 
                     GameStart = true;
                     break;
@@ -45,6 +50,17 @@ namespace NetCode
 
                         EndTurn = true;
                     }
+                    else if( recievedPacket.Variables[ "PlayerAction" ] == "PlayCard" )
+                    {
+                        PlayCardsQueue.Add( new Data.Card(
+                            int.Parse( recievedPacket.Variables[ "CardID" ] ),
+                            recievedPacket.Variables[ "CardName" ],
+                            int.Parse( recievedPacket.Variables[ "Health" ] ),
+                            int.Parse( recievedPacket.Variables[ "Attack" ] ),
+                            int.Parse( recievedPacket.Variables[ "EnergyCost" ] ),
+                            recievedPacket.Variables[ "Effect" ] ) );
+                    }
+
                     break;
                 default:
                     break;

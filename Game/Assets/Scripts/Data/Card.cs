@@ -1,10 +1,18 @@
-﻿namespace Data
+﻿using System.Reflection;
+
+namespace Data
 {
     [System.Serializable]
     public struct effectobject
     {
         public int id;
         public string effect;
+
+        public effectobject( int id, string effect )
+        {
+            this.id = id;
+            this.effect = effect;
+        }
     }
 
     [System.Serializable]
@@ -22,5 +30,15 @@
         public int deleted;
         public string created;
         public string editted;
+
+        public Card( int id, string name, int health, int attack, int cost, string effect )
+        {
+            this.id = id;
+            this.name = name;
+            this.health = health;
+            this.attack = attack;
+            this.cost = cost;
+            this.effect = new effectobject( 1, effect );
+        }
     }
 }

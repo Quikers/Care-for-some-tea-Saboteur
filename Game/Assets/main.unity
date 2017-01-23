@@ -499,6 +499,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Card: {fileID: 1623469557051292, guid: 951365289baea1a4da17b5b71cd6c282, type: 2}
+  NonPlayerCard: {fileID: 1468670180037618, guid: bf5fbc72cc001b64191a0150cd1b3758,
+    type: 2}
+  EnemyBoardDrop: {fileID: 1534943230}
 --- !u!1 &67542640
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,18 +9,20 @@ namespace Game
         public Text TurnValueText;
         public Button NextTurnButton;
 
-        int a;
         void Start()
         {
-            Data.Turn.First = Data.TurnType.LocalPlayer;
             CurrentTurn = 1;
         }
 
         private void Update()
         {
-            if( NetCode.NetworkController.EndTurn == true )
+            if( NetCode.NetworkController.EndTurn )
             {
-                CurrentPhase = Data.TurnType.LocalPlayer;
+                if( Data.Turn.First == Data.TurnType.RemotePlayer )
+                    CurrentPhase = Data.TurnType.LocalPlayer;
+                else
+                    CurrentTurn += 1;
+
                 NetCode.NetworkController.EndTurn = false;
             }
         }
