@@ -90,6 +90,7 @@ namespace Server
                 var variables = new Dictionary<string, string>();
                 variables.Add("UserID", match.Client2.UserID.ToString());
                 variables.Add("Username", match.Client2.Username);
+                variables.Add("Turn", "1");
                 packet1.Variables = variables;
 
                 SendTcp.SendPacket(packet1, match.Client1.Socket);
@@ -102,6 +103,7 @@ namespace Server
                 var variables2 = new Dictionary<string, string>();
                 variables2.Add("UserID", match.Client1.UserID.ToString());
                 variables2.Add("Username", match.Client1.Username);
+                variables2.Add("Turn", "2");
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
@@ -240,12 +242,19 @@ namespace Server
                             {
                                 case "PlayCard":
                                     {
-                                        if (!packet.Variables.ContainsKey("CardType"))
+                                        if (!packet.Variables.ContainsKey("CardType") || (!packet.Variables.ContainsKey("CardID")) || (!packet.Variables.ContainsKey("CardName")))
                                         {
                                             SendErrorToClient("Server", client, packet.Type, "Invalid card");
                                             Console.WriteLine("UserID {0} tried to process an invalid packet with TcpMessageType.PlayerAction.", packet.From);
                                             break;
-                                        } 
+                                        }
+
+                                        string targetID = null;
+                                        string cardName = null;
+                                        if (packet.Variables.ContainsKey("TargetID"))
+                                            targetID = packet.Variables["TargetID"];
+
+                                        cardName = packet.Variables["CardName"];
 
                                         switch (packet.Variables["CardType"])
                                         {
@@ -276,8 +285,11 @@ namespace Server
                                                             "Attack", packet.Variables["Attack"],
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "EffectType", packet.Variables["EffectType"],
-                                                            "Effect", packet.Variables["Effect"]
+                                                            "Effect", packet.Variables["Effect"],
+                                                            "CardID", packet.Variables["CardID"],
+                                                            "CardName", packet.Variables["CardName"]
                                                         });
+                                                    if (targetID != null) minionPlayed.Variables.Add("TargetID", targetID);
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(minionPlayed, opponent.Socket);
@@ -304,8 +316,13 @@ namespace Server
                                                             "PlayerAction", PlayerAction.PlayCard.ToString(),
                                                             "CardType", CardType.Minion.ToString(),
                                                             "EnergyCost", packet.Variables["EnergyCost"],
-                                                            "Effect", packet.Variables["Effect"]
+                                                            "Effect", packet.Variables["Effect"],
+                                                            "CardID", packet.Variables["CardID"],
+                                                            "CardName", packet.Variables["CardName"]
                                                         });
+                                                    if (targetID != null)
+                                                        spellPlayed.Variables.Add("TargetID", targetID);
+                                                    
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(spellPlayed, opponent.Socket);

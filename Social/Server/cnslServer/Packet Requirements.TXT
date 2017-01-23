@@ -16,6 +16,7 @@ Alles tussen "" representeert een Dictionairy key. Hier moet dus ook een value b
 
 ===========PlayCard
 "CardType" = enum CardType tostring
+"CardID"
 
 ======Minion
 "Health"
