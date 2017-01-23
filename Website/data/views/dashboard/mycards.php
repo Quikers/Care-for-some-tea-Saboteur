@@ -1,13 +1,15 @@
 <div id="view-body">
     
-    <a id="editorbutton" href="<?= URL ?>dashboard/cardeditor/">Create a new Card</a>
+    <h1>Manage my Cards</h1>
+    <p style="font-size: 16px;">To edit a card, press on the table row. This will redirect you to the editor page for that specific Card.</p><br>
     
-    This is the My Cards page.<br><br>
+    <a class="btn btn-control btn-success" href="<?= URL ?>dashboard/editor/card/"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
+    <a class="btn btn-control btn-danger" href="#"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
     
-    <table id="cardsTable" class="display" cellspacing="0" width="100%">
+    <table id="cardsTable" class="display cell-border" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th class="controlcol">Controls</th>
+                <th class="controlcol"><input type="checkbox" id="selectAll"></th>
                 <th class="largecol">Name</th>
                 <th class="tinycol">Attack</th>
                 <th class="tinycol">Health</th>
@@ -25,8 +27,21 @@
 
 $(document).ready(function () {
     
-    $('#cardsTable').DataTable({
-        "dom": "lftipr",
+    var selected = [];
+    var isFirst = true;
+    
+    $(".btn-danger").click(function (e) {
+        e.preventDefault();
+        
+        if (selected.length > 0) window.location = "<?= URL ?>dashboard/delete/card/" + selected.join(",");
+    });
+    
+    var table = $('#cardsTable').DataTable({
+        "dom": "lftr",
+        "paging": false,
+        "scrollY": "45vh",
+        "scrollCollapse": true,
+        "aaSorting": [[6, "asc"]],
         "ajax": "<?= URL ?>api/getcardsbyuserid/<?= $_SESSION["user"]["id"] ?>",
         "columns": [
             { "data": "id" },
@@ -45,12 +60,46 @@ $(document).ready(function () {
             for (var i = 0; i < datetds.length; i++)
                 $(datetds[i]).text($(datetds[i]).text().split(" ")[0]);
             
-            $(row).attr("id", id);
-            $(children[0]).html("<a class=\"controlbutton\" href=\"<?= URL ?>dashboard/cardeditor/" + id + "\"><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i> Edit</a><br><a class=\"controlbutton\" href=\"#\"><i class=\"fa fa-trash\" aria-hidden=\"true\"></i> Delete</a>");
+            for (var i = 1; i < children.length; i++) {
+                $(children[i]).addClass("gotocard").click(function () {
+                    window.location = "<?= URL ?>dashboard/editor/card/" + id;
+                });
+            }
+            
+            $(children[0]).html("<input type=\"checkbox\" class=\"select\" id=\"" + id + "\">");
+        },
+        "fnDrawCallback": function (oSettings) {
+            $("input").iCheck({
+                checkboxClass: 'icheckbox_square-red',
+                radioClass: 'iradio_square-red'
+            });
+            
+            $("#selectAll").on("ifChanged", function (event) {
+                if ($(this).iCheck('update')[0].checked)
+                    $("input:not(#selectAll)").iCheck("check");
+                else
+                    $("input:not(#selectAll)").iCheck("uncheck");
+            });
+            
+            $("input:not(#selectAll)").on('ifChanged', function (event) {
+                if ($(this).iCheck('update')[0].checked)
+                    selected.push($(this).attr("id"));
+                else {
+                    selected.splice(selected.indexOf($(this).attr("id")), 1);
+                }
+                
+                var icon = $(".fa-trash");
+                $(".btn-danger").html(" Delete (" + selected.length + " selected)").prepend(icon);
+            });
+            
+            console.log("Draw");
         }
     });
-    
+        
+    $("#view-body").append("<button class=\"btn btn-primary\">Adjust</button>");
+    $(".btn-primary").click(function () {
+        table.columns.adjust().draw();
+    });
 });
-
 
 </script>
