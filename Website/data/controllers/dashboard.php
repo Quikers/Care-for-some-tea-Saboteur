@@ -7,9 +7,7 @@ class Dashboard extends Controller {
     }
     
     public function index() {
-        if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") {
-            header("Location:" . URL . "dashboard/profile");
-        } else { header("Location:" . URL . "home"); }
+        header("Location:" . URL . "home");
     }
     
     public function profile() {
@@ -46,6 +44,23 @@ class Dashboard extends Controller {
         
         $this->view->title = "My Decks";
         $this->view->render("dashboard/mydecks");
+    }
+    
+    public function delete($params = array()) {
+        if (count($params) > 0) {
+            $this->loadModel("Content");
+            $contentModel = new ContentModel();
+            
+            if (is_numeric($params[1])) {
+                $contentModel->Delete($params[0], $params[1]);
+            } else if (is_string($params[1])) {
+                foreach (explode(",", $params[1]) as $id) {
+                    $contentModel->Delete($params[0], $id);
+                }
+            }
+        }
+        
+        header("Location:" . URL . "dashboard/my" . $params[0]);
     }
 
 }
