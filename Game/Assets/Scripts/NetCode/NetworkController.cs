@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using Library;
 
 namespace NetCode
@@ -8,7 +7,7 @@ namespace NetCode
     {
         public static bool GameStart;
         public static bool EndTurn;
-        public static System.Collections.Generic.List< Data.Card > PlayCardsQueue = new List< Data.Card >();
+        public static System.Collections.Generic.List< Data.Card > PlayCardsQueue = new System.Collections.Generic.List< Data.Card >();
 
         public static void StartListener()
         {
