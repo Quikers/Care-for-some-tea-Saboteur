@@ -1,10 +1,10 @@
 <div id="view-body">
     
-    <h1>Manage my Cards</h1>
+    <h1>My Cards</h1>
     <p style="font-size: 16px;">To edit a card, press on the table row. This will redirect you to the editor page for that specific Card.</p><br>
     
     <a class="btn btn-control btn-success" href="<?= URL ?>dashboard/editor/card/"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
-    <a class="btn btn-control btn-danger" href="#"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+    <a class="btn btn-control btn-danger" href="#"><i class="fa fa-trash" aria-hidden="true"></i> Delete (0 selected)</a>
     
     <table id="cardsTable" class="display cell-border" cellspacing="0" width="100%">
         <thead>
@@ -14,8 +14,10 @@
                 <th class="tinycol">Attack</th>
                 <th class="tinycol">Health</th>
                 <th class="largecol">Effect</th>
+                <th class="tinycol">Status</th>
                 <th class="shortcol">Created on</th>
                 <th class="shortcol">Editted on</th>
+                <th class="shortcol">Editted hidden</th>
             </tr>
         </thead>
     </table>
@@ -33,7 +35,7 @@ $(document).ready(function () {
     $(".btn-danger").click(function (e) {
         e.preventDefault();
         
-        if (selected.length > 0) window.location = "<?= URL ?>dashboard/delete/card/" + selected.join(",");
+        if (selected.length > 0) window.location = "<?= URL ?>dashboard/delete/cards/" + selected.join(",");
     });
     
     var table = $('#cardsTable').DataTable({
@@ -41,7 +43,7 @@ $(document).ready(function () {
         "paging": false,
         "scrollY": "45vh",
         "scrollCollapse": true,
-        "aaSorting": [[6, "asc"]],
+        "aaSorting": [[7, "desc"]],
         "ajax": "<?= URL ?>api/getcardsbyuserid/<?= $_SESSION["user"]["id"] ?>",
         "columns": [
             { "data": "id" },
@@ -49,8 +51,17 @@ $(document).ready(function () {
             { "data": "attack" },
             { "data": "health" },
             { "data": "effect.effect" },
+            { "data": "activated" },
             { "data": "created" },
+            { "data": "editted", "iDataSort": 8 },
             { "data": "editted" }
+        ],
+        "columnDefs": [
+            {
+                "targets": [ 8 ],
+                "visible": false,
+                "searchable": false
+            }
         ],
         "rowCallback": function( row, data, index ) {
             var children = $(row).children();
@@ -65,6 +76,8 @@ $(document).ready(function () {
                     window.location = "<?= URL ?>dashboard/editor/card/" + id;
                 });
             }
+            
+            $(children[5]).html( GetActivation($(children[5]).text()) );
             
             $(children[0]).html("<input type=\"checkbox\" class=\"select\" id=\"" + id + "\">");
         },
@@ -91,15 +104,29 @@ $(document).ready(function () {
                 var icon = $(".fa-trash");
                 $(".btn-danger").html(" Delete (" + selected.length + " selected)").prepend(icon);
             });
-            
-            console.log("Draw");
         }
     });
-        
-    $("#view-body").append("<button class=\"btn btn-primary\">Adjust</button>");
-    $(".btn-primary").click(function () {
-        table.columns.adjust().draw();
-    });
 });
+
+function GetActivation( a ) {
+    var message = "";
+    
+    switch(a) {
+        default:
+            console.log("Activation key \"" + a + "\" not recognized.");
+            break;
+        case "-1":
+            message = "<p style=\"color: crimson\">Rejected</p>";
+            break;
+        case "0":
+            message = "<p style=\"color: orange\">Requested</p>";
+            break;
+        case "1":
+            message = "<p style=\"color: green\">Accepted</p>";
+            break;
+    }
+    
+    return message;
+}
 
 </script>
