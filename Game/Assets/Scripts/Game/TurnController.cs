@@ -12,22 +12,17 @@ namespace Game
         int a;
         void Start()
         {
-            Data.Turn.First = Random.Range( 0, 2 ) == 1 ? Data.TurnType.LocalPlayer : Data.TurnType.RemotePlayer;
+            Data.Turn.First = Data.TurnType.LocalPlayer;
             CurrentTurn = 1;
         }
-        void Update()
-        {
-            // this is only for now. Will be changed later and thank god for that.
-            if( CurrentPhase != Data.TurnType.RemotePlayer ) return;
 
-            if( a >= 500)
+        private void Update()
+        {
+            if( NetCode.NetworkController.EndTurn == true )
             {
                 CurrentPhase = Data.TurnType.LocalPlayer;
-                PhaseValueText.text = Data.TurnType.LocalPlayer.ToString();
-
-                a = 0;
+                NetCode.NetworkController.EndTurn = false;
             }
-            a++;
         }
 
         Data.TurnType CurrentPhase
@@ -36,7 +31,7 @@ namespace Game
             set
             {
                 Data.Turn.CurrentPhase = value;
-                PhaseValueText.text = value.ToString();
+                PhaseValueText.text = value == Data.TurnType.LocalPlayer ? Data.PlayerUser.Username : Data.EnemyUser.UserName;
 
                 if( value == Data.TurnType.LocalPlayer )
                 {
@@ -65,13 +60,12 @@ namespace Game
             if( CurrentPhase == Data.TurnType.RemotePlayer ) return;
 
             if( Data.Turn.First == Data.TurnType.LocalPlayer )
-            {
                 CurrentPhase = Data.TurnType.RemotePlayer;
-            }
             else
-            {
                 CurrentTurn += 1;
-            }
+
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.PlayerUpdate, new[] { "PlayerAction", "EndTurn" } ), Data.Network.ServerSocket );
+
         }
     }
 }

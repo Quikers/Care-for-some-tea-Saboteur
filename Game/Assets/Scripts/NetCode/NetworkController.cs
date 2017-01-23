@@ -6,6 +6,7 @@ namespace NetCode
     public class NetworkController
     {
         public static bool GameStart;
+        public static bool EndTurn;
 
         public static void StartListener()
         {
@@ -23,6 +24,7 @@ namespace NetCode
 
         static void HandleMessage( Packet recievedPacket )
         {
+            UnityEngine.Debug.Log( recievedPacket );
             switch( recievedPacket.Type )
             {
                 case TcpMessageType.MatchStart:
@@ -36,8 +38,15 @@ namespace NetCode
 
                 case TcpMessageType.Broadcast :
                     break;
+                case TcpMessageType.PlayerUpdate:
+                    if( recievedPacket.Variables[ "PlayerAction" ] == "EndTurn" )
+                    {
+                        UnityEngine.Debug.Log( "EndTurn" );
+
+                        EndTurn = true;
+                    }
+                    break;
                 default:
-                    UnityEngine.Debug.Log( recievedPacket );
                     break;
             }
         }

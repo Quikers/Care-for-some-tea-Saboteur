@@ -3,12 +3,12 @@ using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
-    [SerializeField] public int CardId;
-    [SerializeField] string cardname;
-    int cardCost;
-    Data.effectobject effect;
-    int attack;
-    int health;
+    public int CardId;
+    public string cardname;
+    public int cardCost;
+    public Data.effectobject effect;
+    public int attack;
+    public int health;
 
     void Update()
     {
