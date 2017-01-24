@@ -229,3 +229,67 @@ fieldset {
 tr:hover td {
     background: linear-gradient(to bottom,#F0C281 0,#EDB25F 100%);
 }
+
+.dashboarditem {
+    width: 100%;
+    height: 150px;
+    padding: 10px 40px;
+    margin-top: 10px;
+    
+    background: rgba(0,0,0,0.1);
+    cursor: pointer;
+    
+    transition: 150ms;
+}
+
+.dashboarditem * {
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
+}
+
+.dashboarditem:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.dashboarditem:active {
+    background: rgba(0,0,0,0.5);
+    color: whitesmoke;
+}
+
+#editorform {
+    width: 410px;
+    display: block;
+    margin: 60px auto;
+}
+
+#editorform label {
+    width: 100px;
+}
+
+input[type="number"] {
+    height: 30px;
+    font-size: 16px;
+}
+
+select {
+    width: 300px;
+    height: 30px;
+    font-size: 16px;
+}
+
+#editorform input[type="submit"] {
+    margin: 10px 0 0 110px;
+    width: 300px;
+}
+
+.tablecontainer {
+    display: inline-block;
+    width: 49%;
+    vertical-align: top;
+}
+
+table.display.compact {
+    display: inline-block;
+}

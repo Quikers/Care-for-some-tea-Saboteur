@@ -20,7 +20,7 @@
     
     <script src="https://use.fontawesome.com/bcfab1323f.js"></script>
 </head>
-<body style="display: none;">
+<body>
 
     <?php Session::init();
     
@@ -35,21 +35,20 @@
     $active["mycards"] = "";
     $active["mydecks"] = "";
     
-    switch(str_replace(" ", "", strtolower($this->title))) {
-        default: echo str_replace(" ", "", strtolower($this->title)); break;
-        case "home":
-            $active["home"] = " active";
+    $title = str_replace(" ", "", strtolower($this->title));
+    
+    switch($title) {
+        default: echo $title; break;
+        case "home": case "contact":
+            $active[$title] = " active";
             break;
         case "content": case "cards": case "decks":
             $active["content"] = " active";
-            $active[str_replace(" ", "", strtolower($this->title))] = " active";
-            break;
-        case "contact":
-            $active["contact"] = " active";
+            $active[$title] = " active";
             break;
         case "account": case "profile": case "dashboard": case "mycards": case "mydecks":
             $active["account"] = " active";
-            $active[str_replace(" ", "", strtolower($this->title))] = " active";
+            $active[$title] = " active";
             break;
     }
     
@@ -103,5 +102,4 @@ $(document).ready(function () {
 </script>
 
     <div id="content">
-    
     

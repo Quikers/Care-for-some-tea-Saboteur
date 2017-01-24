@@ -189,6 +189,10 @@ class API extends Controller {
         }
     }
 
+    public function getallcards($params = null) {
+        echo json_encode($this->API->GetAllCards());
+    }
+
     public function getcardbycardid($params = null) {
         if (count($params) > 0) {
             $result = NULL;

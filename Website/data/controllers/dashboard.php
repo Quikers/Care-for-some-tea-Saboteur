@@ -46,6 +46,32 @@ class Dashboard extends Controller {
         $this->view->render("dashboard/mydecks");
     }
     
+    public function editor($params = array()) {
+        if (count($params) > 0) {
+            $this->loadModel("API");
+            $APIModel = new APIModel();
+            if (count($params) > 1) {
+                if ($params[0] == "card") {
+                    $card = $APIModel->GetCardByCardID($params[1]);
+                    $this->view->card = $card == false ? NULL : $card;
+                } else if ($params[0] == "deck") {
+                    $deck = $APIModel->GetDeckByDeckID($params[1]);
+                    if ($_SESSION["user"]["account_type"] != 1 && $deck["userid"] != $_SESSION["user"]["id"]) {
+                        header("Location:" . URL . "dashboard/mydecks");
+                    }
+                    $this->view->deck = $deck == false ? NULL : $deck;
+                }
+            }
+            
+            $this->view->effects = $APIModel->GetAllEffects();
+            $this->view->type = $params[0];
+            $this->view->title = "Editor";
+            $this->view->render("dashboard/editor");
+        } else {
+            header("Location:" . URL . "home");
+        }
+    }
+    
     public function delete($params = array()) {
         if (count($params) > 0) {
             $this->loadModel("Content");

@@ -30,7 +30,6 @@
 $(document).ready(function () {
     
     var selected = [];
-    var isFirst = true;
     
     $(".btn-danger").click(function (e) {
         e.preventDefault();

@@ -139,6 +139,32 @@ class APIModel extends Model {
         return $this->ContentModel->GetCardDeckRelations("deckid", $deckid);
     }
     
+    public function GetAllCards() {
+        $result = $this->db->Query(
+            'SELECT * FROM `cards`',
+            NULL
+        );
+
+        if (!isset($result["id"])) {
+            if (count($result) > 0) {
+                foreach ($result as $key => $card) {
+                    if ($card["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    }
+                }
+            }
+        } else {
+            $result["effect"] = $this->GetCardEffectByEffectID($result["effect"]);
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            return array("data" => $result);
+        } else {
+            return false;
+        }
+    }
+    
     public function GetCardByCardID($cardid) {
         $result = $this->db->Query(
             'SELECT * FROM `cards` WHERE `id` = :cardid',
@@ -201,6 +227,20 @@ class APIModel extends Model {
         if ($result != array() && $result != array(array())) {
             if (count($result) == 1) { return $result[0]; }
             else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
+    public function GetAllEffects() {
+        $result = $this->db->Query(
+            'SELECT * FROM `effect_types`',
+            NULL,
+            false
+        );
+        
+        if ($result != array() && $result != array(array())) {
+            return $result;
         } else {
             return false;
         }
