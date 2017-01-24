@@ -9,6 +9,8 @@ namespace Game
         public Text TurnValueText;
         public Button NextTurnButton;
 
+        public GameObject EnergyAmountBox;
+
         void Start()
         {
             CurrentTurn = 1;
@@ -23,6 +25,7 @@ namespace Game
                 else
                     CurrentTurn += 1;
 
+                FindObjectOfType<EnergyController>().GainEnergy( 1 );
                 NetCode.NetworkController.EndTurn = false;
             }
         }
