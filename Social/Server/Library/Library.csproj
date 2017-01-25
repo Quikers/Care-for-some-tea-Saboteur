@@ -42,12 +42,9 @@
     <Compile Include="Card.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Match.cs" />
-    <Compile Include="Minion.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="SendTcp.cs" />
-    <Compile Include="SpellCard.cs" />
     <Compile Include="TcpMessage.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

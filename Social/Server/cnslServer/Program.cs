@@ -54,12 +54,14 @@ namespace Server
             } while (true);
         }
 
-        private static async void HandleMatchmaking()
+        private static void HandleMatchmaking()
         {
             while (true)
             {
+                //2 Players required in matchmaking queue to start game.
                 if (PlayerQueue.Count < 2) continue;
 
+                //Display players in matchmaking queue
                 Console.WriteLine("\nMatchmaking queue:\n");
                 foreach(KeyValuePair<int, Client> pair in PlayerQueue)
                 {
@@ -67,13 +69,15 @@ namespace Server
                 }
                 Console.WriteLine();
 
+                //Create and start match
                 Match match = new Match();
                 match.Client1 = PlayerQueue.ElementAt(0).Value;
                 match.Client2 = PlayerQueue.ElementAt(1).Value;
-
                 StartMatch(match);
                 
                 Console.WriteLine("Match has been started between UserID {0} and {1}", match.Client1.UserID, match.Client2.UserID);
+
+                //Remove players from matchmaking queue
                 PlayerQueue.Remove(match.Client1.UserID);
                 PlayerQueue.Remove(match.Client2.UserID);
             }
