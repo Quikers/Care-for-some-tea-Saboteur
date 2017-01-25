@@ -59,7 +59,11 @@
         <div id="nav">
             <div id="nav-bg"></div>
             <div id="li-container">
-                <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?><p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p><?php } ?>
+                <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?>
+                <p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p>
+                <?php } else { ?>
+                <div id="downloadButton" class="li"><a href="<?= URL ?>content/downloadclient"><i class="fa fa-download" aria-hidden="true"></i> Download</a></div>
+                <?php } ?>
                 <center>
                     <div class="li<?= $active["home"] ?>"><a href="<?= URL ?>home">Home</a></div>
                     <div class="li dropdown<?= $active["content"] ?>">

@@ -1,6 +1,6 @@
 <div id="content-body" <?= ( $this->type == "card" ? "style=\"min-width: 500px; width: 500px;\"" : "" ) ?>>
     <h1><?= ucfirst($this->type) ?> Editor</h1>
-    <form style="width: auto;" id="editorform" class="forms" method="POST" action="<?php
+    <form style="width: auto; margin-top: 30px;" id="editorform" class="forms" method="POST" action="<?php
 
     if ($this->type == "card") {
         

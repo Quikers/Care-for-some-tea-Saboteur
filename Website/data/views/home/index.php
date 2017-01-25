@@ -8,16 +8,20 @@
     <?php } else { ?>
     
     <div id="dashboarditem-container">
+        <div class="dashboarditem" href="<?= URL ?>content/downloadclient">
+            <h2 style="margin-top: 30px;"><i class="fa fa-download" aria-hidden="true"></i> Download Client</h2>
+            <p>Click here to download the latest Game Client.</p>
+        </div>
         <div class="dashboarditem" href="<?= URL ?>dashboard/profile">
-            <h2 style="margin-top: 30px;">Profile</h2>
+            <h2 style="margin-top: 30px;"><i class="fa fa-user" aria-hidden="true"></i> Profile</h2>
             <p>Edit your profile information, such as your E-mail, Username and Password.</p>
         </div>
         <div class="dashboarditem" href="<?= URL ?>dashboard/mycards">
-            <h2>My Cards</h2>
+            <h2><i class="fa fa-list" aria-hidden="true"></i> My Cards</h2>
             <p>On this page you will find a table with all of your created Cards.<br>You also have the option to create a new Card, edit a Card or delete a Card.</p>
         </div>
         <div class="dashboarditem" href="<?= URL ?>dashboard/mydecks">
-            <h2>My Decks</h2>
+            <h2><i class="fa fa-list" aria-hidden="true"></i> My Decks</h2>
             <p>On this page you will find a table with all of your created Decks.<br>You also have the option to create a new Deck, edit a Deck or delete a Deck.</p>
         </div>
     </div>
