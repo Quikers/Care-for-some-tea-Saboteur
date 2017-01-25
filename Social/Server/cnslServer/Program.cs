@@ -344,20 +344,20 @@ namespace Server
                                             || (!packet.Variables.ContainsKey("TargetMinionID")))
                                             break;
 
-                                        //Create packet for opponent
-                                        Packet attack = new Packet(
-                                                        packet.From,
-                                                        opponent.UserID.ToString(),
-                                                        TcpMessageType.PlayerUpdate,
-                                                        new[] {
-                                                            "PlayerAction", PlayerAction.PlayCard.ToString(),
-                                                            "CardType", CardType.Minion.ToString(),
-                                                            "EnergyCost", packet.Variables["EnergyCost"],
-                                                            "Effect", packet.Variables["Effect"]
-                                                        });
+                                        ////Create packet for opponent
+                                        //Packet attack = new Packet(
+                                        //                packet.From,
+                                        //                opponent.UserID.ToString(),
+                                        //                TcpMessageType.PlayerUpdate,
+                                        //                new[] {
+                                        //                    "PlayerAction", PlayerAction.PlayCard.ToString(),
+                                        //                    "CardType", CardType.Minion.ToString(),
+                                        //                    "EnergyCost", packet.Variables["EnergyCost"],
+                                        //                    "Effect", packet.Variables["Effect"]
+                                        //                });
 
                                         //Send packet to opponent
-                                        SendTcp.SendPacket(attack, opponent.Socket);
+                                        SendTcp.SendPacket(packet, opponent.Socket);
 
                                         SendSuccessResponse(packet, client);
                                         break;
