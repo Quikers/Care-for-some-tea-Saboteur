@@ -299,6 +299,7 @@ namespace Server
                                                     SendTcp.SendPacket(minionPlayed, opponent.Socket);
 
                                                     SendSuccessResponse(packet, client);
+                                                    Console.WriteLine("Minion played. /n");
                                                     break;
                                                 }
                                             case "Spell":
@@ -335,6 +336,7 @@ namespace Server
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(spellPlayed, opponent.Socket);
                                                     SendSuccessResponse(packet, client);
+                                                    Console.WriteLine("Spell played.");
                                                     break;
                                                 }
                                         }
@@ -363,12 +365,14 @@ namespace Server
                                         SendTcp.SendPacket(packet, opponent.Socket);
 
                                         SendSuccessResponse(packet, client);
+                                        Console.WriteLine("Player {0} attacked with minionID {1} to target minionID {2}", packet.From, packet.Variables["AttackingMinionID"], packet.Variables["TargetMinionID"]);
                                         break;
                                     }
                                 case "EndTurn":
                                     {   
                                         SendTcp.SendPacket(packet, opponent.Socket);
                                         SendSuccessResponse(packet, client);
+                                        Console.WriteLine("UserID {0} ended his turn.", packet.From);
                                         break;
                                     }
                             }
