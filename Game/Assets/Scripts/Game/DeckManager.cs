@@ -6,6 +6,9 @@ namespace Game
     public class DeckManager : MonoBehaviour
     {
         public GameObject Card;
+        public GameObject NonPlayerCard;
+
+        public Transform EnemyBoardDrop;
 
         int[] DrawnCards = new int[ 20 ];
 
@@ -24,6 +27,14 @@ namespace Game
         bool IsInHand( int index )
         {
             return DrawnCards.Any( t => t == index );
+        }
+        
+        public void PlayEnemyCard( Data.Card playedCard )
+        {
+            GameObject card = Instantiate( NonPlayerCard, Vector3.zero, Quaternion.identity );
+
+            card.GetComponent<CardManager>().InstantiateCard( playedCard );
+            card.transform.SetParent( EnemyBoardDrop, false );
         }
 
         public void DrawCard()

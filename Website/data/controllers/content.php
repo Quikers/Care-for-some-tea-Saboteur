@@ -20,4 +20,12 @@ class Content extends Controller {
         $this->view->render("content/decks");
     }
     
+    public function downloadclient() {
+        $file_url = URL . "public/gameclient/comet.zip";
+        header('Content-Type: application/octet-stream');
+        header("Content-Transfer-Encoding: Binary"); 
+        header("Content-disposition: attachment; filename=\"" . basename($file_url) . "\""); 
+        readfile($file_url);
+    }
+    
 }

@@ -139,6 +139,32 @@ class APIModel extends Model {
         return $this->ContentModel->GetCardDeckRelations("deckid", $deckid);
     }
     
+    public function GetAllCards() {
+        $result = $this->db->Query(
+            'SELECT * FROM `cards`',
+            NULL
+        );
+
+        if (!isset($result["id"])) {
+            if (count($result) > 0) {
+                foreach ($result as $key => $card) {
+                    if ($card["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    }
+                }
+            }
+        } else {
+            $result["effect"] = $this->GetCardEffectByEffectID($result["effect"]);
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            return array("data" => $result);
+        } else {
+            return false;
+        }
+    }
+    
     public function GetCardByCardID($cardid) {
         $result = $this->db->Query(
             'SELECT * FROM `cards` WHERE `id` = :cardid',
@@ -171,7 +197,10 @@ class APIModel extends Model {
         if (!isset($result["id"])) {
             if (count($result) > 0) {
                 foreach ($result as $key => $card) {
-                    $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    if ($card["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
+                    }
                 }
             }
         } else {
@@ -203,6 +232,20 @@ class APIModel extends Model {
         }
     }
     
+    public function GetAllEffects() {
+        $result = $this->db->Query(
+            'SELECT * FROM `effect_types`',
+            NULL,
+            false
+        );
+        
+        if ($result != array() && $result != array(array())) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
+    
     public function GetDeckByUserID($userid) {
         $result = $this->db->Query(
             'SELECT * FROM `decks` WHERE `userid` = :userid',
@@ -210,13 +253,19 @@ class APIModel extends Model {
             true
         );
         
-        if (is_numeric(array_keys($result)[0])) {
-            foreach($result as $key => $deck) {
-                $deck["cards"] = array();
-                $result[$key] = $deck;
+        if (count($result) > 0) {
+            if (is_numeric(array_keys($result)[0])) {
+                foreach($result as $key => $deck) {
+                    if ($deck["deleted"] == "1") { unset($result[$key]); }
+                    else {
+                        $deck["cards"] = array();
+                        $result[$key] = $deck;
+                    }
+                }
+            } else {
+                $result["cards"] = array();
+                if ($deck["deleted"] == "1") { $result = array(); }
             }
-        } else {
-            $result["cards"] = array();
         }
         
         if ($result != array() && $result != array(array())) {

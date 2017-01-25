@@ -45,7 +45,7 @@ namespace Utilities
             {
                 // Make request to server.
                 WebRequest request =
-                    WebRequest.Create( "http://careforsometeasaboteur.com/api/getdeckbyuserid/" + userId );
+                    WebRequest.Create( "http://careforsometeasaboteur.com/api/getdecksbyuserid/" + userId );
                 request.Credentials = CredentialCache.DefaultCredentials;
 
                 // Get the response from the server.

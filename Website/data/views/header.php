@@ -20,7 +20,7 @@
     
     <script src="https://use.fontawesome.com/bcfab1323f.js"></script>
 </head>
-<body style="display: none;">
+<body>
 
     <?php Session::init();
     
@@ -35,21 +35,20 @@
     $active["mycards"] = "";
     $active["mydecks"] = "";
     
-    switch(str_replace(" ", "", strtolower($this->title))) {
-        default: echo str_replace(" ", "", strtolower($this->title)); break;
-        case "home":
-            $active["home"] = " active";
+    $title = str_replace(" ", "", strtolower($this->title));
+    
+    switch($title) {
+        default: echo $title; break;
+        case "home": case "contact":
+            $active[$title] = " active";
             break;
         case "content": case "cards": case "decks":
             $active["content"] = " active";
-            $active[str_replace(" ", "", strtolower($this->title))] = " active";
-            break;
-        case "contact":
-            $active["contact"] = " active";
+            $active[$title] = " active";
             break;
         case "account": case "profile": case "dashboard": case "mycards": case "mydecks":
             $active["account"] = " active";
-            $active[str_replace(" ", "", strtolower($this->title))] = " active";
+            $active[$title] = " active";
             break;
     }
     
@@ -60,7 +59,11 @@
         <div id="nav">
             <div id="nav-bg"></div>
             <div id="li-container">
-                <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?><p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p><?php } ?>
+                <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == "1") { ?>
+                <p>Welcome, <strong><?= $_SESSION["user"]["username"] ?></strong> <a class="button" href="<?= URL ?>account/logout">Logout</a></p>
+                <?php } else { ?>
+                <div id="downloadButton" class="li"><a href="<?= URL ?>content/downloadclient"><i class="fa fa-download" aria-hidden="true"></i> Download</a></div>
+                <?php } ?>
                 <center>
                     <div class="li<?= $active["home"] ?>"><a href="<?= URL ?>home">Home</a></div>
                     <div class="li dropdown<?= $active["content"] ?>">
@@ -103,5 +106,4 @@ $(document).ready(function () {
 </script>
 
     <div id="content">
-    
     

@@ -4,12 +4,23 @@ namespace Game
 {
     public class GameManager : MonoBehaviour
     {
-
         public static CardManager GetCard( bool playerCard, int id )
         {
             return Utilities.Find.CardById( id );
         }
 
+
+
+        void Update()
+        {
+            if( NetCode.NetworkController.PlayCardsQueue.Count < 1 ) return;
+
+            foreach( Data.Card card in NetCode.NetworkController.PlayCardsQueue )
+            {
+                FindObjectOfType<DeckManager>().PlayEnemyCard( card );
+                NetCode.NetworkController.PlayCardsQueue.Remove( card );
+            }
+        }
 
         void OnApplicationQuit()
         {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Game
 {
-    public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class Draggable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public Transform ParentToReturnTo = null;
         public Transform PlaceHolderParent = null;
@@ -17,6 +17,22 @@ namespace Game
         void Start()
         {
             _playerDrop = Resources.FindObjectsOfTypeAll< DropZone >()[ 1 ].gameObject;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            for( float t = 0; t < 1f; t += 0.1f )
+            {
+                transform.position = Vector3.Slerp( transform.position, new Vector3( transform.position.x, transform.position.y + 10, transform.position.z ), t );
+            }
+
+        }
+        public void OnPointerExit( PointerEventData eventData )
+        {
+            for( float t = 0; t < 1f; t += 0.1f )
+            {
+                transform.position = Vector3.Lerp( transform.position, new Vector3( transform.position.x, transform.position.y - 10, transform.position.z ), t );
+            }
         }
 
         public void OnBeginDrag( PointerEventData eventData )
@@ -106,6 +122,10 @@ namespace Game
 
             }
             Destroy( _placeHolder );
+
+            // Detroy this script
+            Destroy( this );
+
             _playerDrop.SetActive( false );
         }
     }

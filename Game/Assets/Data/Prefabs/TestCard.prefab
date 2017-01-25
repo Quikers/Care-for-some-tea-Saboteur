@@ -273,6 +273,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardId: 0
+  cardname: 
+  cardCost: 0
+  effect:
+    id: 0
+    effect: 
+  attack: 0
+  health: 0
   CardCostText: {fileID: 114839886819511070}
   CardTitleText: {fileID: 114601600248130640}
   CardDiscrText: {fileID: 114754081035282366}
@@ -408,8 +415,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0000035763, y: -39}
-  m_SizeDelta: {x: 125, y: 39.2}
+  m_AnchoredPosition: {x: -1.4, y: -29.3}
+  m_SizeDelta: {x: 108, y: 41.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224180015592557250
 RectTransform:
@@ -431,7 +438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 165.9, y: 167}
   m_SizeDelta: {x: 125, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224221457044263104

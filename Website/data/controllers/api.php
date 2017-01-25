@@ -189,6 +189,10 @@ class API extends Controller {
         }
     }
 
+    public function getallcards($params = null) {
+        echo json_encode($this->API->GetAllCards());
+    }
+
     public function getcardbycardid($params = null) {
         if (count($params) > 0) {
             $result = NULL;
@@ -233,6 +237,43 @@ class API extends Controller {
         }
     }
 
+    public function getcardsbydeckid($params = null) {
+        if (count($params) > 0) {
+            $result["data"] = array();
+            if (strpos($params[0], ",") != false) {
+                foreach (explode(",", $params[0]) as $cardid) {
+                    $relArr = $this->API->GetCardDeckRelByDeckID($cardid);
+                    if ($relArr != false && count($relArr) > 0) {
+                        foreach($relArr as $relObj) {
+                            array_push($result["data"], $this->API->GetCardByCardID($relObj["cardid"]));
+                        }
+                    } else {
+                        echo "false";
+                        return;
+                    }
+                }
+            } else if (is_numeric($params[0])) {
+                $relArr = $this->API->GetCardDeckRelByDeckID($params[0]);
+                if ($relArr != false && count($relArr) > 0) {
+                    foreach($relArr as $relObj) {
+                        array_push($result["data"], $this->API->GetCardByCardID($relObj["cardid"]));
+                    }
+                } else {
+                    echo "false";
+                    return;
+                }
+            } else {
+                echo "false";
+                return;
+            }
+
+            echo json_encode($result);
+        } else {
+            echo "false";
+            return;
+        }
+    }
+
     public function getdeckbydeckid($params = null) {
         if (count($params) > 0) {
             $result = NULL;
@@ -250,12 +291,14 @@ class API extends Controller {
         }
     }
 
-    public function getdeckbyuserid($params = null) {
+    public function getdecksbyuserid($params = null) {
         if (count($params) > 0) {
             $result = NULL;
             if (is_numeric($params[0])) {
                 $temp = $this->API->GetDeckByUserID($params[0]);
-                $result = array("data" => is_numeric(array_keys($temp)[0]) ? $temp : array($temp));
+                if ($temp != false) {
+                    $result = array("data" => is_numeric(array_keys($temp)[0]) ? $temp : array($temp));
+                } else { $result = $temp; }
             } else {
                 echo "false";
                 return;
@@ -268,7 +311,7 @@ class API extends Controller {
         }
     }
 
-    public function getdeckbyusername($params = null) {
+    public function getdecksbyusername($params = null) {
         if (count($params) > 0) {
             $userid = $this->API->GetUserByUsername(array($params[0]), false)["id"];
 
