@@ -62,7 +62,8 @@ namespace Game
 
             Debug.Log( p );
 
-            Library.SendTcp.SendPacket( p, Data.Network.ServerSocket );
+            if( CardArea.gameObject.CompareTag( "Board" ) )
+                Library.SendTcp.SendPacket( p, Data.Network.ServerSocket );
 
             if( CardArea.gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
             {

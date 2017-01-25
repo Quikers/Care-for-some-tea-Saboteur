@@ -18,16 +18,15 @@ namespace Game
 
         private void Update()
         {
-            if( NetCode.NetworkController.EndTurn )
-            {
-                if( Data.Turn.First == Data.TurnType.RemotePlayer )
-                    CurrentPhase = Data.TurnType.LocalPlayer;
-                else
-                    CurrentTurn += 1;
+            if( !NetCode.NetworkController.EndTurn ) return;
 
-                FindObjectOfType<EnergyController>().GainEnergy( 1 );
-                NetCode.NetworkController.EndTurn = false;
-            }
+            if( Data.Turn.First == Data.TurnType.RemotePlayer )
+                CurrentPhase = Data.TurnType.LocalPlayer;
+            else
+                CurrentTurn += 1;
+
+            FindObjectOfType<EnergyController>().GainEnergy( 1 );
+            NetCode.NetworkController.EndTurn = false;
         }
 
         Data.TurnType CurrentPhase

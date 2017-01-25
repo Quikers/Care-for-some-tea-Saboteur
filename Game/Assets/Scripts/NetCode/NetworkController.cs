@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Library;
+using System.Collections.Generic;
 
 namespace NetCode
 {
@@ -7,7 +8,8 @@ namespace NetCode
     {
         public static bool GameStart;
         public static bool EndTurn;
-        public static System.Collections.Generic.List< Data.Card > PlayCardsQueue = new System.Collections.Generic.List< Data.Card >();
+        public static List< Data.Card > PlayCardsQueue = new List< Data.Card >();
+        public static Dictionary<int , int> AttackingQueue = new Dictionary< int, int >();
 
         public static void StartListener()
         {
@@ -59,9 +61,12 @@ namespace NetCode
                             int.Parse( recievedPacket.Variables[ "EnergyCost" ] ),
                             recievedPacket.Variables[ "Effect" ] ) );
                     }
+                    else if( recievedPacket.Variables[ "PlayerAction" ] == "Attack" )
+                    {
+                        AttackingQueue.Add( int.Parse( recievedPacket.Variables[ "TargetMinionID" ] ),
+                            int.Parse( recievedPacket.Variables[ "AttackingMinionID" ] ) );
+                    }
 
-                    break;
-                default:
                     break;
             }
         }

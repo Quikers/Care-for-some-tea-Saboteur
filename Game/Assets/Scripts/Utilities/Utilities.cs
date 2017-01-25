@@ -25,8 +25,8 @@ namespace Utilities
 
         public static CardManager CardById( int id )
         {
-            CardManager[] Cards = FindObjectsOfType< CardManager >();
-            foreach( CardManager cardManager in Cards )
+            CardManager[] cards = FindObjectsOfType< CardManager >();
+            foreach( CardManager cardManager in cards )
             {
                 if( cardManager.CardId == id )
                     return cardManager;
