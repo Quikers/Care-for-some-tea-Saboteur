@@ -246,6 +246,65 @@ class APIModel extends Model {
         }
     }
     
+    public function CreateDeck($deck) {
+        $this->db->Query(
+            'INSERT INTO `decks`(`userid`, `name`, `activated`, `deleted`) VALUES (:userid, :name, :activated, :deleted)',
+            array( 
+                "userid" => $_SESSION["user"]["id"],
+                "name" => $deck["name"],
+                "activated" => 0,
+                "deleted" => 0
+            )
+        );
+        
+        if (count($deck["addedcards"]) > 0) {
+            foreach ($deck["addedcards"] as $cardid) {
+                $this->db->Query(
+                    'INSERT INTO `cards_decks_rel` (`deckid`, `cardid`) VALUES (:deckid, :cardid)',
+                    array( 
+                        "deckid" => $deck["id"],
+                        "cardid" => $cardid
+                    )
+                );
+            }
+        }
+    }
+    
+    public function UpdateDeck($deck) {
+        $this->db->Query(
+            'UPDATE `decks` SET `name`=:name, ' . ( $deck["activated"] != NULL ? '`activated`=:activated,' : "" ) . ( $deck["activated"] != NULL ? '`deleted`=:deleted' : "" ),
+            array( 
+                "name" => $deck["name"],
+                "activated" => $deck["activated"],
+                "deleted" => $deck["deleted"]
+            )
+        );
+        
+        if (count($deck["addedcards"]) > 0) {
+            foreach ($deck["addedcards"] as $cardid) {
+                $this->db->Query(
+                    'INSERT INTO `cards_decks_rel` (`deckid`, `cardid`) VALUES (:deckid, :cardid)',
+                    array( 
+                        "deckid" => $deck["id"],
+                        "cardid" => $cardid
+                    )
+                );
+            }
+        }
+        
+        if (count($deck["deletedcards"]) > 0) {
+            foreach ($deck["deletedcards"] as $cardid) {
+                $this->db->Query(
+                    'DELETE `cards_decks_rel` WHERE `deckid`=:deckid AND WHERE `cardid`=:cardid',
+                    array( 
+                        "deckid" => $deck["id"],
+                        "cardid" => $cardid
+                    )
+                );
+            }
+        }
+    }
+    
     public function GetDeckByUserID($userid) {
         $result = $this->db->Query(
             'SELECT * FROM `decks` WHERE `userid` = :userid',
