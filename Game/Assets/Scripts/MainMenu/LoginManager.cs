@@ -60,11 +60,12 @@ namespace MainMenu
 
             try
             {
+                Data.Network.ServerSocket = new TcpClient( IP.text, 25002 );
+
                 // login to social server.
                 SendTcp.SendPacket(
                     new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.Login,
-                        new[] { "Username", Data.PlayerUser.Username } ), new TcpClient( IP.text, 25002 ) );
-                Data.Network.ServerSocket = new TcpClient( IP.text, 25002 );
+                        new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
 
             }
             catch( SocketException ex )

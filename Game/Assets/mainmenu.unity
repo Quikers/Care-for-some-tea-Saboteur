@@ -991,7 +991,7 @@ MonoBehaviour:
   LoginPanel: {fileID: 1369910464}
   Email: {fileID: 1332295218}
   Password: {fileID: 1373910278}
-  IP: {fileID: 0}
+  IP: {fileID: 248169959}
 --- !u!1 &248169957
 GameObject:
   m_ObjectHideFlags: 0
