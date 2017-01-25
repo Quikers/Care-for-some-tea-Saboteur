@@ -299,7 +299,7 @@ namespace Server
                                                     SendTcp.SendPacket(minionPlayed, opponent.Socket);
 
                                                     SendSuccessResponse(packet, client);
-                                                    Console.WriteLine("Minion played. /n");
+                                                    Console.WriteLine("Minion played. \n");
                                                     break;
                                                 }
                                             case "Spell":
