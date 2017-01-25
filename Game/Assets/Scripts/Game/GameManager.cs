@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Game
 {
@@ -13,13 +14,33 @@ namespace Game
 
         void Update()
         {
-            if( NetCode.NetworkController.PlayCardsQueue.Count < 1 ) return;
-
-            foreach( Data.Card card in NetCode.NetworkController.PlayCardsQueue )
+            if( NetCode.NetworkController.AttackingQueue.Count >= 1 )
             {
-                FindObjectOfType<DeckManager>().PlayEnemyCard( card );
-                NetCode.NetworkController.PlayCardsQueue.Remove( card );
+                foreach( var attacker in NetCode.NetworkController.AttackingQueue )
+                {
+                    Debug.Log( attacker.Value + "  " + attacker.Key );
+
+                    Debug.Log( Utilities.Find.CardById( attacker.Value ) );
+                    Debug.Log( Utilities.Find.CardById( attacker.Key ) );
+
+                    Utilities.Find.CardById( attacker.Value )
+                        .GetComponent< EnemyCardController >()
+                        .Attack( Utilities.Find.CardById( attacker.Value ), Utilities.Find.CardById( attacker.Key ) );
+
+                    NetCode.NetworkController.AttackingQueue.Remove( attacker.Key );
+
+                }
             }
+
+            if( NetCode.NetworkController.PlayCardsQueue.Count >= 1 )
+            {
+                foreach( Data.Card card in NetCode.NetworkController.PlayCardsQueue )
+                {
+                    FindObjectOfType<DeckManager>().PlayEnemyCard( card );
+                    NetCode.NetworkController.PlayCardsQueue.Remove( card );
+                }
+            }
+            
         }
 
         void OnApplicationQuit()

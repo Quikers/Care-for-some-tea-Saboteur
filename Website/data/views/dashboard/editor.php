@@ -33,7 +33,9 @@
         <fieldset>
             <legend>Main</legend>
             <label for="cardname">Deck name</label><input type="text" id="deckname" name="name" value="<?= isset($this->deck) ? $this->deck["name"] : "" ?>" required><br>
-            <input type="text" name="cards" value="" hidden>
+            <input type="text" name="id" value="<?= isset($this->deck) ? $this->deck["id"] : "" ?>" hidden>
+            <input id="deletedCards" type="text" name="deletedcards" value="" hidden>
+            <input id="addedCards" type="text" name="addedcards" value="" hidden>
             <div class="tablecontainer">
                 <label>Current Cards</label><p style="display: inline-block; color: crimson; font-size: 16px;">All cards checked in the table below will be removed on upload!</p>
                 <table id="currentCardsTable" class="display cell-border compact nowrap" cellspacing="0" width="49%">
@@ -82,9 +84,6 @@
     
         var deleteSelected = [];
         var addSelected = [];
-                
-        console.log(card);
-        console.log(deck);
         
         <?php if ($this->type == "deck") { ?>
         
@@ -132,6 +131,8 @@
                     else {
                         deleteSelected.splice(deleteSelected.indexOf($(this).attr("id")), 1);
                     }
+                    
+                    $("#deletedCards").val(deleteSelected);
                 });
             }
         });
@@ -179,6 +180,8 @@
                     else {
                         addSelected.splice(addSelected.indexOf($(this).attr("id")), 1);
                     }
+                    
+                    $("#addedCards").val(addSelected);
                 });
             }
         });

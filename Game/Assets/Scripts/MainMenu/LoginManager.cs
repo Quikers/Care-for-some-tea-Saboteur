@@ -14,6 +14,12 @@ namespace MainMenu
 
         public InputField Email;
         public InputField Password;
+        public InputField IP;
+
+        void Start()
+        {
+            
+        }
 
         public void Register()
         {
@@ -59,10 +65,13 @@ namespace MainMenu
 
             try
             {
+                Data.Network.ServerSocket = new TcpClient( IP.text, 25002 );
+
                 // login to social server.
                 SendTcp.SendPacket(
                     new Packet( Data.PlayerUser.Id.ToString(), "Server", TcpMessageType.Login,
                         new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
+
             }
             catch( SocketException ex )
             {                
