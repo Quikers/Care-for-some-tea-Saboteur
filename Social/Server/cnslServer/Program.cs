@@ -304,7 +304,11 @@ namespace Server
                                             case "Spell":
                                                 {
                                                     //Check requirements of incoming packet
-                                                    if ((!packet.Variables.ContainsKey("EnergyCost")) || (!packet.Variables.ContainsKey("Effect")))
+                                                    if ((!packet.Variables.ContainsKey("EnergyCost")) 
+                                                        || (!packet.Variables.ContainsKey("Effect"))
+                                                        || (!packet.Variables.ContainsKey("CardID"))
+                                                        || (!packet.Variables.ContainsKey("CardName"))
+                                                        )
                                                     {
                                                         Console.WriteLine("UserID {0} tried to process an invalid packet. HandlePacket > PlayerUpdate > PlayCard > Spell", packet.From);
                                                         SendErrorToClient("Server", client, "Invalid Packet.");
@@ -318,7 +322,7 @@ namespace Server
                                                         TcpMessageType.PlayerUpdate,
                                                         new[] {
                                                             "PlayerAction", PlayerAction.PlayCard.ToString(),
-                                                            "CardType", CardType.Minion.ToString(),
+                                                            "CardType", CardType.Spell.ToString(),
                                                             "EnergyCost", packet.Variables["EnergyCost"],
                                                             "Effect", packet.Variables["Effect"],
                                                             "CardID", packet.Variables["CardID"],
@@ -330,7 +334,6 @@ namespace Server
 
                                                     //Send packet to opponent
                                                     SendTcp.SendPacket(spellPlayed, opponent.Socket);
-
                                                     SendSuccessResponse(packet, client);
                                                     break;
                                                 }
