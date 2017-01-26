@@ -8,7 +8,7 @@
     <?php } else { ?>
     
     <div id="dashboarditem-container">
-        <div class="dashboarditem" href="<?= URL ?>content/downloadclient">
+        <div class="dashboarditem" href="<?= URL ?>collection/downloadclient">
             <h2 style="margin-top: 30px;"><i class="fa fa-download" aria-hidden="true"></i> Download Client</h2>
             <p>Click here to download the latest Game Client.</p>
         </div>
