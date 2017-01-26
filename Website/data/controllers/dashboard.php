@@ -47,36 +47,63 @@ class Dashboard extends Controller {
     }
     
     public function uploadcard() {
-        print_r($_POST);
+        $this->loadModel("API");
+        $API = new APIModel();
+        $card = $API->GetCardByCardID($_POST["id"]);
+        
+        if ($card != false) {
+            $API->UpdateCard(
+                array(
+                    "id" => $_POST["id"],
+                    "name" => $_POST["name"],
+                    "cost" => $_POST["cost"],
+                    "attack" => $_POST["attack"],
+                    "health" => $_POST["health"],
+                    "effect" => $_POST["effect"],
+                    "activated" => isset($_POST["activated"]) ? $_POST["activated"] : NULL,
+                )
+            );
+        } else {
+            $card = $API->CreateCard(
+                array(
+                    "name" => $_POST["name"],
+                    "cost" => $_POST["cost"],
+                    "attack" => $_POST["attack"],
+                    "health" => $_POST["health"],
+                    "effect" => $_POST["effect"]
+                )
+            );
+        }
+        
+        header("Location:" . URL . "dashboard/editor/card/" . $card["id"]);
     }
     
     public function uploaddeck() {
-        print_r($_POST);
         $this->loadModel("API");
         $API = new APIModel();
         
-        if ($_POST["name"] != "") {
-            $deck = $API->GetDeckByDeckID($_POST["id"]);
-            if ($deck != false) {
-                $API->UpdateDeck(
-                    array(
-                        "id" => $_POST["id"],
-                        "name" => $_POST["name"],
-                        "addedcards" => $_POST["addedcards"],
-                        "deletedcards" => $_POST["deletedcards"],
-                        "activated" => isset($_POST["activated"]) ? $_POST["activated"] : NULL,
-                        "deleted" => isset($_POST["deleted"]) ? $_POST["deleted"] : NULL
-                    )
-                );
-            } else {
-                $API->CreateDeck(
-                    array(
-                        "name" => $_POST["name"],
-                        "addedcards" => $_POST["addedcards"]
-                    )
-                );
-            }
+        $deck = $API->GetDeckByDeckID($_POST["id"]);
+        if ($deck != false) {
+            $API->UpdateDeck(
+                array(
+                    "id" => $_POST["id"],
+                    "name" => $_POST["name"],
+                    "addedcards" => $_POST["addedcards"],
+                    "deletedcards" => $_POST["deletedcards"],
+                    "activated" => isset($_POST["activated"]) ? $_POST["activated"] : NULL,
+                    "deleted" => isset($_POST["deleted"]) ? $_POST["deleted"] : NULL
+                )
+            );
+        } else {
+            $deck = $API->CreateDeck(
+                array(
+                    "name" => $_POST["name"],
+                    "addedcards" => $_POST["addedcards"]
+                )
+            );
         }
+        
+        header("Location:" . URL . "dashboard/editor/deck/" . $deck["id"]);
     }
     
     public function editor($params = array()) {

@@ -246,6 +246,51 @@ class APIModel extends Model {
         }
     }
     
+    public function CreateCard($card) {
+        echo 'INSERT INTO `cards`(`userid`, `name`, `cost`, `attack`, `health`, `effect`, `activated`, `deleted`) VALUES (' . $_SESSION["user"]["id"] . ', ' . $card["name"] . ', ' . $card["cost"] . ', ' . $card["attack"] . ', ' . $card["health"] . ', ' . $card["effect"] . ', 0, 0)';
+        
+        $this->db->Query(
+            'INSERT INTO `cards`(`userid`, `name`, `cost`, `attack`, `health`, `effect`, `activated`, `deleted`) VALUES (:userid, :name, :cost, :attack, :health, :effect, :activated, :deleted)',
+            array(
+                "userid" => $_SESSION["user"]["id"],
+                "name" => $card["name"],
+                "cost" => $card["cost"],
+                "attack" => $card["attack"],
+                "health" => $card["health"],
+                "effect" => $card["effect"],
+                "activated" => 0,
+                "deleted" => 0
+            )
+        );
+        
+        $result = $this->db->Query(
+            'SELECT * FROM `cards` ORDER BY `id` DESC LIMIT 1',
+            NULL
+        );
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
+    public function UpdateCard($card) {
+        $this->db->Query(
+            'UPDATE `cards` SET `name`=:name, `cost`=:cost, `attack`=:attack, `health`=:health, `effect`=:effect, `activated`=:activated WHERE `id` = :cardid',
+            array( 
+                "name" => $card["name"],
+                "cost" => $card["cost"],
+                "attack" => $card["attack"],
+                "health" => $card["health"],
+                "effect" => $card["effect"],
+                "activated" => 0,
+                "cardid" => $card["id"]
+            )
+        );
+    }
+    
     public function CreateDeck($deck) {
         $this->db->Query(
             'INSERT INTO `decks`(`userid`, `name`, `activated`, `deleted`) VALUES (:userid, :name, :activated, :deleted)',
@@ -257,33 +302,47 @@ class APIModel extends Model {
             )
         );
         
-        if (count($deck["addedcards"]) > 0) {
-            foreach ($deck["addedcards"] as $cardid) {
+        $result = $this->db->Query(
+            'SELECT * FROM `decks` ORDER BY `id` DESC LIMIT 1',
+            NULL
+        );
+        
+        $addedCardsArr = count($deck["addedcards"]) > 0 ? explode(",", $deck["addedcards"]) : array();
+        if (count($addedCardsArr) > 0) {
+            foreach ($addedCardsArr as $cardid) {
                 $this->db->Query(
                     'INSERT INTO `cards_decks_rel` (`deckid`, `cardid`) VALUES (:deckid, :cardid)',
                     array( 
-                        "deckid" => $deck["id"],
+                        "deckid" => $result["id"],
                         "cardid" => $cardid
                     )
                 );
             }
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[0]; }
+            else { return $result; }
+        } else {
+            return false;
         }
     }
     
     public function UpdateDeck($deck) {
         $this->db->Query(
-            'UPDATE `decks` SET `name`=:name, ' . ( $deck["activated"] != NULL ? '`activated`=:activated,' : "" ) . ( $deck["activated"] != NULL ? '`deleted`=:deleted' : "" ),
+            'UPDATE `decks` SET `name`=:name, `activated`=:activated WHERE `id` = :deckid',
             array( 
                 "name" => $deck["name"],
-                "activated" => $deck["activated"],
-                "deleted" => $deck["deleted"]
+                "activated" => 0,
+                "deckid" => $deck["id"]
             )
         );
         
-        if (count($deck["addedcards"]) > 0) {
-            foreach ($deck["addedcards"] as $cardid) {
+        $deletedCardsArr = count($deck["deletedcards"]) > 0 ? explode(",", $deck["deletedcards"]) : array();
+        if (count($deletedCardsArr) > 0) {
+            foreach ($deletedCardsArr as $cardid) {
                 $this->db->Query(
-                    'INSERT INTO `cards_decks_rel` (`deckid`, `cardid`) VALUES (:deckid, :cardid)',
+                    'DELETE FROM `cards_decks_rel` WHERE `deckid`=:deckid AND `cardid`=:cardid',
                     array( 
                         "deckid" => $deck["id"],
                         "cardid" => $cardid
@@ -292,10 +351,11 @@ class APIModel extends Model {
             }
         }
         
-        if (count($deck["deletedcards"]) > 0) {
-            foreach ($deck["deletedcards"] as $cardid) {
+        $addedCardsArr = count($deck["addedcards"]) > 0 ? explode(",", $deck["addedcards"]) : array();
+        if (count($addedCardsArr) > 0) {
+            foreach ($addedCardsArr as $cardid) {
                 $this->db->Query(
-                    'DELETE `cards_decks_rel` WHERE `deckid`=:deckid AND WHERE `cardid`=:cardid',
+                    'INSERT INTO `cards_decks_rel` (`deckid`, `cardid`) VALUES (:deckid, :cardid)',
                     array( 
                         "deckid" => $deck["id"],
                         "cardid" => $cardid
