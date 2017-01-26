@@ -11,6 +11,7 @@
             <tr>
                 <th class="controlcol"><input type="checkbox" id="selectAll"></th>
                 <th class="largecol">Name</th>
+                <th class="tinycol">Cost</th>
                 <th class="tinycol">Attack</th>
                 <th class="tinycol">Health</th>
                 <th class="largecol">Effect</th>
@@ -43,10 +44,11 @@ $(document).ready(function () {
         "scrollY": "45vh",
         "scrollCollapse": true,
         "aaSorting": [[7, "desc"]],
-        "ajax": "<?= URL ?>api/getcardsbyuserid/<?= $_SESSION["user"]["id"] ?>",
+        "ajax": "<?= URL ?>api/getcardsbyuserid/<?= $_SESSION["user"]["id"] ?>/true",
         "columns": [
             { "data": "id" },
             { "data": "name" },
+            { "data": "cost" },
             { "data": "attack" },
             { "data": "health" },
             { "data": "effect.effect" },
@@ -76,7 +78,7 @@ $(document).ready(function () {
                 });
             }
             
-            $(children[5]).html( GetActivation($(children[5]).text()) );
+            $(children[6]).html( GetActivation($(children[6]).text()) );
             
             $(children[0]).html("<input type=\"checkbox\" class=\"select\" id=\"" + id + "\">");
         },

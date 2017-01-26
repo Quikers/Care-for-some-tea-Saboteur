@@ -1,4 +1,4 @@
-<div id="content-body">
+<div id="collection-body">
     <h3>Contact</h3>
     <p>Please contact us on the following platforms:</p>
     <p>

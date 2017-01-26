@@ -221,18 +221,26 @@ class API extends Controller {
             $result["data"] = array();
             if (strpos($params[0], ",") != false) {
                 foreach (explode(",", $params[0]) as $userid) {
-                    array_push($result["data"], $this->API->GetCardsByUserID($userid));
+                    array_push($result["data"], $this->API->GetCardsByUserID($userid, $params[1]));
                 }
             } else if (is_numeric($params[0])) {
-                $result["data"] = $this->API->GetCardsByUserID($params[0]);
+                $result["data"] = $this->API->GetCardsByUserID($params[0], $params[1]);
             } else {
-                echo "false";
+                if (isset($params[1]) && strpos("true", $params[1]) > -1) {
+                    echo "";
+                } else {
+                    echo "false";
+                }
                 return;
             }
 
             echo json_encode($result);
         } else {
-            echo "false";
+            if (isset($params[1]) && strpos("true", $params[1]) > -1) {
+                echo "";
+            } else {
+                echo "false";
+            }
             return;
         }
     }
@@ -273,6 +281,10 @@ class API extends Controller {
             return;
         }
     }
+    
+    public function getalldecks() {
+        echo json_encode(array("data" => $this->API->GetAllDecks()));
+    }
 
     public function getdeckbydeckid($params = null) {
         if (count($params) > 0) {
@@ -295,18 +307,28 @@ class API extends Controller {
         if (count($params) > 0) {
             $result = NULL;
             if (is_numeric($params[0])) {
-                $temp = $this->API->GetDeckByUserID($params[0]);
+                $temp = $this->API->GetDecksByUserID($params[0]);
                 if ($temp != false) {
                     $result = array("data" => is_numeric(array_keys($temp)[0]) ? $temp : array($temp));
                 } else { $result = $temp; }
             } else {
-                echo "false";
+                if (isset($params[1]) && strpos("true", $params[1]) > -1) {
+                    echo "";
+                } else {
+                    echo "false";
+                }
                 return;
             }
-
-            echo json_encode($result);
+            
+            if ($result != false) {
+                echo json_encode($result);
+            } else { echo "{\"data\":[]}"; }
         } else {
-            echo "false";
+            if (isset($params[1]) && strpos("true", $params[1]) > -1) {
+                echo "";
+            } else {
+                echo "false";
+            }
             return;
         }
     }

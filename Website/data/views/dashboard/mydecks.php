@@ -28,7 +28,6 @@
 $(document).ready(function () {
     
     var selected = [];
-    var isFirst = true;
     
     $(".btn-danger").click(function (e) {
         e.preventDefault();
@@ -42,7 +41,7 @@ $(document).ready(function () {
         "scrollY": "45vh",
         "scrollCollapse": true,
         "aaSorting": [[5, "desc"]],
-        "ajax": "<?= URL ?>api/getdecksbyuserid/<?= $_SESSION["user"]["id"] ?>",
+        "ajax": "<?= URL ?>api/getdecksbyuserid/<?= $_SESSION["user"]["id"] ?>/true",
         "columns": [
             { "data": "id" },
             { "data": "name" },
