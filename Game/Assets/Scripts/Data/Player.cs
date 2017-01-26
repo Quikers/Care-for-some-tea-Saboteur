@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace Data
 {
@@ -8,6 +7,8 @@ namespace Data
         public static TcpClient PlayerClient;
 
         public static Deck CurrentDeck;
-        public static int CurrentEnergy;
+        public static int CurrentEnergy = 1;
+
+        public static int CurrentHealth = 20;
     }
 }

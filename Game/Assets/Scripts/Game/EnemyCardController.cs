@@ -14,8 +14,15 @@ namespace Game
 
         public void OnDrop( PointerEventData eventData )
         {
-            if( !eventData.pointerDrag.transform.parent.gameObject.CompareTag( "BoardCard" ) ) return;
+            if( !eventData.pointerDrag.transform.parent.gameObject.CompareTag( "BoardCard" ) | Data.Turn.CurrentPhase != Data.TurnType.LocalPlayer )
+                return;
+            if( eventData.pointerDrag.GetComponent< CardAttackController >().HasAttacked )
+                return;
+
             CardManager attackerController = eventData.pointerDrag.GetComponent< CardAttackController >().cardData;
+
+            eventData.pointerDrag.GetComponent<CardAttackController>().EndDrag();
+            eventData.pointerDrag.GetComponent< CardAttackController >().HasAttacked = true;
 
             cardData.Health -= attackerController.Attack;
             attackerController.Health -= cardData.Attack;
@@ -31,7 +38,6 @@ namespace Game
 
         public void Attack( CardManager attackingCardManager, CardManager attackedCardManager )
         {
-
             attackedCardManager.Health -= attackingCardManager.Attack;
             attackingCardManager.Health -= attackingCardManager.Attack;
 

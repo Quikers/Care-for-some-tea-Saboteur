@@ -26,6 +26,7 @@ namespace Game
                 CurrentTurn += 1;
 
             FindObjectOfType<EnergyController>().GainEnergy( 1 );
+            GameManager.ActiveAllCards();
             NetCode.NetworkController.EndTurn = false;
         }
 

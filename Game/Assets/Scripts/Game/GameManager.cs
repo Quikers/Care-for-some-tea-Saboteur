@@ -5,12 +5,19 @@ namespace Game
 {
     public class GameManager : MonoBehaviour
     {
-        public static CardManager GetCard( bool playerCard, int id )
+        CardManager GetCard( int id )
         {
             return Utilities.Find.CardById( id );
         }
 
-
+        public static void ActiveAllCards()
+        {
+            CardAttackController[] attackingCards = FindObjectsOfType< CardAttackController >();
+            foreach( var attackingCard in attackingCards )
+            {
+                attackingCard.HasAttacked = false;
+            }
+        }
 
         void Update()
         {
@@ -29,15 +36,28 @@ namespace Game
                 {
                     Debug.Log( attacker.Value + "  " + attacker.Key );
 
-                    Debug.Log( Utilities.Find.CardById( attacker.Value ) );
-                    Debug.Log( Utilities.Find.CardById( attacker.Key ) );
 
-                    Utilities.Find.CardById( attacker.Value )
-                        .GetComponent< EnemyCardController >()
-                        .Attack( Utilities.Find.CardById( attacker.Value ), Utilities.Find.CardById( attacker.Key ) );
+                    if( attacker.Key >= 0 )
+                    {
+                        Debug.Log( Utilities.Find.CardById( attacker.Value ) );
+                        Debug.Log( Utilities.Find.CardById( attacker.Key ) );
 
+                        GetCard( attacker.Value )
+                            .GetComponent< EnemyCardController >()
+                            .Attack( GetCard( attacker.Value ), GetCard( attacker.Key ) );
+                    }
+                    else if( attacker.Key == -1 )
+                    {
+                        FindObjectsOfType< FaceController >()[ 0 ]
+                            .Attack( GetCard( attacker.Value ) );
+                    }
+                    else if( attacker.Key == -2 )
+                    {
+                        FindObjectsOfType< FaceController >()[ 1 ]
+                            .Attack( GetCard( attacker.Value ) );
+
+                    }
                     NetCode.NetworkController.AttackingQueue.Remove( attacker.Key );
-
                 }
             }            
         }

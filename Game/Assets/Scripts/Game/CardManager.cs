@@ -71,6 +71,7 @@ public class CardManager : MonoBehaviour
     public Text CardDiscrText;
     public Text CardHealthText;
     public Text CardAttackText;
+    public Image CardImage;
 
     public void InstantiateCard( Data.Card dataObject )
     {
@@ -80,5 +81,22 @@ public class CardManager : MonoBehaviour
         Effect = dataObject.effect;
         Attack = dataObject.attack;
         Health = dataObject.health;
+
+        Sprite sprite = new Sprite();
+
+        if( CardCost < 2 )
+            sprite = Resources.Load<Sprite>( "0" );
+        else if( CardCost < 4 )
+            sprite = Resources.Load<Sprite>( "2" );
+        else if( CardCost < 6)
+            sprite = Resources.Load<Sprite>( "4" );
+        else if( CardCost < 8 )
+            sprite = Resources.Load<Sprite>( "6" );
+        else if( CardCost < 10 )
+            sprite = Resources.Load<Sprite>( "8" );
+        else if( CardCost == 10 )
+            sprite = Resources.Load<Sprite>( "10" );
+
+        CardImage.sprite = sprite;
     }
 }
