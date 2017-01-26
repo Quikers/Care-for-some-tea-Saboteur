@@ -14,9 +14,18 @@ namespace Game
 
         void Update()
         {
+            if( NetCode.NetworkController.PlayCardsQueue.Count >= 1 )
+            {
+                for( int i = 0; i < NetCode.NetworkController.PlayCardsQueue.Count; i++ )
+                {
+                    FindObjectOfType<DeckManager>().PlayEnemyCard( NetCode.NetworkController.PlayCardsQueue[ i ] );
+                    NetCode.NetworkController.PlayCardsQueue.RemoveAt( i );
+                }
+            }
+
             if( NetCode.NetworkController.AttackingQueue.Count >= 1 )
             {
-                foreach( var attacker in NetCode.NetworkController.AttackingQueue )
+                foreach( var attacker in NetCode.NetworkController.AttackingQueue.ToArray() )
                 {
                     Debug.Log( attacker.Value + "  " + attacker.Key );
 
@@ -30,17 +39,7 @@ namespace Game
                     NetCode.NetworkController.AttackingQueue.Remove( attacker.Key );
 
                 }
-            }
-
-            if( NetCode.NetworkController.PlayCardsQueue.Count >= 1 )
-            {
-                foreach( Data.Card card in NetCode.NetworkController.PlayCardsQueue )
-                {
-                    FindObjectOfType<DeckManager>().PlayEnemyCard( card );
-                    NetCode.NetworkController.PlayCardsQueue.Remove( card );
-                }
-            }
-            
+            }            
         }
 
         void OnApplicationQuit()

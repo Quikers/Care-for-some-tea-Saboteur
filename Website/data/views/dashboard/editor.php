@@ -6,13 +6,14 @@
         
         $effectval = "1";
         foreach($this->effects as $val => $effectArr) {
-            if ($effectArr["id"] == $this->card["effect"]["id"]) { $effectval = $val + 1; }
+            if (isset($this->card) && $effectArr["id"] == $this->card["effect"]["id"]) { $effectval = $val + 1; }
         }
         
         ?><?= URL ?>dashboard/uploadcard">
         
         <fieldset>
             <legend>Main</legend>
+            <input type="text" name="id" value="<?= isset($this->card) ? $this->card["id"] : "" ?>" hidden>
             <label for="cardname">Card name</label><input type="text" id="cardname" name="name" value="<?= isset($this->card) ? $this->card["name"] : "" ?>" required><br>
             <label for="cost">Energy Cost</label><input type="number" min="0" max="10" value="<?= isset($this->card) ? $this->card["cost"] : "0" ?>" id="cost" name="cost" required><br>
         </fieldset>
@@ -21,7 +22,7 @@
             <label for="attack">Attack</label><input type="number" min="0" max="12" value="<?= isset($this->card) ? $this->card["attack"] : "0" ?>" id="attack" name="attack" required>
             <input style="margin-left: 32px" type="number" min="0" max="12" value="<?= isset($this->card) ? $this->card["health"] : "0" ?>" id="health" name="health" required><label style="text-align: right;" for="health">Health</label><br>
             <label class="effect" for="effect">Effect</label><select id="effect" name="effect" required><?php 
-                foreach ($this->effects as $effectArr) { echo "<option id=\"" . $effectArr["id"] . "\"" . ( $effectArr["id"] == $this->card["effect"]["id"] ? " selected=\"selected\"" : "" ) . ">" . $effectArr["effect"] . "</option>\n"; }
+                foreach ($this->effects as $effectArr) { echo "<option value=\"" . $effectArr["id"] . "\"" . ( $effectArr["id"] == $this->card["effect"]["id"] ? " selected=\"selected\"" : "" ) . ">" . $effectArr["effect"] . "</option>\n"; }
             ?></select><br>
         </fieldset>
         
@@ -104,7 +105,7 @@
             ],
             "rowCallback": function( row, data, index ) {
                 var children = $(row).children();
-                var id = $(children[0]).text();
+                var id = $.isNumeric($(children[0]).text()) ? $(children[0]).text() : $(children[0]).find("input[type=\"checkbox\"]").attr("id");
 
                 var datetds = [children[children.length - 2], children[children.length - 1]];
                 for (var i = 0; i < datetds.length; i++)
@@ -131,7 +132,7 @@
                     else {
                         deleteSelected.splice(deleteSelected.indexOf($(this).attr("id")), 1);
                     }
-                    
+
                     $("#deletedCards").val(deleteSelected);
                 });
             }
@@ -153,7 +154,7 @@
             ],
             "rowCallback": function( row, data, index ) {
                 var children = $(row).children();
-                var id = $(children[0]).text();
+                var id = $.isNumeric($(children[0]).text()) ? $(children[0]).text() : $(children[0]).find("input[type=\"checkbox\"]").attr("id");
 
                 var datetds = [children[children.length - 2], children[children.length - 1]];
                 for (var i = 0; i < datetds.length; i++)
@@ -180,7 +181,7 @@
                     else {
                         addSelected.splice(addSelected.indexOf($(this).attr("id")), 1);
                     }
-                    
+
                     $("#addedCards").val(addSelected);
                 });
             }
