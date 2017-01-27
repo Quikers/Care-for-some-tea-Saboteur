@@ -6,11 +6,13 @@ namespace Data
     public struct effectobject
     {
         public int id;
+        public string type;
         public string effect;
 
-        public effectobject( int id, string effect )
+        public effectobject( int id, string type, string effect )
         {
             this.id = id;
+            this.type = type;
             this.effect = effect;
         }
     }
@@ -31,14 +33,14 @@ namespace Data
         public string created;
         public string editted;
 
-        public Card( int id, string name, int health, int attack, int cost, string effect )
+        public Card( int id, string name, int health, int attack, int cost, string type, string effect )
         {
             this.id = id;
             this.name = name;
             this.health = health;
             this.attack = attack;
             this.cost = cost;
-            this.effect = new effectobject( 1, effect );
+            this.effect = new effectobject( 1, type, effect );
         }
     }
 }

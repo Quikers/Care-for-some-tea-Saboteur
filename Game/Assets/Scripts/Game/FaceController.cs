@@ -7,13 +7,22 @@ public class FaceController : MonoBehaviour, IDropHandler
     public UnityEngine.UI.Text healthText;
     public int ID;
 
-    int CurrentHealth
+    int CurrentPlayerHealth
     {
         get { return Data.Player.CurrentHealth; }
         set
         {
             Data.Player.CurrentHealth = value;
             healthText.text = Data.Player.CurrentHealth.ToString();
+        }
+    }
+    int CurrentEnemyHealth
+    {
+        get { return Data.Enemy.CurrentHealth; }
+        set
+        {
+            Data.Enemy.CurrentHealth = value;
+            healthText.text = Data.Enemy.CurrentHealth.ToString();
         }
     }
 
@@ -42,6 +51,12 @@ public class FaceController : MonoBehaviour, IDropHandler
 
     public void Attack(CardManager attackerController )
     {
-        CurrentHealth -= attackerController.Attack;
+        if( ID == -2 )
+            CurrentPlayerHealth -= attackerController.Attack;
+        else if( ID == -1 )
+            CurrentEnemyHealth -= attackerController.Attack;
+
+
     }
+
 }

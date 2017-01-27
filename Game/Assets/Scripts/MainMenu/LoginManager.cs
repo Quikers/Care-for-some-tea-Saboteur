@@ -18,7 +18,6 @@ namespace MainMenu
 
         void Start()
         {
-            
         }
 
         public void Register()

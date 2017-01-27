@@ -59,6 +59,7 @@ namespace NetCode
                             int.Parse( recievedPacket.Variables[ "Health" ] ),
                             int.Parse( recievedPacket.Variables[ "Attack" ] ),
                             int.Parse( recievedPacket.Variables[ "EnergyCost" ] ),
+                            recievedPacket.Variables[ "Type" ],
                             recievedPacket.Variables[ "Effect" ] ) );
                     }
                     else if( recievedPacket.Variables[ "PlayerAction" ] == "Attack" )

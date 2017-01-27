@@ -1,26 +1,50 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game
 {
     public class GameManager : MonoBehaviour
     {
+        public GameObject WinScreen;
+
         CardManager GetCard( int id )
         {
             return Utilities.Find.CardById( id );
+        }
+
+        public void BackToMM()
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
         }
 
         public static void ActiveAllCards()
         {
             CardAttackController[] attackingCards = FindObjectsOfType< CardAttackController >();
             foreach( var attackingCard in attackingCards )
-            {
                 attackingCard.HasAttacked = false;
+
+            List< GameObject > energyObjects = FindObjectOfType< EnergyController >().EnergyObjects;
+            foreach( var energyObject in energyObjects )
+            {
+                energyObject.SetActive( true );
             }
         }
 
         void Update()
         {
+            if( Data.Player.CurrentHealth <= 0 )
+            {
+                WinScreen.SetActive( true );
+                WinScreen.GetComponentInChildren< Text >().text = "You lost!";
+            }
+            else if( Data.Enemy.CurrentHealth <= 0 )
+            {
+                WinScreen.SetActive( true );
+                WinScreen.GetComponentInChildren< Text >().text = "Congratulations You Won!";
+            }
+
             if( NetCode.NetworkController.PlayCardsQueue.Count >= 1 )
             {
                 for( int i = 0; i < NetCode.NetworkController.PlayCardsQueue.Count; i++ )
