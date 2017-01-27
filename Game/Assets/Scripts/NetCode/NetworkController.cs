@@ -31,8 +31,6 @@ namespace NetCode
             switch( recievedPacket.Type )
             {
                 case TcpMessageType.MatchStart:
-                    UnityEngine.Debug.Log( "Match Start" );
-                    UnityEngine.Debug.Log( recievedPacket );
 
                     Data.EnemyUser.Id = int.Parse( recievedPacket.Variables[ "UserID" ] );
                     Data.EnemyUser.UserName = recievedPacket.Variables[ "Username" ];

@@ -58,14 +58,8 @@ namespace Game
             {
                 foreach( var attacker in NetCode.NetworkController.AttackingQueue.ToArray() )
                 {
-                    Debug.Log( attacker.Value + "  " + attacker.Key );
-
-
                     if( attacker.Key >= 0 )
                     {
-                        Debug.Log( Utilities.Find.CardById( attacker.Value ) );
-                        Debug.Log( Utilities.Find.CardById( attacker.Key ) );
-
                         GetCard( attacker.Value )
                             .GetComponent< EnemyCardController >()
                             .Attack( GetCard( attacker.Value ), GetCard( attacker.Key ) );

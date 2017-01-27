@@ -60,7 +60,6 @@ namespace Game
                     "CardName", dCardManager.Cardname
                 } );
 
-            Debug.Log( p );
 
             if( CardArea.gameObject.CompareTag( "Board" ) )
             {
