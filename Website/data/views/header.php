@@ -84,7 +84,7 @@
                     <div class="dropdown-content">
                         <div class="li-dropdown<?= $active["profile"] ?>"><a href="<?= URL ?>dashboard/profile"><i class="fa fa-user" aria-hidden="true"></i> Profile</a></div>
                         <?php if ($_SESSION["user"]["account_type"] == 1) { ?>
-                        <div class="li-dropdown<?= $active["adminpanel"] ?>"><a href="<?= URL ?>dashboard/adminpanel"><i class="fa fa-list" aria-hidden="true"></i> Admin</a></div>
+                        <div class="li-dropdown<?= $active["adminpanel"] ?>"><a href="<?= URL ?>dashboard/adminpanel"><i class="fa fa-tachometer" aria-hidden="true"></i> Admin</a></div>
                         <?php } ?>
                         <div class="li-dropdown<?= $active["mycards"] ?>"><a href="<?= URL ?>dashboard/mycards"><i class="fa fa-list" aria-hidden="true"></i> My Cards</a></div>
                         <div class="li-dropdown<?= $active["mydecks"] ?>"><a href="<?= URL ?>dashboard/mydecks"><i class="fa fa-list" aria-hidden="true"></i> My Decks</a></div>
