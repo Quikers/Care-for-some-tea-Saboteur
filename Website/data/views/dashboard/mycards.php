@@ -51,7 +51,7 @@ $(document).ready(function () {
             { "data": "cost" },
             { "data": "attack" },
             { "data": "health" },
-            { "data": "effect.effect" },
+            { "data": "effect.type" },
             { "data": "activated" },
             { "data": "created" },
             { "data": "editted", "iDataSort": 8 },

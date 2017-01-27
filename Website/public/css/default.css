@@ -284,6 +284,14 @@ select {
     width: 300px;
 }
 
+#deckstablecontainer {
+    width: 38.5%;
+}
+
+#cardstablecontainer {
+    width: 60.5%;
+}
+
 .tablecontainer {
     display: inline-block;
     width: 49%;

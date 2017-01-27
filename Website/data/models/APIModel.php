@@ -131,6 +131,26 @@ class APIModel extends Model {
         }
     }
     
+    public function UpdateStatus($type, $status, $id) {
+        if ($type == "deck") {
+            $result = $this->db->Query(
+                'UPDATE `decks` SET `activated`=:activated WHERE `id` = :deckid',
+                array(
+                    "deckid" => $id,
+                    "activated" => $status
+                )
+            );
+        } else if ($type == "card") {
+            $result = $this->db->Query(
+                'UPDATE `cards` SET `activated`=:activated WHERE `id` = :cardid',
+                array(
+                    "cardid" => $id,
+                    "activated" => $status
+                )
+            );
+        }
+    }
+    
     public function GetCardDeckRelByCardID($cardid) {
         return $this->CollectionModel->GetCardDeckRelations("cardid", $cardid);
     }

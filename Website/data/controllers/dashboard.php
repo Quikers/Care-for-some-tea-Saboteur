@@ -53,6 +53,83 @@ class Dashboard extends Controller {
         $this->view->render("dashboard/mydecks");
     }
     
+    public function approve($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "1", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    echo $cardid;
+                    $API->UpdateStatus("card", "1", $cardid);
+                }
+            }
+        }
+        
+        //header("Location:" . URL . "dashboard/adminpanel");
+    }
+    
+    public function unapprove($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "0", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    $API->UpdateStatus("card", "0", $cardid);
+                }
+            }
+        }
+        
+        header("Location:" . URL . "dashboard/adminpanel");
+    }
+    
+    public function reject($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "-1", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    $API->UpdateStatus("card", "-1", $cardid);
+                }
+            }
+        }
+        
+        header("Location:" . URL . "dashboard/adminpanel");
+    }
+    
     public function uploadcard() {
         $this->loadModel("API");
         $API = new APIModel();

@@ -1,35 +1,15 @@
-<div id="content-body">
-    
-    <a class="btn btn-control btn-success cards" href="#"><i class="fa fa-check" aria-hidden="true"></i> Approve</a>
-    <a class="btn btn-control btn-warning cards" href="#"><i class="fa fa-ban" aria-hidden="true"></i> Unapprove</a>
-    <a class="btn btn-control btn-danger cards" href="#"><i class="fa fa-times" aria-hidden="true"></i> Reject</a>
-    <p style="display: inline-block; vertical-align: super;" id="selectedView" class="cards">0 cards selected.</p>
-    
-    <table id="cardsTable" class="display cell-border compact" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th class="controlcol"><input type="checkbox" id="selectAll" class="cards"></th>
-                <th class="largecol">Name</th>
-                <th class="tinycol">Cost</th>
-                <th class="tinycol">Attack</th>
-                <th class="tinycol">Health</th>
-                <th class="largecol">Effect</th>
-                <th class="tinycol">Status</th>
-                <th class="shortcol">Created on</th>
-                <th class="shortcol">Editted on</th>
-                <th class="shortcol">Editted hidden</th>
-            </tr>
-        </thead>
-    </table>
-    
-    <br><br>
-    
-    <a class="btn btn-control btn-success decks" href="#"><i class="fa fa-check" aria-hidden="true"></i> Approve</a>
-    <a class="btn btn-control btn-warning decks" href="#"><i class="fa fa-ban" aria-hidden="true"></i> Unapprove</a>
-    <a class="btn btn-control btn-danger decks" href="#"><i class="fa fa-times" aria-hidden="true"></i> Reject</a>
-    <p style="display: inline-block; vertical-align: super;" id="selectedView" class="decks">0 decks selected.</p>
-    
-    <table id="decksTable" class="display cell-border compact" cellspacing="0" width="100%">
+<div id="deckcard-container" style="position: static; margin: 10px;">
+
+    <a class="btn btn-control btn-success" href="#"><i class="fa fa-check" aria-hidden="true"></i> Approve</a>
+    <a class="btn btn-control btn-warning" href="#"><i class="fa fa-ban" aria-hidden="true"></i> Unapprove</a>
+    <a class="btn btn-control btn-danger" href="#"><i class="fa fa-times" aria-hidden="true"></i> Reject</a>
+    <p style="display: inline-block; vertical-align: super;"> Selected: </p>
+    <p style="display: inline-block; vertical-align: super;" id="selectedView" class="decks">0 decks</p>
+    <p style="display: inline-block; vertical-align: super;" id="selectedView" class="cards">0 cards </p><br>
+
+    <div class="tablecontainer" id="deckstablecontainer">
+        <label><h3>Decks</h3></label>
+        <table id="decksTable" class="display cell-border compact nowrap" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th class="controlcol"><input type="checkbox" id="selectAll" class="decks"></th>
@@ -41,8 +21,26 @@
                 <th class="shortcol">Editted hidden</th>
             </tr>
         </thead>
-    </table>
-    
+    </table></div>
+    <div class="tablecontainer" id="cardstablecontainer">
+        <label><h3>Cards</h3></label>
+        <table id="cardsTable" class="display cell-border compact nowrap" cellspacing="0" width="49%">
+        <thead>
+            <tr>
+                <th class="controlcol"><input type="checkbox" id="selectAll" class="cards"></th>
+                <th class="largecol">Name</th>
+                <th class="tinycol">Cost</th>
+                <th class="tinycol">Attack</th>
+                <th class="tinycol">Health</th>
+                <th class="shortcol">Effect</th>
+                <th class="tinycol">Status</th>
+                <th class="shortcol">Created on</th>
+                <th class="shortcol">Editted on</th>
+                <th class="shortcol">Editted hidden</th>
+            </tr>
+        </thead>
+    </table></div>
+
 </div>
 
 <script>
@@ -52,109 +50,22 @@ $(document).ready(function () {
     var selectedCards = [];
     var selectedDecks = [];
     
-    $(".btn-success.cards").click(function (e) {
+    $(".btn-success").click(function (e) {
         e.preventDefault();
         
-        if (selectedCards.length > 0) window.location = "<?= URL ?>dashboard/approve/cards/" + selectedCards.join(",");
+        if (selectedCards.length > 0 || selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/approve/" + selectedDecks.join(",") + "/" + selectedCards.join(",");
     });
     
-    $(".btn-warning.cards").click(function (e) {
+    $(".btn-warning").click(function (e) {
         e.preventDefault();
         
-        if (selectedCards.length > 0) window.location = "<?= URL ?>dashboard/unapprove/cards/" + selectedCards.join(",");
+        if (selectedCards.length > 0 || selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/unapprove/" + selectedDecks.join(",") + "/" + selectedCards.join(",");
     });
     
-    $(".btn-danger.cards").click(function (e) {
+    $(".btn-danger").click(function (e) {
         e.preventDefault();
         
-        if (selectedCards.length > 0) window.location = "<?= URL ?>dashboard/reject/cards/" + selectedCards.join(",");
-    });
-    
-    $(".btn-success.decks").click(function (e) {
-        e.preventDefault();
-        
-        if (selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/approve/decks/" + selectedDecks.join(",");
-    });
-    
-    $(".btn-warning.decks").click(function (e) {
-        e.preventDefault();
-        
-        if (selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/unapprove/decks/" + selectedDecks.join(",");
-    });
-    
-    $(".btn-danger.decks").click(function (e) {
-        e.preventDefault();
-        
-        if (selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/reject/decks/" + selectedDecks.join(",");
-    });
-
-    var cardsTable = $("#cardsTable").DataTable({
-        "dom": "lftr",
-        "paging": false,
-        "scrollY": "45vh",
-        "scrollCollapse": true,
-        "aaSorting": [[8, "desc"]],
-        "ajax": "<?= URL ?>api/getallcards",
-        "columns": [
-            { "data": "id" },
-            { "data": "name" },
-            { "data": "cost" },
-            { "data": "attack" },
-            { "data": "health" },
-            { "data": "effect.effect" },
-            { "data": "activated" },
-            { "data": "created" },
-            { "data": "editted", "iDataSort": 9 },
-            { "data": "editted" }
-        ],
-        "columnDefs": [
-            {
-                "targets": [ 9 ],
-                "visible": false,
-                "searchable": false
-            }
-        ],
-        "rowCallback": function( row, data, index ) {
-            var children = $(row).children();
-            var id = $(children[0]).text();
-            
-            var datetds = [children[children.length - 2], children[children.length - 1]];
-            for (var i = 0; i < datetds.length; i++)
-                $(datetds[i]).text($(datetds[i]).text().split(" ")[0]);
-            
-            for (var i = 1; i < children.length; i++) {
-                $(children[i]).addClass("gotocard").click(function () {
-                    window.location = "<?= URL ?>dashboard/editor/card/" + id;
-                });
-            }
-            
-            $(children[6]).html( GetActivation($(children[6]).text()) );
-            
-            $(children[0]).html("<input type=\"checkbox\" class=\"select cards\" id=\"" + id + "\">");
-        },
-        "fnDrawCallback": function (oSettings) {
-            $(".cards").iCheck({
-                checkboxClass: 'icheckbox_square-red',
-                radioClass: 'iradio_square-red'
-            });
-            
-            $("#selectAll").on("ifChanged", function (event) {
-                if ($(this).iCheck('update')[0].checked)
-                    $(".cards:not(#selectAll)").iCheck("check");
-                else
-                    $(".cards:not(#selectAll)").iCheck("uncheck");
-            });
-            
-            $(".cards:not(#selectAll)").on('ifChanged', function (event) {
-                if ($(this).iCheck('update')[0].checked)
-                    selectedCards.push($(this).attr("id"));
-                else {
-                    selectedCards.splice(selectedCards.indexOf($(this).attr("id")), 1);
-                }
-                
-                $("#selectedView.cards").html(selectedCards.length + " cards selected.");
-            });
-        }
+        if (selectedCards.length > 0 || selectedDecks.length > 0) window.location = "<?= URL ?>dashboard/reject/" + selectedDecks.join(",") + "/" + selectedCards.join(",");
     });
 
     var decksTable = $("#decksTable").DataTable({
@@ -193,8 +104,8 @@ $(document).ready(function () {
         },
         "fnDrawCallback": function (oSettings) {
             $(".decks").iCheck({
-                checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green'
+                checkboxClass: 'icheckbox_square',
+                radioClass: 'iradio_square'
             });
 
             $("#selectAll.decks").on("ifChanged", function (event) {
@@ -211,7 +122,76 @@ $(document).ready(function () {
                     selectedDecks.splice(selectedDecks.indexOf($(this).attr("id")), 1);
                 }
                 
-                $("#selectedView.decks").html(selectedDecks.length + " decks selected.");
+                $("#selectedView.decks").html(selectedDecks.length + " decks ");
+            });
+        }
+    });
+
+    var cardsTable = $("#cardsTable").DataTable({
+        "dom": "lftr",
+        "paging": false,
+        "scrollY": "45vh",
+        "scrollCollapse": true,
+        "aaSorting": [[8, "desc"]],
+        "ajax": "<?= URL ?>api/getallcards",
+        "columns": [
+            { "data": "id" },
+            { "data": "name" },
+            { "data": "cost" },
+            { "data": "attack" },
+            { "data": "health" },
+            { "data": "effect.type" },
+            { "data": "activated" },
+            { "data": "created" },
+            { "data": "editted", "iDataSort": 9 },
+            { "data": "editted" }
+        ],
+        "columnDefs": [
+            {
+                "targets": [ 9 ],
+                "visible": false,
+                "searchable": false
+            }
+        ],
+        "rowCallback": function( row, data, index ) {
+            var children = $(row).children();
+            var id = $(children[0]).text();
+            
+            var datetds = [children[children.length - 2], children[children.length - 1]];
+            for (var i = 0; i < datetds.length; i++)
+                $(datetds[i]).text($(datetds[i]).text().split(" ")[0]);
+            
+            for (var i = 1; i < children.length; i++) {
+                $(children[i]).addClass("gotocard").click(function () {
+                    window.location = "<?= URL ?>dashboard/editor/card/" + id;
+                });
+            }
+            
+            $(children[6]).html( GetActivation($(children[6]).text()) );
+            
+            $(children[0]).html("<input type=\"checkbox\" class=\"select cards\" id=\"" + id + "\">");
+        },
+        "fnDrawCallback": function (oSettings) {
+            $(".cards").iCheck({
+                checkboxClass: 'icheckbox_square',
+                radioClass: 'iradio_square'
+            });
+            
+            $("#selectAll.cards").on("ifChanged", function (event) {
+                if ($(this).iCheck('update')[0].checked)
+                    $(".cards:not(#selectAll)").iCheck("check");
+                else
+                    $(".cards:not(#selectAll)").iCheck("uncheck");
+            });
+            
+            $(".cards:not(#selectAll)").on('ifChanged', function (event) {
+                if ($(this).iCheck('update')[0].checked)
+                    selectedCards.push($(this).attr("id"));
+                else {
+                    selectedCards.splice(selectedCards.indexOf($(this).attr("id")), 1);
+                }
+                
+                $("#selectedView.cards").html(selectedCards.length + " cards");
             });
         }
     });
@@ -232,6 +212,9 @@ function GetActivation( a ) {
             break;
         case "1":
             message = "<p style=\"color: green\">Accepted</p>";
+            break;
+        case "Accepted": case "Requested": case "Rejected": 
+            message = "<p style=\"color: green\">" + a + "</p>";
             break;
     }
     

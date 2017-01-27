@@ -98,7 +98,7 @@
             "aoColumns": [
                 { "data": "id" },
                 { "data": "name" },
-                { "data": "effect.effect" },
+                { "data": "effect.type" },
                 { "data": "cost" },
                 { "data": "attack" },
                 { "data": "health" }
@@ -147,7 +147,7 @@
             "aoColumns": [
                 { "data": "id" },
                 { "data": "name" },
-                { "data": "effect.effect" },
+                { "data": "effect.type" },
                 { "data": "cost" },
                 { "data": "attack" },
                 { "data": "health" }
