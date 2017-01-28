@@ -271,7 +271,8 @@ namespace Server
                                                     if (!packet.Variables.ContainsKey("Health")
                                                         || (!packet.Variables.ContainsKey("Attack"))
                                                         || (!packet.Variables.ContainsKey("EnergyCost"))
-                                                        || (!packet.Variables.ContainsKey("EffectType")) 
+                                                        || (!packet.Variables.ContainsKey("EffectID"))
+                                                        || (!packet.Variables.ContainsKey("EffectType"))
                                                         || (!packet.Variables.ContainsKey("Effect")))
                                                     {
                                                         SendErrorToClient(packet.From, client, "Invalid packet");
@@ -291,6 +292,7 @@ namespace Server
                                                             "Health", packet.Variables["Health"],
                                                             "Attack", packet.Variables["Attack"],
                                                             "EnergyCost", packet.Variables["EnergyCost"],
+                                                            "EffectID", packet.Variables["EffectID"],
                                                             "EffectType", packet.Variables["EffectType"],
                                                             "Effect", packet.Variables["Effect"],
                                                             "CardID", packet.Variables["CardID"],
@@ -579,6 +581,14 @@ namespace Server
 
                                 Match match = ActiveGames[i];
                                 if (match.Client1.UserID != fromUserID && match.Client2.UserID != fromUserID) continue;
+
+                                Communicate(
+                                    new Packet(
+                                        fromUserID.ToString(),
+                                        match.Client1.UserID == fromUserID ? match.Client2.UserID.ToString() : match.Client1.UserID.ToString(),
+                                        TcpMessageType.MatchEnd
+                                    )
+                                );
 
                                 ActiveGames.Remove(match);
                                 loopcount++;
