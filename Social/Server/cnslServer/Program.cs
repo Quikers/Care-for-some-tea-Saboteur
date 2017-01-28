@@ -70,9 +70,10 @@ namespace Server
                 Console.WriteLine();
 
                 //Create and start match
-                Match match = new Match();
-                match.Client1 = PlayerQueue.ElementAt(0).Value;
-                match.Client2 = PlayerQueue.ElementAt(1).Value;
+                Match match = new Match {
+                    Client1 = PlayerQueue.ElementAt(0).Value,
+                    Client2 = PlayerQueue.ElementAt(1).Value
+                };
                 StartMatch(match);
                 
                 Console.WriteLine("Match has been started between UserID {0} and {1}", match.Client1.UserID, match.Client2.UserID);
@@ -87,27 +88,31 @@ namespace Server
         {
             try { 
                 // Send response to player 1
-                Packet packet1 = new Packet();
-                packet1.From = "Server";
-                packet1.To = match.Client1.UserID.ToString();
-                packet1.Type = TcpMessageType.MatchStart;
-                var variables = new Dictionary<string, string>();
-                variables.Add("UserID", match.Client2.UserID.ToString());
-                variables.Add("Username", match.Client2.Username);
-                variables.Add("Turn", "1");
+                Packet packet1 = new Packet {
+                    From = "Server",
+                    To = match.Client1.UserID.ToString(),
+                    Type = TcpMessageType.MatchStart
+                };
+                Dictionary<string, string> variables = new Dictionary<string, string> {
+                    {"UserID", match.Client2.UserID.ToString()},
+                    {"Username", match.Client2.Username},
+                    {"Turn", "1"}
+                };
                 packet1.Variables = variables;
 
                 SendTcp.SendPacket(packet1, match.Client1.Socket);
 
                 // Send response to player 2
-                Packet packet2 = new Packet();
-                packet2.From = "Server";
-                packet2.To = match.Client1.Socket.Client.LocalEndPoint.ToString();
-                packet2.Type = TcpMessageType.MatchStart;
-                var variables2 = new Dictionary<string, string>();
-                variables2.Add("UserID", match.Client1.UserID.ToString());
-                variables2.Add("Username", match.Client1.Username);
-                variables2.Add("Turn", "2");
+                Packet packet2 = new Packet {
+                    From = "Server",
+                    To = match.Client1.Socket.Client.LocalEndPoint.ToString(),
+                    Type = TcpMessageType.MatchStart
+                };
+                Dictionary<string, string> variables2 = new Dictionary<string, string> {
+                    {"UserID", match.Client1.UserID.ToString()},
+                    {"Username", match.Client1.Username},
+                    {"Turn", "2"}
+                };
                 packet2.Variables = variables2;
 
                 SendTcp.SendPacket(packet2, match.Client2.Socket);
@@ -182,8 +187,9 @@ namespace Server
                 }
             }
 
-            try
-            {
+            try {
+                Console.WriteLine(packet);
+
                 switch (packet.Type)
                 {
                     default:
@@ -210,7 +216,7 @@ namespace Server
                             if (!packet.Variables.ContainsKey("PlayerAction")) break;
 
                             //Get match
-                            Match match = ActiveGames.Where(x => x.Client1 == client || x.Client2 == client).FirstOrDefault();
+                            Match match = ActiveGames.FirstOrDefault(x => x.Client1 == client || x.Client2 == client);
 
                             if (match == null)
                             {
@@ -254,11 +260,8 @@ namespace Server
                                         }
 
                                         string targetID = null;
-                                        string cardName = null;
                                         if (packet.Variables.ContainsKey("TargetID"))
                                             targetID = packet.Variables["TargetID"];
-
-                                        cardName = packet.Variables["CardName"];
 
                                         switch (packet.Variables["CardType"])
                                         {
@@ -268,7 +271,7 @@ namespace Server
                                                     if (!packet.Variables.ContainsKey("Health")
                                                         || (!packet.Variables.ContainsKey("Attack"))
                                                         || (!packet.Variables.ContainsKey("EnergyCost"))
-                                                        || (!packet.Variables.ContainsKey("Type")) 
+                                                        || (!packet.Variables.ContainsKey("EffectType")) 
                                                         || (!packet.Variables.ContainsKey("Effect")))
                                                     {
                                                         SendErrorToClient(packet.From, client, "Invalid packet");
@@ -288,7 +291,7 @@ namespace Server
                                                             "Health", packet.Variables["Health"],
                                                             "Attack", packet.Variables["Attack"],
                                                             "EnergyCost", packet.Variables["EnergyCost"],
-                                                            "Type", packet.Variables["Type"],
+                                                            "EffectType", packet.Variables["EffectType"],
                                                             "Effect", packet.Variables["Effect"],
                                                             "CardID", packet.Variables["CardID"],
                                                             "CardName", packet.Variables["CardName"]
@@ -348,18 +351,6 @@ namespace Server
                                         if ((!packet.Variables.ContainsKey("AttackingMinionID"))
                                             || (!packet.Variables.ContainsKey("TargetMinionID")))
                                             break;
-
-                                        ////Create packet for opponent
-                                        //Packet attack = new Packet(
-                                        //                packet.From,
-                                        //                opponent.UserID.ToString(),
-                                        //                TcpMessageType.PlayerUpdate,
-                                        //                new[] {
-                                        //                    "PlayerAction", PlayerAction.PlayCard.ToString(),
-                                        //                    "CardType", CardType.Minion.ToString(),
-                                        //                    "EnergyCost", packet.Variables["EnergyCost"],
-                                        //                    "Effect", packet.Variables["Effect"]
-                                        //                });
 
                                         //Send packet to opponent
                                         SendTcp.SendPacket(packet, opponent.Socket);
@@ -454,9 +445,6 @@ namespace Server
                             if (IsClientValid(userID))
                             {
                                 Logout(client);
-
-                                Console.WriteLine("UserID {0} logged out", userID);
-                                ShowOnlinePlayers();
                             }
                             else
                             {
@@ -489,13 +477,13 @@ namespace Server
                             }
                             
                             //If pending game already exists, do nothing
-                            if (PendingGames.Where(x => x.Client1 == client).FirstOrDefault() != null) break;
+                            if (PendingGames.FirstOrDefault(x => x.Client1 == client) != null) break;
 
                             //Create new pending game
                             Match match = new Match()
                             {
                                 Client1 = client,
-                                Client2 = OnlinePlayers.Where(x => x.Key == toUserID).FirstOrDefault().Value
+                                Client2 = OnlinePlayers.FirstOrDefault(x => x.Key == toUserID).Value
                             };
 
                             if(match.Client2 != null)
@@ -509,7 +497,7 @@ namespace Server
                         }
                     case TcpMessageType.CancelGameInvite:
                         {
-                            var pendinggame = PendingGames.Where(x => x.Client1 == client).FirstOrDefault();
+                            var pendinggame = PendingGames.FirstOrDefault(x => x.Client1 == client);
                             if(pendinggame != null)PendingGames.Remove(pendinggame);
 
                             Communicate(packet);
@@ -520,7 +508,7 @@ namespace Server
                             if (IsClientValid(int.Parse(packet.To)))
                             {
                                 int senderID = int.Parse(packet.To);
-                                Match game = PendingGames.Where(x => x.Client1.UserID == senderID).FirstOrDefault();
+                                Match game = PendingGames.FirstOrDefault(x => x.Client1.UserID == senderID);
                                 if (game != null)
                                 {
                                     PendingGames.Remove(game);
@@ -545,7 +533,7 @@ namespace Server
                             Communicate(packet);
 
                             //Remove game from PendinGames
-                            Match pendinggame = PendingGames.Where(x => x.Client1.UserID == to).FirstOrDefault();
+                            Match pendinggame = PendingGames.FirstOrDefault(x => x.Client1.UserID == to);
                             if (pendinggame != null) PendingGames.Remove(pendinggame);
                             break;
                         }
@@ -586,11 +574,17 @@ namespace Server
 
                             //Foreach Match in ActiveGames remove the match that has packet.from as userID for Client1 or Client2.
                             int loopcount = 0;
-                            foreach(var x in ActiveGames.Where(x => x.Client1.UserID == fromUserID || x.Client2.UserID == fromUserID))
-                            {   
-                                ActiveGames.Remove(x);
+                            for (int i = 0; i < ActiveGames.Count; i++) {
+                                if (!ActiveGames.Contains(ActiveGames[i])) continue;
+
+                                Match match = ActiveGames[i];
+                                if (match.Client1.UserID != fromUserID && match.Client2.UserID != fromUserID) continue;
+
+                                ActiveGames.Remove(match);
                                 loopcount++;
-                                if (loopcount > 1) Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd", fromUserID);
+                                if (loopcount > 1)
+                                    Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd",
+                                        fromUserID);
                             }
 
                             break;
@@ -610,9 +604,8 @@ namespace Server
 
                 Console.WriteLine("====================================================");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not handle packet. Please check the packet syntax.\n\n{0}", ex.ToString());
+            catch (Exception ex) {
+                Console.WriteLine("Could not handle packet:\n\n{0}\n\n Please check the packet syntax.\n\n{1}", packet, ex.ToString());
                 return;
             }
         }
@@ -641,13 +634,13 @@ namespace Server
         private static Client GetClientFromOnlinePlayersByUserID(int UserID)
         {
             if (!IsClientValid(UserID)) return null;
-            else return OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
+            else return OnlinePlayers.FirstOrDefault(x => x.Key == UserID).Value;
         }
 
         private static bool IsClientValid(int UserID)
         {
             if (OnlinePlayers.Count == 0) return false;
-            Client user = OnlinePlayers.Where(x => x.Key == UserID).FirstOrDefault().Value;
+            Client user = OnlinePlayers.FirstOrDefault(x => x.Key == UserID).Value;
             if (user == null) return false;
 
             if (user.Socket.Connected)

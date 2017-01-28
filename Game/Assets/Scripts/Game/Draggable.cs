@@ -114,7 +114,6 @@ namespace Game
             if( gameObject.CompareTag( "almostBoardCard" ) )
             {
                 gameObject.tag = "BoardCard";
-                Debug.Log( "Sibling Index: " + transform.GetSiblingIndex() );
 
                 GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackController ) );
                 coverImage.transform.SetParent( transform, false );
