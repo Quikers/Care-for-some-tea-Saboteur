@@ -210,7 +210,7 @@ namespace Server
                             if (!packet.Variables.ContainsKey("PlayerAction")) break;
 
                             //Get match
-                            Match match = ActiveGames.Where(x => x.Client1 == client || x.Client2 == client).FirstOrDefault();
+                            Match match = ActiveGames.Where(x => (x.Client1 == client || x.Client2 == client)).FirstOrDefault();
 
                             if (match == null)
                             {
@@ -349,18 +349,6 @@ namespace Server
                                             || (!packet.Variables.ContainsKey("TargetMinionID")))
                                             break;
 
-                                        ////Create packet for opponent
-                                        //Packet attack = new Packet(
-                                        //                packet.From,
-                                        //                opponent.UserID.ToString(),
-                                        //                TcpMessageType.PlayerUpdate,
-                                        //                new[] {
-                                        //                    "PlayerAction", PlayerAction.PlayCard.ToString(),
-                                        //                    "CardType", CardType.Minion.ToString(),
-                                        //                    "EnergyCost", packet.Variables["EnergyCost"],
-                                        //                    "Effect", packet.Variables["Effect"]
-                                        //                });
-
                                         //Send packet to opponent
                                         SendTcp.SendPacket(packet, opponent.Socket);
 
@@ -454,9 +442,6 @@ namespace Server
                             if (IsClientValid(userID))
                             {
                                 Logout(client);
-
-                                Console.WriteLine("UserID {0} logged out", userID);
-                                ShowOnlinePlayers();
                             }
                             else
                             {
@@ -586,13 +571,17 @@ namespace Server
 
                             //Foreach Match in ActiveGames remove the match that has packet.from as userID for Client1 or Client2.
                             int loopcount = 0;
-                            foreach(Match match in ActiveGames)
-                            {
+                            for (int i = 0; i < ActiveGames.Count; i++) {
+                                if (!ActiveGames.Contains(ActiveGames[i])) continue;
+
+                                Match match = ActiveGames[i];
                                 if (match.Client1.UserID != fromUserID && match.Client2.UserID != fromUserID) continue;
 
                                 ActiveGames.Remove(match);
                                 loopcount++;
-                                if (loopcount > 1) Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd", fromUserID);
+                                if (loopcount > 1)
+                                    Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd",
+                                        fromUserID);
                             }
 
                             break;
@@ -612,9 +601,8 @@ namespace Server
 
                 Console.WriteLine("====================================================");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not handle packet. Please check the packet syntax.\n\n{0}", ex.ToString());
+            catch (Exception ex) {
+                Console.WriteLine("Could not handle packet:\n\n{0}\n\n Please check the packet syntax.\n\n{1}", packet, ex.ToString());
                 return;
             }
         }
