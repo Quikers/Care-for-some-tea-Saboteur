@@ -1,0 +1,223 @@
+html, body {
+    background: lightgrey;
+}
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: calc(100vh - 150px);
+    
+    min-width: 1000px;
+}
+
+#header #logo {
+    min-width: 1200px;
+}
+
+#header #logo, #header #nav #nav-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    background: url("http://213.46.57.198/public/images/background.jpg") no-repeat;
+    background-repeat: no-repeat;
+    background-size: 1920px 211px;
+    background-position: center top;
+}
+
+#header #nav #nav-bg {
+    z-index: 99;
+    
+    background: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+#header #nav {
+    position: absolute;
+    top: 120px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    background: url("http://careforsometeasaboteur.com/public/images/backgroundblur.jpg");
+    background-position: center -155px;
+    
+    border-top: 2px solid rgba(255,255,255,0.5);
+}
+
+#header #nav #li-container {
+    position: relative;
+    z-index: 100;
+}
+
+#header #nav #li-container .li {
+    display: inline-block;
+    
+    width: 190px;
+    height: 29px;
+    
+    margin: 0 auto;
+    
+    background: rgba(255, 255, 255, 0.6);
+    
+    transition: 150ms;
+    
+    color: rgb(150,150,150);
+    text-align: center;
+    font-size: 24px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+    font-family: Helvetica;
+    
+    cursor: default;
+    
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
+}
+
+#header #nav #li-container>.li:not(#downloadButton) {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.li:hover {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: black !important;
+}
+
+.li:active {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.li.active  {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.li a {
+    display: inline-block;
+    
+    width: 100%;
+    height: 100%;
+    
+    transition: 150ms;
+    
+    color: rgb(150,150,150);
+    text-align: center;
+    letter-spacing: 3px;
+    font-family: Helvetica;
+    
+    cursor: pointer;
+}
+
+.li a:hover {
+    text-decoration: none;
+    color: black;
+}
+
+.li.active, .li.active>a {
+    color: black !important;
+}
+
+div.li#downloadButton {
+    min-width: 200px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.dropdown {
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 29px;
+    left: 0;
+    right: 0;
+}
+
+.dropdown-content .li-dropdown {
+    display: block;
+    position: relative;
+    left: 0;
+    right: 0;
+    
+    background: rgb(240, 240, 240);
+    color: rgb(150,150,150) !important;
+    
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    
+    transition: 150ms;
+}
+
+.dropdown-content .li-dropdown.active>a {
+    color: black;
+}
+
+.dropdown-content .li-dropdown:first-of-type() {
+    border-top: 0;
+}
+
+.dropdown-content .li-dropdown:hover {
+    background-color: rgb(200, 200, 200);
+    color: black;
+}
+
+#header #nav #li-container p {
+    position: absolute;
+    top: -2px;
+    background: rgba(255,255,255,0.4);
+    padding: 6px 0 6px 6px;
+}
+
+#header #nav #li-container p .button {
+    background: rgba(255,255,255,0.4);
+    padding: 6px;
+    text-decoration: none;
+    transition: 150ms;
+}
+
+#header #nav #li-container p .button:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+#header #nav #li-container p .button:active {
+    background: rgba(255,255,255,0.6);
+}
+
+#content {
+    position: fixed;
+    top: 150px;
+    left: 0;
+    right: 0;
+    bottom: 25px;
+    z-index: -1;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    border-top: 2px solid lightgrey;
+    
+    background: #DDDDDD;
+}
+
+#footer {
+    position: fixed;
+    top: calc(100vh - 25px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    background: whitesmoke;
+    
+    padding: 2px 10px;
+    border-top: 1px solid lightgrey;
+}
