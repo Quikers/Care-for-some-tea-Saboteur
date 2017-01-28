@@ -1,20 +1,20 @@
-<div id="deckcard-container" style="position: static; margin: 10px;">
+<div id="content-body">
     
     <h1>Collection: Cards</h1>
     <p>Here you will find all available Cards with all their information on them.</p>
     
-    <table id="cardsTable" class="display cell-border compact nowrap" cellspacing="0" width="100%">
+    <table id="cardsTable" class="display cell-border nowrap" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th class="largecol">Name</th>
-                <th class="tinycol">Cost</th>
-                <th class="tinycol">Attack</th>
-                <th class="tinycol">Health</th>
-                <th class="shortcol">Effect</th>
-                <th class="tinycol">Status</th>
-                <th class="shortcol">Created on</th>
-                <th class="shortcol">Editted on</th>
-                <th class="shortcol">Editted hidden</th>
+                <th width="45%">Name</th>
+                <th width="5%">Cost</th>
+                <th width="5%">Attack</th>
+                <th width="5%">Health</th>
+                <th width="10%">Effect</th>
+                <th width="10%">Status</th>
+                <th width="10%">Created on</th>
+                <th width="10%">Editted on</th>
+                <th>Editted hidden</th>
             </tr>
         </thead>
     </table>

@@ -189,7 +189,7 @@ td {
 }
 
 th {
-    padding: 5px !important;
+    padding: 5px 0 5px 0 !important;
 }
 
 .dataTables_scrollBody table th {
