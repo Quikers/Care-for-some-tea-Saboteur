@@ -11,7 +11,10 @@ namespace MainMenu
         void FixedUpdate()
         {
             if( NetCode.NetworkController.GameStart )
+            {
+                NetCode.NetworkController.GameStart = false;
                 UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+            }
 
         }
         public string DeckName

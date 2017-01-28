@@ -52,7 +52,8 @@ namespace MainMenu
 
         void OnApplicationQuit()
         {
-            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
+            if( Data.Network.ServerSocket != null )
+                Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
 
         public void ServerListener()
