@@ -84,18 +84,16 @@ public class CardManager : MonoBehaviour
 
         Sprite sprite = new Sprite();
 
-        if( CardCost < 2 )
+        if( CardCost <= 2 )
             sprite = Resources.Load<Sprite>( "0" );
-        else if( CardCost < 4 )
+        else if( CardCost <= 4 )
             sprite = Resources.Load<Sprite>( "2" );
-        else if( CardCost < 6)
+        else if( CardCost <= 6)
             sprite = Resources.Load<Sprite>( "4" );
-        else if( CardCost < 8 )
+        else if( CardCost <= 8 )
             sprite = Resources.Load<Sprite>( "6" );
-        else if( CardCost < 10 )
+        else if( CardCost <= 10 )
             sprite = Resources.Load<Sprite>( "8" );
-        else if( CardCost == 10 )
-            sprite = Resources.Load<Sprite>( "10" );
 
         CardImage.sprite = sprite;
     }
