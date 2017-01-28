@@ -82,10 +82,10 @@ public class CardManager : MonoBehaviour
         Attack = dataObject.attack;
         Health = dataObject.health;
 
-        Sprite sprite = new Sprite();
-
         if( Effect.id > 0 )
-            attack = Effect.id;
+            Attack += Effect.id;
+
+        Sprite sprite = new Sprite();
 
         if( CardCost <= 2 )
             sprite = Resources.Load<Sprite>( "0" );
