@@ -8,6 +8,7 @@ namespace Game
     public class GameManager : MonoBehaviour
     {
         public GameObject WinScreen;
+        public GameObject PauseMenu;
 
         CardManager GetCard( int id )
         {
@@ -16,6 +17,7 @@ namespace Game
 
         public void BackToMM()
         {
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
             UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
         }
 
@@ -34,6 +36,9 @@ namespace Game
 
         void Update()
         {
+            if( Input.GetKeyDown( KeyCode.Escape ) )
+                PauseMenu.SetActive( true );
+            
             if( Data.Player.CurrentHealth <= 0 )
             {
                 WinScreen.SetActive( true );
@@ -82,6 +87,8 @@ namespace Game
 
         void OnApplicationQuit()
         {
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
 
