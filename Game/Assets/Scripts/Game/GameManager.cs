@@ -36,9 +36,11 @@ namespace Game
 
         void Update()
         {
-            if( Input.GetKeyDown( KeyCode.Escape ) )
+            if( PauseMenu.activeSelf & Input.GetKeyDown( KeyCode.Escape ) )
+                PauseMenu.SetActive( false );
+            else if( !PauseMenu.activeSelf & Input.GetKeyDown( KeyCode.Escape ) )
                 PauseMenu.SetActive( true );
-            
+
             if( Data.Player.CurrentHealth <= 0 )
             {
                 WinScreen.SetActive( true );
