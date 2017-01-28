@@ -34,6 +34,7 @@ namespace Game
             GameObject card = Instantiate( NonPlayerCard, Vector3.zero, Quaternion.identity );
 
             card.GetComponent<CardManager>().InstantiateCard( playedCard );
+            card.GetComponent<CardManager>().DoEffect();
             card.transform.SetParent( EnemyBoardDrop, false );
         }
 
