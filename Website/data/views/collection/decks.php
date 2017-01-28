@@ -1,17 +1,17 @@
-<div id="deckcard-container" style="position: static; margin: 10px;">
+<div id="content-body">
     
     <h1>Collection: Decks</h1>
     <p>Here you will find all available Decks with all their information on them.</p>
     
-    <table id="decksTable" class="display cell-border compact nowrap" cellspacing="0" width="100%">
+    <table id="decksTable" class="display cell-border nowrap" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th class="largecol">Name</th>
-                <th class="tinycol">Cards</th>
-                <th class="tinycol">Status</th>
-                <th class="shortcol">Created on</th>
-                <th class="shortcol">Editted on</th>
-                <th class="shortcol">Editted hidden</th>
+                <th width="78%">Name</th>
+                <th width="2%" >Cards</th>
+                <th width="5%">Status</th>
+                <th width="5%">Created on</th>
+                <th width="5%">Editted on</th>
+                <th>Editted hidden</th>
             </tr>
         </thead>
     </table>
@@ -26,19 +26,19 @@ $(document).ready(function () {
         "paging": false,
         "scrollY": "40vh",
         "scrollCollapse": true,
+        "aaSorting": [[5, "desc"]],
         "ajax": "<?= URL ?>api/getalldecks",
         "aoColumns": [
-            { "data": "id" },
             { "data": "name" },
             { "data": "cards.length" },
             { "data": "activated" },
             { "data": "created" },
-            { "data": "editted", "iDataSort": 6 },
+            { "data": "editted", "iDataSort": 5 },
             { "data": "editted" }
         ],
         "columnDefs": [
             {
-                "targets": [ 6 ],
+                "targets": [ 5 ],
                 "visible": false,
                 "searchable": false
             }
@@ -51,9 +51,7 @@ $(document).ready(function () {
             for (var i = 0; i < datetds.length; i++)
                 $(datetds[i]).text($(datetds[i]).text().split(" ")[0]);
 
-            $(children[3]).html( GetActivation($(children[3]).text()) );
-            
-            $(children[0]).html("<input type=\"checkbox\" class=\"select decks\" id=\"" + id + "\">");
+            $(children[2]).html( GetActivation($(children[2]).text()) );
         },
         "fnDrawCallback": function (oSettings) {
             $(".decks").iCheck({
@@ -80,6 +78,30 @@ $(document).ready(function () {
         }
     });
 });
+
+function GetActivation( a ) {
+    var message = "";
+    
+    switch(a) {
+        default:
+            console.log("Activation key \"" + a + "\" not recognized.");
+            break;
+        case "-1":
+            message = "<p style=\"color: crimson\">Rejected</p>";
+            break;
+        case "0":
+            message = "<p style=\"color: orange\">Requested</p>";
+            break;
+        case "1":
+            message = "<p style=\"color: green\">Accepted</p>";
+            break;
+        case "Accepted": case "Requested": case "Rejected": 
+            message = "<p style=\"color: green\">" + a + "</p>";
+            break;
+    }
+    
+    return message;
+}
 
 
 </script>

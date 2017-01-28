@@ -21,10 +21,14 @@ class Collection extends Controller {
     }
     
     public function downloadclient() {
-        $file_url = URL . "public/gameclient/comet.zip";
-        header('Collection-Type: application/octet-stream');
-        header("Collection-Transfer-Encoding: Binary"); 
-        header("Collection-disposition: attachment; filename=\"" . basename($file_url) . "\""); 
+        $file_url = "../../public/gameclient/comet.zip";
+        echo $file_url;
+        echo file_exists($file_url) ? "True" : "False";
+        header('Collection-Type: application/zip');
+        header("Collection-disposition: attachment; filename=\"" . basename($file_url) . "\"");
+        header("Content-length: " . filesize(basename($file_url)));
+        header("Pragma: no-cache"); 
+        header("Expires: 0"); 
         readfile($file_url);
     }
     
