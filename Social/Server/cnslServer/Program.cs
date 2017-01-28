@@ -444,8 +444,8 @@ namespace Server
                         {
                             int userID = int.Parse(packet.From);
 
-                            if (IsClientValid(userID))
-                            {
+                            if (IsClientValid(userID)) {
+                                CancelMatchmaking(packet, client);
                                 Logout(client);
                             }
                             else
@@ -456,15 +456,8 @@ namespace Server
                             client.Socket.Close();
                             break;
                         }
-                    case TcpMessageType.CancelMatchmaking:
-                        {
-                            int fromUserID = int.Parse(packet.From);
-                            if (PlayerQueue.ContainsKey(fromUserID))
-                            {
-                                PlayerQueue.Remove(fromUserID);
-                            }
-
-                            SendSuccessResponse(packet, client);
+                    case TcpMessageType.CancelMatchmaking: {
+                            CancelMatchmaking(packet, client); 
                             break;
                         }
                     case TcpMessageType.SendGameInvite:
@@ -618,6 +611,13 @@ namespace Server
                 Console.WriteLine("Could not handle packet:\n\n{0}\n\n Please check the packet syntax.\n\n{1}", packet, ex.ToString());
                 return;
             }
+        }
+
+        private static void CancelMatchmaking( Packet packet, Client client ) {
+            if (!PlayerQueue.ContainsKey(int.Parse(packet.From))) return;
+
+            PlayerQueue.Remove(int.Parse(packet.From));
+            SendSuccessResponse(packet, client);
         }
 
         private static void ListenToClient(Client client)
