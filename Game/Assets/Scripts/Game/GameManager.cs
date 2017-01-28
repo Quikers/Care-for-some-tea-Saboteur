@@ -17,7 +17,7 @@ namespace Game
 
         public void BackToMM()
         {
-            //Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
             UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
         }
 
@@ -89,7 +89,7 @@ namespace Game
 
         void OnApplicationQuit()
         {
-            //Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
 
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
