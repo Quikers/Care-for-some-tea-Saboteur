@@ -586,9 +586,11 @@ namespace Server
 
                             //Foreach Match in ActiveGames remove the match that has packet.from as userID for Client1 or Client2.
                             int loopcount = 0;
-                            foreach(var x in ActiveGames.Where(x => x.Client1.UserID == fromUserID || x.Client2.UserID == fromUserID))
-                            {   
-                                ActiveGames.Remove(x);
+                            foreach(Match match in ActiveGames)
+                            {
+                                if (match.Client1.UserID != fromUserID && match.Client2.UserID != fromUserID) continue;
+
+                                ActiveGames.Remove(match);
                                 loopcount++;
                                 if (loopcount > 1) Console.WriteLine("UserID {0} had multiple active games. HandlePacket > MatchEnd", fromUserID);
                             }
