@@ -36,7 +36,7 @@ namespace Game
         public void Attack( CardManager attackingCardManager, CardManager attackedCardManager )
         {
             attackedCardManager.Health -= attackingCardManager.Attack;
-            attackingCardManager.Health -= attackingCardManager.Attack;
+            attackingCardManager.Health -= attackedCardManager.Attack;
 
         }
     }

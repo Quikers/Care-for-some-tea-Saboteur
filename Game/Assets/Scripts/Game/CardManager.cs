@@ -84,6 +84,9 @@ public class CardManager : MonoBehaviour
 
         Sprite sprite = new Sprite();
 
+        if( Effect.id > 0 )
+            attack = Effect.id;
+
         if( CardCost <= 2 )
             sprite = Resources.Load<Sprite>( "0" );
         else if( CardCost <= 4 )
