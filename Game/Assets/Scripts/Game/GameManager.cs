@@ -23,6 +23,12 @@ namespace Game
             UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
         }
 
+        private void Start()
+        {
+            Data.Player.CurrentHealth = 20;
+            Data.Enemy.CurrentHealth = 20;
+        }
+
         public static void ActiveAllCards()
         {
             CardAttackController[] attackingCards = FindObjectsOfType< CardAttackController >();
