@@ -11,6 +11,12 @@ public class LoginInfoManager : MonoBehaviour
 
     public MainMenu.QueueInfoController QueuePanel;
 
+    private void Update()
+    {
+        if( EmailText.gameObject.activeSelf == false && Data.PlayerUser.Email != null )
+            Login();
+    }
+
     public void Login()
     {
         LoginButton.gameObject.SetActive( false );
