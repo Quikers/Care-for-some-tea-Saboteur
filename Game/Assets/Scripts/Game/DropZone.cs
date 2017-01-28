@@ -54,16 +54,19 @@ namespace Game
                     "Health", dCardManager.health.ToString(),
                     "Attack", dCardManager.attack.ToString(),
                     "EnergyCost", dCardManager.cardCost.ToString(),
-                    "EffectType", dCardManager.effect.id.ToString(),
+                    "EffectType", dCardManager.effect.type,
                     "Effect", dCardManager.effect.effect,
                     "CardID", dCardManager.CardId.ToString(),
                     "CardName", dCardManager.Cardname
                 } );
 
-            Debug.Log( p );
 
             if( CardArea.gameObject.CompareTag( "Board" ) )
+            {
+                Debug.Log( p );
                 Library.SendTcp.SendPacket( p, Data.Network.ServerSocket );
+                FindObjectOfType< EnergyController >().UseEnergy( dCardManager.cardCost );
+            }
 
             if( CardArea.gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
             {

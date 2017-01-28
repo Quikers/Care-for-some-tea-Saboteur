@@ -100,10 +100,13 @@ namespace Game
 
         public void OnEndDrag( PointerEventData eventData )
         {
-            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) ||
-                GetComponent<CardManager>().CardCost > Data.Player.CurrentEnergy )
+            if( Data.Turn.CurrentPhase == Data.TurnType.RemotePlayer || gameObject.CompareTag( "BoardCard" ) )
                 return;
-            
+
+            if( GetComponent< CardManager >().CardCost > Data.Player.CurrentEnergy &
+                !gameObject.CompareTag( "almostBoardCard" ) )
+                return;
+
             transform.SetParent( ParentToReturnTo, true );
             transform.SetSiblingIndex( _placeHolder.transform.GetSiblingIndex() );
             GetComponent< CanvasGroup >().blocksRaycasts = true;
@@ -111,7 +114,6 @@ namespace Game
             if( gameObject.CompareTag( "almostBoardCard" ) )
             {
                 gameObject.tag = "BoardCard";
-                Debug.Log( "Sibling Index: " + transform.GetSiblingIndex() );
 
                 GameObject coverImage = new GameObject( "cover", typeof( Image ), typeof( CanvasGroup ), typeof( CardAttackController ) );
                 coverImage.transform.SetParent( transform, false );
@@ -119,12 +121,13 @@ namespace Game
                 coverImage.GetComponent<Image>().rectTransform.anchorMax = Vector2.one;
                 coverImage.GetComponent<Image>().rectTransform.sizeDelta = Vector2.zero;
                 coverImage.GetComponent<CanvasGroup>().alpha = 0;
+                
+                Destroy( _placeHolder );
 
+                // Detroy this script
+                Destroy( this );
             }
-            Destroy( _placeHolder );
 
-            // Detroy this script
-            Destroy( this );
 
             _playerDrop.SetActive( false );
         }

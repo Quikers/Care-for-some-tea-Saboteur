@@ -11,7 +11,10 @@ namespace MainMenu
         void FixedUpdate()
         {
             if( NetCode.NetworkController.GameStart )
+            {
+                NetCode.NetworkController.GameStart = false;
                 UnityEngine.SceneManagement.SceneManager.LoadScene( "main" );
+            }
 
         }
         public string DeckName
@@ -33,6 +36,7 @@ namespace MainMenu
         {
             if( Data.PlayerUser.Id == 0 )
                 return;
+
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.AddPlayerToQueue, new[] { "Username", Data.PlayerUser.Username } ), Data.Network.ServerSocket );
 
             Resources.FindObjectsOfTypeAll<QueueInfoController>()[ 0 ].gameObject.SetActive( true );

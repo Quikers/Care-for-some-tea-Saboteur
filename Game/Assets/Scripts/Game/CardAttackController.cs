@@ -47,9 +47,6 @@ namespace Game
 
         public void EndDrag()
         {
-            if( HasAttacked )
-                return;
-
             Destroy( lineImage );
         }
     }
