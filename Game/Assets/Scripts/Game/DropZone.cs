@@ -54,7 +54,7 @@ namespace Game
                     "Health", dCardManager.health.ToString(),
                     "Attack", dCardManager.attack.ToString(),
                     "EnergyCost", dCardManager.cardCost.ToString(),
-                    "EffectType", dCardManager.effect.type,
+                    "Type", dCardManager.effect.type,
                     "Effect", dCardManager.effect.effect,
                     "CardID", dCardManager.CardId.ToString(),
                     "CardName", dCardManager.Cardname
