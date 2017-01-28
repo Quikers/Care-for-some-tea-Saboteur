@@ -17,7 +17,7 @@ public class EnergyController : MonoBehaviour
 
     public void GainEnergy( int amount )
     {
-        if( Data.Player.CurrentEnergy >= 10 ) return;
+        if( Data.Player.GlobalEnergy >= 10 ) return;
         Data.Player.GlobalEnergy += amount;
         Data.Player.CurrentEnergy = Data.Player.GlobalEnergy;
 

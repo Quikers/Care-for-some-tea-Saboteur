@@ -33,14 +33,14 @@ namespace Data
         public string created;
         public string editted;
 
-        public Card( int id, string name, int health, int attack, int cost, string type, string effect )
+        public Card( int id, string name, int health, int attack, int cost, int effectid, string type, string effect )
         {
             this.id = id;
             this.name = name;
             this.health = health;
             this.attack = attack;
             this.cost = cost;
-            this.effect = new effectobject( 1, type, effect );
+            this.effect = new effectobject( effectid, type, effect );
         }
     }
 }

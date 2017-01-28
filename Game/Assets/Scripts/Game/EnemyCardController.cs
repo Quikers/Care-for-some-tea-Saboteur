@@ -21,7 +21,6 @@ namespace Game
 
             CardManager attackerController = eventData.pointerDrag.GetComponent< CardAttackController >().cardData;
 
-            eventData.pointerDrag.GetComponent<CardAttackController>().EndDrag();
             eventData.pointerDrag.GetComponent< CardAttackController >().HasAttacked = true;
 
             cardData.Health -= attackerController.Attack;

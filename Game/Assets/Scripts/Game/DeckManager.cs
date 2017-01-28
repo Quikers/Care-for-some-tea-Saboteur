@@ -39,7 +39,6 @@ namespace Game
 
         public void DrawCard()
         {
-            //Instantiate( Card, Vector3.zero, Quaternion.identity );
             if( transform.childCount > 8 ) return;
 
             float randomNum = Random.Range( 0, 19 );

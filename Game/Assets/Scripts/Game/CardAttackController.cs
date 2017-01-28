@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace Game
 {
-    public class CardAttackController : MonoBehaviour, IBeginDragHandler, IDragHandler
+    public class CardAttackController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public bool HasAttacked;
 
@@ -45,7 +45,7 @@ namespace Game
             lineImage.transform.rotation = Quaternion.Euler( 0, 0, angle );
         }
 
-        public void EndDrag()
+        public void OnEndDrag(PointerEventData eventData)
         {
             Destroy( lineImage );
         }

@@ -57,6 +57,7 @@ namespace NetCode
                             int.Parse( recievedPacket.Variables[ "Health" ] ),
                             int.Parse( recievedPacket.Variables[ "Attack" ] ),
                             int.Parse( recievedPacket.Variables[ "EnergyCost" ] ),
+                            int.Parse( recievedPacket.Variables[ "EnergyID" ] ),
                             recievedPacket.Variables[ "EffectType" ],
                             recievedPacket.Variables[ "Effect" ] ) );
                     }

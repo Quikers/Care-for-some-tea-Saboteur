@@ -36,7 +36,6 @@ public class FaceController : MonoBehaviour, IDropHandler
         if( eventData.pointerDrag.GetComponent<CardAttackController>().HasAttacked )
             return;
 
-        eventData.pointerDrag.GetComponent<CardAttackController>().EndDrag();
         eventData.pointerDrag.GetComponent<CardAttackController>().HasAttacked = true;
 
         CardManager attackerController = eventData.pointerDrag.GetComponent< CardAttackController >().cardData;
