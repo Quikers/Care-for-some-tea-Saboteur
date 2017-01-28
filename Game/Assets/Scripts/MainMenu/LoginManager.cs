@@ -16,10 +16,6 @@ namespace MainMenu
         public InputField Password;
         public InputField IP;
 
-        void Start()
-        {
-        }
-
         public void Register()
         {
             // you can go fuck yourself i ain't gonna make that.
