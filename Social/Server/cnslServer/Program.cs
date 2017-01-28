@@ -271,7 +271,7 @@ namespace Server
                                                     if (!packet.Variables.ContainsKey("Health")
                                                         || (!packet.Variables.ContainsKey("Attack"))
                                                         || (!packet.Variables.ContainsKey("EnergyCost"))
-                                                        || (!packet.Variables.ContainsKey("Type")) 
+                                                        || (!packet.Variables.ContainsKey("EffectType")) 
                                                         || (!packet.Variables.ContainsKey("Effect")))
                                                     {
                                                         SendErrorToClient(packet.From, client, "Invalid packet");
@@ -291,7 +291,7 @@ namespace Server
                                                             "Health", packet.Variables["Health"],
                                                             "Attack", packet.Variables["Attack"],
                                                             "EnergyCost", packet.Variables["EnergyCost"],
-                                                            "Type", packet.Variables["Type"],
+                                                            "EffectType", packet.Variables["EffectType"],
                                                             "Effect", packet.Variables["Effect"],
                                                             "CardID", packet.Variables["CardID"],
                                                             "CardName", packet.Variables["CardName"]
