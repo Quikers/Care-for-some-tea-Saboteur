@@ -29,10 +29,9 @@ $(document).ready(function () {
         "paging": false,
         "scrollY": "45vh",
         "scrollCollapse": true,
-        "aaSorting": [[8, "desc"]],
+        "aaSorting": [[7, "desc"]],
         "ajax": "<?= URL ?>api/getallcards",
         "columns": [
-            { "data": "id" },
             { "data": "name" },
             { "data": "cost" },
             { "data": "attack" },
@@ -40,12 +39,12 @@ $(document).ready(function () {
             { "data": "effect.type" },
             { "data": "activated" },
             { "data": "created" },
-            { "data": "editted", "iDataSort": 9 },
+            { "data": "editted", "iDataSort": 8 },
             { "data": "editted" }
         ],
         "columnDefs": [
             {
-                "targets": [ 9 ],
+                "targets": [ 8 ],
                 "visible": false,
                 "searchable": false
             }
@@ -64,9 +63,7 @@ $(document).ready(function () {
                 });
             }
             
-            $(children[6]).html( GetActivation($(children[6]).text()) );
-            
-            $(children[0]).html("<input type=\"checkbox\" class=\"select cards\" id=\"" + id + "\">");
+            $(children[5]).html( GetActivation($(children[5]).text()) );
         },
         "fnDrawCallback": function (oSettings) {
             $(".cards").iCheck({
