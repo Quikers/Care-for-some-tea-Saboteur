@@ -63,6 +63,7 @@ namespace Game
 
             if( CardArea.gameObject.CompareTag( "Board" ) )
             {
+                Debug.Log( p );
                 Library.SendTcp.SendPacket( p, Data.Network.ServerSocket );
                 FindObjectOfType< EnergyController >().UseEnergy( dCardManager.cardCost );
             }
