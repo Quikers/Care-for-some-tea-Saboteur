@@ -17,16 +17,13 @@ namespace Game
 
         public void BackToMM()
         {
+            Data.Player.CurrentHealth = 20;
+            Data.Enemy.CurrentHealth = 20;
+
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
             WinScreen.SetActive( false );
 
             UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
-        }
-
-        private void Start()
-        {
-            Data.Player.CurrentHealth = 20;
-            Data.Enemy.CurrentHealth = 20;
         }
 
         public static void ActiveAllCards()
