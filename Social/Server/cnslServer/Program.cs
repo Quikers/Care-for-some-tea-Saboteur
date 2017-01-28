@@ -618,6 +618,8 @@ namespace Server
 
             PlayerQueue.Remove(int.Parse(packet.From));
             SendSuccessResponse(packet, client);
+
+            Console.WriteLine("UserID {0} left the matchmaking queue.", packet.From);
         }
 
         private static void ListenToClient(Client client)
