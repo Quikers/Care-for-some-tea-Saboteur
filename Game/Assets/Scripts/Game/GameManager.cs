@@ -18,6 +18,8 @@ namespace Game
         public void BackToMM()
         {
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+            WinScreen.SetActive( false );
+
             UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
         }
 
