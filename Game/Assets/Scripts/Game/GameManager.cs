@@ -1,19 +1,62 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game
 {
     public class GameManager : MonoBehaviour
     {
-        public static CardManager GetCard( bool playerCard, int id )
+        public GameObject WinScreen;
+        public GameObject PauseMenu;
+
+        CardManager GetCard( int id )
         {
             return Utilities.Find.CardById( id );
         }
 
+        public void BackToMM()
+        {
+            Data.Player.CurrentHealth = 20;
+            Data.Enemy.CurrentHealth = 20;
 
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+            WinScreen.SetActive( false );
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene( "mainmenu" );
+        }
+
+        public static void ActiveAllCards()
+        {
+            CardAttackController[] attackingCards = FindObjectsOfType< CardAttackController >();
+            foreach( var attackingCard in attackingCards )
+                attackingCard.HasAttacked = false;
+
+            List< GameObject > energyObjects = FindObjectOfType< EnergyController >().EnergyObjects;
+            foreach( var energyObject in energyObjects )
+            {
+                energyObject.SetActive( true );
+            }
+        }
 
         void Update()
         {
+            if( PauseMenu.activeSelf & Input.GetKeyDown( KeyCode.Escape ) )
+                PauseMenu.SetActive( false );
+            else if( !PauseMenu.activeSelf & Input.GetKeyDown( KeyCode.Escape ) )
+                PauseMenu.SetActive( true );
+
+            if( Data.Player.CurrentHealth <= 0 )
+            {
+                WinScreen.SetActive( true );
+                WinScreen.GetComponentInChildren< Text >().text = "You lost!";
+            }
+            else if( Data.Enemy.CurrentHealth <= 0 )
+            {
+                WinScreen.SetActive( true );
+                WinScreen.GetComponentInChildren< Text >().text = "Congratulations You Won!";
+            }
+
             if( NetCode.NetworkController.PlayCardsQueue.Count >= 1 )
             {
                 for( int i = 0; i < NetCode.NetworkController.PlayCardsQueue.Count; i++ )
@@ -27,23 +70,32 @@ namespace Game
             {
                 foreach( var attacker in NetCode.NetworkController.AttackingQueue.ToArray() )
                 {
-                    Debug.Log( attacker.Value + "  " + attacker.Key );
+                    if( attacker.Key >= 0 )
+                    {
+                        GetCard( attacker.Value )
+                            .GetComponent< EnemyCardController >()
+                            .Attack( GetCard( attacker.Value ), GetCard( attacker.Key ) );
+                    }
+                    else if( attacker.Key == -1 )
+                    {
+                        FindObjectsOfType< FaceController >()[ 0 ]
+                            .Attack( GetCard( attacker.Value ) );
+                    }
+                    else if( attacker.Key == -2 )
+                    {
+                        FindObjectsOfType< FaceController >()[ 1 ]
+                            .Attack( GetCard( attacker.Value ) );
 
-                    Debug.Log( Utilities.Find.CardById( attacker.Value ) );
-                    Debug.Log( Utilities.Find.CardById( attacker.Key ) );
-
-                    Utilities.Find.CardById( attacker.Value )
-                        .GetComponent< EnemyCardController >()
-                        .Attack( Utilities.Find.CardById( attacker.Value ), Utilities.Find.CardById( attacker.Key ) );
-
+                    }
                     NetCode.NetworkController.AttackingQueue.Remove( attacker.Key );
-
                 }
             }            
         }
 
         void OnApplicationQuit()
         {
+            Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.MatchEnd ), Data.Network.ServerSocket );
+
             Library.SendTcp.SendPacket( new Library.Packet( Data.PlayerUser.Id.ToString(), "Server", Library.TcpMessageType.Logout ), Data.Network.ServerSocket );
         }
 

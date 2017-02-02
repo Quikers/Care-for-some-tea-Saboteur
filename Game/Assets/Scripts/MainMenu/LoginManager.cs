@@ -16,15 +16,10 @@ namespace MainMenu
         public InputField Password;
         public InputField IP;
 
-        void Start()
-        {
-            
-        }
-
         public void Register()
         {
             // you can go fuck yourself i ain't gonna make that.
-            Application.OpenURL( "http://careforsometeasaboteur.com/account?type=register" );
+            Application.OpenURL( "http://213.46.57.198/account?type=register" );
         }
 
         public void Login()

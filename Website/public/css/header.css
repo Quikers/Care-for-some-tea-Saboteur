@@ -23,7 +23,7 @@ html, body {
     right: 0;
     bottom: 0;
     
-    background: url("http://careforsometeasaboteur.com/public/images/background.jpg") no-repeat;
+    background: url("http://213.46.57.198/public/images/background.jpg") no-repeat;
     background-repeat: no-repeat;
     background-size: 1920px 211px;
     background-position: center top;
@@ -57,7 +57,7 @@ html, body {
 #header #nav #li-container .li {
     display: inline-block;
     
-    width: 15%;
+    width: 190px;
     height: 29px;
     
     margin: 0 auto;

@@ -3,16 +3,16 @@
 class APIModel extends Model {
     
     public $AccountModel;
-    public $ContentModel;
+    public $CollectionModel;
     
     function __construct() {
         parent::__construct();
         
         $this->IncludeModel("Account");
-        $this->IncludeModel("Content");
+        $this->IncludeModel("Collection");
         
         $this->AccountModel = new AccountModel();
-        $this->ContentModel = new ContentModel();
+        $this->CollectionModel = new CollectionModel();
     }
     
     private function IncludeModel($model) {
@@ -46,7 +46,7 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -63,7 +63,7 @@ class APIModel extends Model {
         );
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -88,7 +88,7 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -113,7 +113,7 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -124,19 +124,39 @@ class APIModel extends Model {
         $result = $this->AccountModel->Login($email, $password);
         
         if ($result != false) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
         }
     }
     
+    public function UpdateStatus($type, $status, $id) {
+        if ($type == "deck") {
+            $result = $this->db->Query(
+                'UPDATE `decks` SET `activated`=:activated WHERE `id` = :deckid',
+                array(
+                    "deckid" => $id,
+                    "activated" => $status
+                )
+            );
+        } else if ($type == "card") {
+            $result = $this->db->Query(
+                'UPDATE `cards` SET `activated`=:activated WHERE `id` = :cardid',
+                array(
+                    "cardid" => $id,
+                    "activated" => $status
+                )
+            );
+        }
+    }
+    
     public function GetCardDeckRelByCardID($cardid) {
-        return $this->ContentModel->GetCardDeckRelations("cardid", $cardid);
+        return $this->CollectionModel->GetCardDeckRelations("cardid", $cardid);
     }
     
     public function GetCardDeckRelByDeckID($deckid) {
-        return $this->ContentModel->GetCardDeckRelations("deckid", $deckid);
+        return $this->CollectionModel->GetCardDeckRelations("deckid", $deckid);
     }
     
     public function GetAllCards() {
@@ -177,7 +197,7 @@ class APIModel extends Model {
         if (isset($result["id"])) { $result["effect"] = $this->GetCardEffectByEffectID($result["effect"]); }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -186,7 +206,7 @@ class APIModel extends Model {
     
     public function GetCardsByUserID($userid) {
         $result = $this->db->Query(
-            'SELECT * FROM `cards` WHERE `userid` = :userid',
+            'SELECT * FROM `cards` WHERE `userid` = :userid AND `deleted` = 0',
             array(
                 "userid" => $userid
             ),
@@ -197,18 +217,15 @@ class APIModel extends Model {
         if (!isset($result["id"])) {
             if (count($result) > 0) {
                 foreach ($result as $key => $card) {
-                    if ($card["deleted"] == "1") { unset($result[$key]); }
-                    else {
-                        $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
-                    }
+                    $result[$key]["effect"] = $this->GetCardEffectByEffectID($card["effect"]);
                 }
             }
-        } else {
+        } else if ($result != false) {
             $result["effect"] = $this->GetCardEffectByEffectID($result["effect"]);
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -225,7 +242,7 @@ class APIModel extends Model {
         );
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -269,7 +286,7 @@ class APIModel extends Model {
         );
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -285,7 +302,7 @@ class APIModel extends Model {
                 "attack" => $card["attack"],
                 "health" => $card["health"],
                 "effect" => $card["effect"],
-                "activated" => 0,
+                "activated" => $_SESSION["user"]["account_type"] == 1 ? 1 : 0,
                 "cardid" => $card["id"]
             )
         );
@@ -297,7 +314,7 @@ class APIModel extends Model {
             array( 
                 "userid" => $_SESSION["user"]["id"],
                 "name" => $deck["name"],
-                "activated" => 0,
+                "activated" => $_SESSION["user"]["account_type"] == 1 ? 1 : 0,
                 "deleted" => 0
             )
         );
@@ -321,7 +338,7 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -365,9 +382,38 @@ class APIModel extends Model {
         }
     }
     
-    public function GetDeckByUserID($userid) {
+    public function GetAllDecks() {
         $result = $this->db->Query(
-            'SELECT * FROM `decks` WHERE `userid` = :userid',
+            'SELECT * FROM `decks`',
+            NULL
+        );
+        
+        foreach($result as $key => $deck) {
+            if (isset($deck["id"])) {
+                $card_deck_relArr = $this->GetCardDeckRelByDeckID($deck["id"]);
+
+                $deck["cards"] = array();
+                if ($card_deck_relArr != false) {
+                    foreach ($card_deck_relArr as $card_deck_rel) {
+                        array_push($deck["cards"], $this->GetCardByCardID($card_deck_rel["cardid"]));
+                    }
+                }
+                
+                $result[$key] = $deck;
+            }
+        }
+        
+        if ($result != array() && $result != array(array())) {
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
+    
+    public function GetDecksByUserID($userid) {
+        $result = $this->db->Query(
+            'SELECT * FROM `decks` WHERE `userid` = :userid AND `deleted` = 0',
             array( "userid" => $userid ),
             true
         );
@@ -375,20 +421,16 @@ class APIModel extends Model {
         if (count($result) > 0) {
             if (is_numeric(array_keys($result)[0])) {
                 foreach($result as $key => $deck) {
-                    if ($deck["deleted"] == "1") { unset($result[$key]); }
-                    else {
-                        $deck["cards"] = array();
-                        $result[$key] = $deck;
-                    }
+                    $deck["cards"] = array();
+                    $result[$key] = $deck;
                 }
-            } else {
+            } else if ($result != false) {
                 $result["cards"] = array();
-                if ($deck["deleted"] == "1") { $result = array(); }
             }
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;
@@ -414,7 +456,7 @@ class APIModel extends Model {
         }
         
         if ($result != array() && $result != array(array())) {
-            if (count($result) == 1) { return $result[0]; }
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
             else { return $result; }
         } else {
             return false;

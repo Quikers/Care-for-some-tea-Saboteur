@@ -4,7 +4,7 @@ $username = "";
 $password = "";
 
 if (isset($_SESSION["message"])) {
-    echo '<center><div id="message-content">';
+    echo '<center><div id="message-collection">';
     echo $_SESSION["message"];
     echo "</div></center>";
 }

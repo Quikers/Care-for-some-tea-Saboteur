@@ -12,7 +12,7 @@ namespace Utilities
             {                
                 // Make request to server.
                 WebRequest request =
-                    WebRequest.Create( "http://careforsometeasaboteur.com/api/checklogin/" + email + "/" + password );
+                    WebRequest.Create( "http://213.46.57.198/api/checklogin/" + email + "/" + password );
 
                 request.Credentials = CredentialCache.DefaultCredentials;
 
@@ -45,7 +45,7 @@ namespace Utilities
             {
                 // Make request to server.
                 WebRequest request =
-                    WebRequest.Create( "http://careforsometeasaboteur.com/api/getdecksbyuserid/" + userId );
+                    WebRequest.Create( "http://213.46.57.198/api/getdecksbyuserid/" + userId );
                 request.Credentials = CredentialCache.DefaultCredentials;
 
                 // Get the response from the server.
@@ -74,7 +74,7 @@ namespace Utilities
             {
                 // Make request to server.
                 WebRequest request =
-                    WebRequest.Create( "http://careforsometeasaboteur.com/api/getdeckbydeckid/" + deckId );
+                    WebRequest.Create( "http://213.46.57.198/api/getdeckbydeckid/" + deckId );
                 request.Credentials = CredentialCache.DefaultCredentials;
 
                 // Get the response from the server.

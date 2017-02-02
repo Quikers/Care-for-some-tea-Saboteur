@@ -8,10 +8,16 @@
     <?php } else { ?>
     
     <div id="dashboarditem-container">
-        <div class="dashboarditem" href="<?= URL ?>content/downloadclient">
+        <div class="dashboarditem" href="<?= URL ?>collection/downloadclient">
             <h2 style="margin-top: 30px;"><i class="fa fa-download" aria-hidden="true"></i> Download Client</h2>
             <p>Click here to download the latest Game Client.</p>
         </div>
+        <?php if (isset($_SESSION["loggedIn"]) && $_SESSION["loggedIn"] == true && $_SESSION["user"]["account_type"] == 1) { ?>
+        <div class="dashboarditem" href="<?= URL ?>dashboard/adminpanel">
+            <h2 style="margin-top: 30px;"><i class="fa fa-tachometer" aria-hidden="true"></i> Admin Panel</h2>
+            <p>Approve, unapprove or reject Decks and Cards made by other users that do not have admin privileges.</p>
+        </div>
+        <?php } ?>
         <div class="dashboarditem" href="<?= URL ?>dashboard/profile">
             <h2 style="margin-top: 30px;"><i class="fa fa-user" aria-hidden="true"></i> Profile</h2>
             <p>Edit your profile information, such as your E-mail, Username and Password.</p>

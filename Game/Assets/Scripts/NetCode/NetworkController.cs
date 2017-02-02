@@ -31,8 +31,6 @@ namespace NetCode
             switch( recievedPacket.Type )
             {
                 case TcpMessageType.MatchStart:
-                    UnityEngine.Debug.Log( "Match Start" );
-                    UnityEngine.Debug.Log( recievedPacket );
 
                     Data.EnemyUser.Id = int.Parse( recievedPacket.Variables[ "UserID" ] );
                     Data.EnemyUser.UserName = recievedPacket.Variables[ "Username" ];
@@ -59,6 +57,8 @@ namespace NetCode
                             int.Parse( recievedPacket.Variables[ "Health" ] ),
                             int.Parse( recievedPacket.Variables[ "Attack" ] ),
                             int.Parse( recievedPacket.Variables[ "EnergyCost" ] ),
+                            int.Parse( recievedPacket.Variables[ "EffectID" ] ),
+                            recievedPacket.Variables[ "EffectType" ],
                             recievedPacket.Variables[ "Effect" ] ) );
                     }
                     else if( recievedPacket.Variables[ "PlayerAction" ] == "Attack" )

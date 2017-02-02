@@ -34,12 +34,12 @@ namespace Game
             GameObject card = Instantiate( NonPlayerCard, Vector3.zero, Quaternion.identity );
 
             card.GetComponent<CardManager>().InstantiateCard( playedCard );
+            card.GetComponent<CardManager>().DoEffect();
             card.transform.SetParent( EnemyBoardDrop, false );
         }
 
         public void DrawCard()
         {
-            //Instantiate( Card, Vector3.zero, Quaternion.identity );
             if( transform.childCount > 8 ) return;
 
             float randomNum = Random.Range( 0, 19 );

@@ -36,11 +36,11 @@ namespace Game
         public void OnDrop( PointerEventData eventData )
         {
             Draggable d = eventData.pointerDrag.GetComponent< Draggable >();
-
-            CardManager dCardManager = d.GetComponent< CardManager >();
-
+            
             if( d == null )
                 return;
+
+            CardManager dCardManager = d.GetComponent<CardManager>();
 
             d.ParentToReturnTo = CardArea;
             d.transform.position = new Vector3( d.transform.position.x, d.transform.position.y, CardArea.position.z );
@@ -50,20 +50,26 @@ namespace Game
                 new[]
                 {
                     "PlayerAction", "PlayCard",
-                    "CardType", "Minion",   
+                    "CardType", "Minion",
                     "Health", dCardManager.health.ToString(),
                     "Attack", dCardManager.attack.ToString(),
+                    "EffectID", dCardManager.effect.id.ToString(),
                     "EnergyCost", dCardManager.cardCost.ToString(),
-                    "EffectType", dCardManager.effect.id.ToString(),
+                    "EffectType", dCardManager.effect.type,
                     "Effect", dCardManager.effect.effect,
                     "CardID", dCardManager.CardId.ToString(),
                     "CardName", dCardManager.Cardname
-                } );
+                }
+            );
 
-            Debug.Log( p );
+            dCardManager.DoEffect();
 
             if( CardArea.gameObject.CompareTag( "Board" ) )
+            {
+                Debug.Log( p );
                 Library.SendTcp.SendPacket( p, Data.Network.ServerSocket );
+                FindObjectOfType< EnergyController >().UseEnergy( dCardManager.cardCost );
+            }
 
             if( CardArea.gameObject.CompareTag( "Board" ) && d.gameObject.CompareTag( "HandCard" ) )
             {

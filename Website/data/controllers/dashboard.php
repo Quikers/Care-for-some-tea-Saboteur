@@ -29,7 +29,14 @@ class Dashboard extends Controller {
         if (isset($_POST["username"])) { $AccountModel->UpdateUserField("username", $_POST["username"]); }
         if (isset($_POST["password"])) { $AccountModel->UpdateUserField("password", $_POST["password"]); }
         
-        //header("Location:" . URL . "dashboard/profile");
+        header("Location:" . URL . "dashboard/profile");
+    }
+    
+    public function adminpanel() {
+        if (!isset($_SESSION["loggedIn"]) || $_SESSION["loggedIn"] != true || $_SESSION["user"]["account_type"] != 1) { header("Location:" . URL . "home"); return; }
+        
+        $this->view->title = "Admin Panel";
+        $this->view->render("dashboard/adminpanel");
     }
     
     public function mycards() {
@@ -44,6 +51,83 @@ class Dashboard extends Controller {
         
         $this->view->title = "My Decks";
         $this->view->render("dashboard/mydecks");
+    }
+    
+    public function approve($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "1", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    echo $cardid;
+                    $API->UpdateStatus("card", "1", $cardid);
+                }
+            }
+        }
+        
+        //header("Location:" . URL . "dashboard/adminpanel");
+    }
+    
+    public function unapprove($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "0", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    $API->UpdateStatus("card", "0", $cardid);
+                }
+            }
+        }
+        
+        header("Location:" . URL . "dashboard/adminpanel");
+    }
+    
+    public function reject($params) {
+        $this->loadModel("API");
+        $API = new APIModel();
+        
+        if (isset($params[0])) {
+            $deckids = explode(",", $params[0]);
+            if (count($deckids) > 0) {
+                foreach ($deckids as $deckid) {
+                    $API->UpdateStatus("deck", "-1", $deckid);
+                }
+            }
+        }
+        
+        if (isset($params[1])) {
+            $cardids = explode(",", $params[1]);
+            if (count($cardids) > 0) {
+                foreach ($cardids as $cardid) {
+                    $API->UpdateStatus("card", "-1", $cardid);
+                }
+            }
+        }
+        
+        header("Location:" . URL . "dashboard/adminpanel");
     }
     
     public function uploadcard() {
@@ -75,7 +159,7 @@ class Dashboard extends Controller {
             );
         }
         
-        header("Location:" . URL . "dashboard/editor/card/" . $card["id"]);
+        header("Location:" . URL . "dashboard/mycards/");
     }
     
     public function uploaddeck() {
@@ -94,6 +178,8 @@ class Dashboard extends Controller {
                     "deleted" => isset($_POST["deleted"]) ? $_POST["deleted"] : NULL
                 )
             );
+        
+            header("Location:" . URL . "dashboard/editor/deck/" . $deck["id"]);
         } else {
             $deck = $API->CreateDeck(
                 array(
@@ -101,9 +187,9 @@ class Dashboard extends Controller {
                     "addedcards" => $_POST["addedcards"]
                 )
             );
-        }
         
-        header("Location:" . URL . "dashboard/editor/deck/" . $deck["id"]);
+            header("Location:" . URL . "dashboard/mydecks/");
+        }
     }
     
     public function editor($params = array()) {
@@ -134,14 +220,14 @@ class Dashboard extends Controller {
     
     public function delete($params = array()) {
         if (count($params) > 0) {
-            $this->loadModel("Content");
-            $contentModel = new ContentModel();
+            $this->loadModel("Collection");
+            $collectionModel = new CollectionModel();
             
             if (is_numeric($params[1])) {
-                $contentModel->Delete($params[0], $params[1]);
+                $collectionModel->Delete($params[0], $params[1]);
             } else if (is_string($params[1])) {
                 foreach (explode(",", $params[1]) as $id) {
-                    $contentModel->Delete($params[0], $id);
+                    $collectionModel->Delete($params[0], $id);
                 }
             }
         }
