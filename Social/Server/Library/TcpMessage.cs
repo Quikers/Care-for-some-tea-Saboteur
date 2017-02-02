@@ -55,7 +55,7 @@ namespace Library {
 
                 string[] keyValue = pair.Split(new[] { "\\@\\" }, StringSplitOptions.None);
                 switch (keyValue[0]) {
-                    default:
+                    default:    
                         if (!packet.Variables.ContainsKey(keyValue[0]))
                             packet.Variables.Add(keyValue[0], keyValue[1]);
                         break;

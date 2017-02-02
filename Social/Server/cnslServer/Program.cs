@@ -665,8 +665,7 @@ namespace Server
         private static void Broadcast(Packet packet)
         { 
             foreach (var player in OnlinePlayers)
-            {
-                packet.Type = TcpMessageType.ChatMessage;
+            {   
                 SendTcp.SendPacket(packet, player.Value.Socket);
             }
         }
