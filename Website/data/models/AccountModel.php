@@ -24,7 +24,7 @@ class AccountModel extends Model {
 
     public function UsernameLogin($username, $password) {
         $result = $this->db->Query(
-            'SELECT `id`, `email`, `username`, `account_type`, `created`, `editted` FROM users WHERE `username` = :username A$
+            'SELECT `id`, `email`, `username`, `account_type`, `created`, `editted` FROM users WHERE `username` = :username AND `password` = PASSWORD(:password)',
             array(
                 "username" => $username,
                 "password" => $password
