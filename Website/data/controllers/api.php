@@ -189,6 +189,14 @@ class API extends Controller {
         }
     }
 
+    public function checkusernamelogin($params = null) {
+        if (count($params) == 2) {
+            echo json_encode($this->API->CheckUsernameLogin($params[0], $params[1]));
+        } else {
+            echo 0;
+        }
+    }
+
     public function getallcards($params = null) {
         echo json_encode($this->API->GetAllCards());
     }

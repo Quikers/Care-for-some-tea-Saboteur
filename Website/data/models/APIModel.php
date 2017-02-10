@@ -130,6 +130,17 @@ class APIModel extends Model {
             return false;
         }
     }
+
+    public function CheckUsernameLogin($username, $password) {
+        $result = $this->AccountModel->UsernameLogin($username, $password);
+
+        if ($result != false) {
+            if (count($result) == 1) { return $result[array_keys($result)[0]]; }
+            else { return $result; }
+        } else {
+            return false;
+        }
+    }
     
     public function UpdateStatus($type, $status, $id) {
         if ($type == "deck") {

@@ -21,6 +21,22 @@ class AccountModel extends Model {
             return false;
         }
     }
+
+    public function UsernameLogin($username, $password) {
+        $result = $this->db->Query(
+            'SELECT `id`, `email`, `username`, `account_type`, `created`, `editted` FROM users WHERE `username` = :username A$
+            array(
+                "username" => $username,
+                "password" => $password
+            )
+        );
+
+        if ($result != array() && $result != null) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
     
     public function GetLastInsertedUser() {
         return $this->db->Query("SELECT (`id`) FROM `users` ORDER BY `id` DESC LIMIT 1");
